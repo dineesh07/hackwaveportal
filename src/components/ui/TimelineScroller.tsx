@@ -166,14 +166,24 @@ export function TimelineScroller() {
     offset: ["start start", "end end"]
   });
 
-  const trackX = useTransform(scrollYProgress, [0, 1], ["0%", "-300vw"]);
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // On mobile, card is ~90vw and gap is 15vw (we will adjust CSS to 15vw) -> distance is 105vw. 4 * 105 = 420vw.
+  // On desktop, card is ~25vw and gap is 40vw -> distance is 65vw. 4 * 65 = 260vw. -300vw gives some padding.
+  const trackX = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "-420vw" : "-300vw"]);
   
   const springScroll = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
   
-  // Mascot explicitly mapped to 30vw initially, corresponding to first breakpoint card position
-  const mascotX = useTransform(springScroll, [0, 1], ["30vw", "75vw"]);
+  const mascotX = useTransform(springScroll, [0, 1], ["30vw", isMobile ? "85vw" : "75vw"]);
   
-  const trackProgressWidth = useTransform(springScroll, [0, 1], ["30vw", "375vw"]);
+  const trackProgressWidth = useTransform(springScroll, [0, 1], ["30vw", isMobile ? "450vw" : "375vw"]);
 
   const endOpacity = useTransform(scrollYProgress, [0.95, 1], [0, 1]);
 

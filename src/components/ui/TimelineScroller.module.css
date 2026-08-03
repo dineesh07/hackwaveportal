@@ -41,7 +41,7 @@
   left: 0;
   right: 0;
   border-top: 2px solid #2A2A2A;
-  width: 300vw;
+  width: 500vw;
   z-index: 0;
 }
 
@@ -66,10 +66,16 @@
 
 .cardsWrapper {
   display: flex;
-  gap: 40vw;
+  gap: 15vw;
   position: relative;
   width: max-content;
   z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .cardsWrapper {
+    gap: 40vw;
+  }
 }
 
 .cardContainer {
@@ -142,7 +148,7 @@
   position: absolute;
   bottom: 0px;
   right: -10px;
-  font-size: 14rem;
+  font-size: clamp(5rem, 25vw, 14rem);
   font-weight: 900;
   line-height: 1;
   color: rgba(255, 255, 255, 0.03);
@@ -312,9 +318,10 @@
 .mainTitle {
   font-family: var(--font-syncopate), sans-serif;
   font-weight: 700;
-  font-size: 3rem;
+  font-size: clamp(2rem, 8vw, 3rem);
   margin-bottom: 3rem;
   text-align: center;
+  word-wrap: break-word;
 }
 
 .outlineText {
