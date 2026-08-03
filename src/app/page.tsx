@@ -20,7 +20,7 @@ export default function Home() {
       <div className={styles.publicPortal}>
         <main>
           {/* HERO SECTION */}
-          <section className={`${styles.hero}`}>
+          <section id="home" className={`${styles.hero}`}>
             <div className={styles.radialGlowTopLeft}></div>
             <div className={styles.radialGlowBottomRight}></div>
             <div className="container">

@@ -59,13 +59,20 @@
 }
 
 .mascotImage {
-  width: 120%;
+  width: 100%;
   max-width: 900px;
   height: auto;
   filter: drop-shadow(0 0 40px rgba(239, 68, 68, 0.3));
   transform-origin: center center;
   animation: floatMascot 6s ease-in-out infinite;
-  margin-left: -5%;
+  margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+  .mascotImage {
+    width: 120%;
+    margin-left: -5%;
+  }
 }
 
 @keyframes floatMascot {
@@ -104,19 +111,13 @@
 }
 
 .headline {
-  font-size: 3rem;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
   font-family: var(--font-jakarta), sans-serif;
   font-weight: 800;
   text-transform: uppercase;
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin-bottom: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .headline {
-    font-size: 4.5rem;
-  }
 }
 
 .subheadline {
@@ -132,7 +133,7 @@
   display: flex;
   gap: 2rem;
   margin-bottom: 2.5rem;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .featureItem {
@@ -318,7 +319,7 @@
 .sectionTitle {
   font-family: var(--font-syncopate), sans-serif;
   font-weight: 700;
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 6vw, 2.5rem);
   margin-bottom: 3rem;
   text-align: center;
 }

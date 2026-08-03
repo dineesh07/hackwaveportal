@@ -1,5 +1,6 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 
@@ -428,9 +429,9 @@ export const StaggeredMenu = ({
             {items && items.length ? (
               items.map((it, idx) => (
                 <li className="sm-panel-itemWrap" key={it.label + idx}>
-                  <a className="sm-panel-item" href={it.link} aria-label={it.ariaLabel} data-index={idx + 1} onClick={closeMenu}>
+                  <Link className="sm-panel-item" href={it.link} aria-label={it.ariaLabel} data-index={idx + 1} onClick={closeMenu}>
                     <span className="sm-panel-itemLabel">{it.label}</span>
-                  </a>
+                  </Link>
                 </li>
               ))
             ) : (

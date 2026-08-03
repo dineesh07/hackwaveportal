@@ -10,7 +10,7 @@
 .sectionTitle {
   font-family: var(--font-syncopate), sans-serif;
   font-weight: 700;
-  font-size: 3rem;
+  font-size: clamp(2rem, 8vw, 3rem);
   margin-bottom: 4rem;
   text-align: center;
 }
@@ -43,7 +43,7 @@
 
 .cardWrapper {
   position: relative;
-  width: 320px;
+  width: min(100vw - 2rem, 320px);
   height: 470px;
   margin: 0 auto;
 }

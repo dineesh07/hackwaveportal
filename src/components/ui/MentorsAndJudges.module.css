@@ -15,10 +15,11 @@
 .title {
   font-family: var(--font-syncopate), sans-serif;
   font-weight: 700;
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 8vw, 3.5rem);
   color: var(--flame-red);
   margin: 0;
   line-height: 1;
+  text-align: center;
 }
 
 .underlineContainer {

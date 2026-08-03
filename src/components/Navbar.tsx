@@ -5,7 +5,7 @@ import StaggeredMenu from "./ui/StaggeredMenu";
 
 export function Navbar() {
   const menuItems = [
-    { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
+    { label: 'Home', ariaLabel: 'Go to home page', link: '/#home' },
     { label: 'About', ariaLabel: 'Learn about us', link: '/#about' },
     { label: 'Tracks', ariaLabel: 'View our tracks', link: '/#tracks' },
     { label: 'Timeline', ariaLabel: 'View the timeline', link: '/#timeline' },
