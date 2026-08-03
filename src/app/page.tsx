@@ -34,7 +34,7 @@ export default function Home() {
                   </h1>
 
                   <p className={styles.subheadline}>
-                    Join <b>HACKWAVE IGNITE</b>, a two-phase hackathon where innovative ideas evolve into impactful solutions through mentorship, collaboration, and competition.
+                    Organized by the Coding Club of CT-PG, <b>HACKWAVE IGNITE</b> is a two-phase innovation hackathon where ideas evolve into impactful solutions through mentorship, collaboration, and competition.
                   </p>
 
                   <div className={styles.heroControls}>
@@ -94,7 +94,7 @@ export default function Home() {
                     <span style={{ color: 'var(--flame-red)' }}>What</span> is <span className={styles.outlineText}>HACKWAVE?</span>
                   </h2>
                   <p>
-                    Unlike traditional hackathons that end after a single demo, <b>HACKWAVE</b> focuses on continuous growth.
+                    Organized by the Coding Club of CT-PG, <b>HACKWAVE</b> is designed to go beyond traditional hackathons by emphasizing continuous learning, mentorship, and innovation.
                   </p>
                   <p>
                     Teams begin by building a working prototype, receive valuable guidance from dedicated mentors, and iterate on their solutions before presenting them to an expert jury. This ensures every participant experiences the complete product development journey—from ideation to execution.
