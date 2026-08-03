@@ -38,7 +38,7 @@ interface CardData {
 
 const organizerCardConfigs: CardData[] = [
   { id: "card-1", name: "Malathi Eswaran", role: "Staff Coordinator", phone: "+91 9489373737", linkedin: "", serial: "HW- 001", image: "/malathimam.jpg" },
-  { id: "card-2", name: "Dineesh M.", role: "Lead Organizer", phone: "+91 93637 30057", linkedin: "https://www.linkedin.com/in/dineesh30052007/", serial: "HW-002", image: "/dineesh.jpeg" },
+  { id: "card-2", name: "Dineesh M", role: "Lead Organizer", phone: "+91 93637 30057", linkedin: "https://www.linkedin.com/in/dineesh30052007/", serial: "HW-002", image: "/dineesh.jpeg" },
 ];
 
 
