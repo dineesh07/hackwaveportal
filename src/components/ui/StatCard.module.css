@@ -1,0 +1,91 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem 1rem;
+  box-shadow: var(--shadow-xs);
+  position: relative;
+  overflow: hidden;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.875rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-60);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius);
+}
+
+.value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.bar {
+  display: block;
+  height: 3px;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+/* Tones */
+.default {
+  color: var(--ink);
+}
+.success {
+  color: var(--success);
+}
+.danger {
+  color: var(--danger);
+}
+.gold {
+  color: var(--flame-orange);
+}
+
+.icon.default {
+  background: var(--paper);
+  color: var(--ink-60);
+}
+.icon.success {
+  background: rgba(31, 146, 84, 0.1);
+}
+.icon.danger {
+  background: rgba(200, 30, 58, 0.1);
+}
+.icon.gold {
+  background: rgba(255, 107, 53, 0.12);
+}
+
+.bar_default {
+  background: linear-gradient(90deg, var(--line), var(--line));
+}
+.bar_success {
+  background: linear-gradient(90deg, var(--success), rgba(31, 146, 84, 0.3));
+}
+.bar_danger {
+  background: linear-gradient(90deg, var(--danger), rgba(200, 30, 58, 0.3));
+}
+.bar_gold {
+  background: linear-gradient(90deg, var(--flame-orange), rgba(255, 107, 53, 0.3));
+}

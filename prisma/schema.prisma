@@ -1,0 +1,363 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  name               String
+  rollNo             String   @unique   // login username
+  email              String?  @unique
+  phone              String?
+  passwordHash       String
+  mustChangePassword Boolean  @default(true)
+  role               Role
+  status             Status   @default(ACTIVE)
+  lastLoginAt        DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  organization       String?
+  expertise          String?
+
+  mentorAssignments  MentorAssignment[] @relation("MentorUser")
+  juryAssignments    JuryAssignment[]   @relation("JuryUser")
+  juryEvaluations    JuryEvaluation[]   @relation("JuryUserEvals")
+}
+
+enum Role {
+  TEAM
+  MENTOR
+  JURY
+  COORDINATOR
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  LOCKED
+}
+
+model Team {
+  id                  String   @id @default(cuid())
+  teamName            String
+  institution         String?
+  leaderName          String
+  leaderRollNo        String
+  leaderPhone         String
+  leaderEmail         String?
+  userId              String?  @unique
+  registrationStatus  RegistrationStatus @default(PENDING_VERIFICATION)
+  registeredAt        DateTime @default(now())
+  verifiedAt          DateTime?
+  verifiedBy          String?
+  status              Status   @default(ACTIVE)
+  createdAt           DateTime @default(now())
+
+  members             TeamMember[]
+  projects            Project[]
+  mentorAssignments   MentorAssignment[]
+}
+
+enum RegistrationStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  ACCOUNT_CREATED
+  REJECTED
+}
+
+model TeamMember {
+  id      String @id @default(cuid())
+  teamId  String
+  team    Team   @relation(fields: [teamId], references: [id])
+  name    String
+  rollNo  String?
+  phone   String
+  email   String?
+}
+
+model Project {
+  id                 String   @id @default(cuid())
+  teamId             String
+  team               Team     @relation(fields: [teamId], references: [id])
+  phase              Int      @default(1)
+
+  projectTitle       String
+  oneLiner           String   @db.VarChar(150)
+  track              Track
+  projectStatus      ProjectStatus
+
+  problemStatement   String   @db.Text
+  proposedSolution   String   @db.Text
+  targetUsers        String[]
+
+  coreFeatures       Feature[] @relation("CoreFeatures")
+  futureEnhancements Feature[] @relation("FutureEnhancements")
+
+  techFrontend       String[]
+  techBackend        String[]
+  techDatabase       String[]
+  techAiMl           String[]
+  techCloud          String[]
+  techApis           String[]
+  techOther          String[]
+
+  architectureFileUrl String
+
+  mockupFileUrl       String?
+  prototypeLinkUrl    String?
+  githubRepoUrl       String?
+  liveDemoUrl         String?
+
+  potentialChallenges String @db.Text
+
+  references          Reference[]
+
+  demoVideoUrl        String?
+
+  questionsForMentors String? @db.Text
+
+  status              SubmissionStatus @default(DRAFT)
+  submittedAt         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  mentorFeedback      MentorFeedback[]
+  privateNotes        MentorPrivateNote[]
+  tasks               Task[]
+  juryAssignments     JuryAssignment[]
+  juryEvaluations     JuryEvaluation[]
+  leaderboardEntry    LeaderboardEntry?
+  awards              AwardRecipient[]
+
+  @@unique([teamId, phase])
+}
+
+model Feature {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  coreForProjectId    String?
+  futureForProjectId  String?
+  core        Project? @relation("CoreFeatures", fields: [coreForProjectId], references: [id])
+  future      Project? @relation("FutureEnhancements", fields: [futureForProjectId], references: [id])
+}
+
+model Reference {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  title     String
+  url       String
+}
+
+enum Track {
+  ARTIFICIAL_INTELLIGENCE
+  WEB_DEVELOPMENT
+  MOBILE_DEVELOPMENT
+  HEALTHCARE
+  EDUCATION
+  AGRICULTURE
+  SUSTAINABILITY
+  FINTECH
+  CYBERSECURITY
+  OPEN_INNOVATION
+  IOT
+  BLOCKCHAIN_WEB3
+  CLOUD_COMPUTING
+  OTHERS
+}
+
+enum ProjectStatus {
+  IDEATION_COMPLETE
+  RESEARCH_IN_PROGRESS
+  PROTOTYPE_STARTED
+  MVP_DEVELOPMENT_STARTED
+}
+
+enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  REVIEWED
+}
+
+model MentorAssignment {
+  id        String @id @default(cuid())
+  mentorId  String
+  mentor    User   @relation("MentorUser", fields: [mentorId], references: [id])
+  teamId    String
+  team      Team   @relation(fields: [teamId], references: [id])
+  phase     Int    @default(1)
+  assignedAt DateTime @default(now())
+
+  @@unique([mentorId, teamId, phase])
+}
+
+model MentorFeedback {
+  id               String   @id @default(cuid())
+  projectId        String
+  project          Project  @relation(fields: [projectId], references: [id])
+  mentorId         String
+  phase            Int      @default(1)
+  overallFeedback  String   @db.Text
+  suggestions      String   @db.Text
+  createdAt        DateTime @default(now())
+}
+
+model MentorPrivateNote {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id])
+  mentorId   String
+  phase      Int      @default(1)
+  note       String   @db.Text
+  createdAt  DateTime @default(now())
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  projectId   String
+  project     Project    @relation(fields: [projectId], references: [id])
+  mentorId    String
+  phase       Int        @default(1)
+  title       String
+  description String
+  priority    Priority
+  dueDate     DateTime
+  status      TaskStatus @default(PENDING)
+  createdAt   DateTime   @default(now())
+  completedAt DateTime?
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskStatus {
+  PENDING
+  COMPLETED
+}
+
+model JuryAssignment {
+  id         String   @id @default(cuid())
+  juryId     String
+  jury       User     @relation("JuryUser", fields: [juryId], references: [id])
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id])
+  phase      Int      @default(1)
+  assignedAt DateTime @default(now())
+
+  @@unique([juryId, projectId, phase])
+}
+
+model JuryEvaluation {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  juryId      String
+  jury        User     @relation("JuryUserEvals", fields: [juryId], references: [id])
+  phase       Int      @default(1)
+
+  scoreProblemUnderstanding Int
+  scoreInnovation           Int
+  scoreTechnicalImpl        Int
+  scorePrototypeFunc        Int
+  scoreUiUx                 Int
+  scoreScalability           Int
+  scorePresentation          Int
+  scoreImpactPotential       Int
+  totalScore                 Int
+
+  strengths            String  @db.Text
+  areasForImprovement  String  @db.Text
+  overallComments      String  @db.Text
+
+  status       EvaluationStatus @default(DRAFT)
+  submittedAt  DateTime?
+  reopenedAt   DateTime?
+  reopenReason String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([projectId, juryId, phase])
+}
+
+enum EvaluationStatus {
+  DRAFT
+  SUBMITTED
+}
+
+model LeaderboardEntry {
+  id             String   @id @default(cuid())
+  projectId      String   @unique
+  project        Project  @relation(fields: [projectId], references: [id])
+  phase          Int      @default(1)
+  averageScore   Float
+  rank           Int?
+  scoresPublishedAt DateTime?
+  updatedAt      DateTime @updatedAt
+}
+
+model ShortlistDecision {
+  id              String   @id @default(cuid())
+  projectId       String   @unique
+  phase           Int      @default(1)
+  isShortlisted   Boolean
+  publishedAt     DateTime?
+  decidedBy       String
+  decidedAt       DateTime   @default(now())
+}
+
+model Award {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  icon         String?
+  phase        Int      @default(1)
+  publishedAt  DateTime?
+  createdBy    String
+  createdAt    DateTime @default(now())
+
+  recipients   AwardRecipient[]
+}
+
+model AwardRecipient {
+  id         String  @id @default(cuid())
+  awardId    String
+  award      Award   @relation(fields: [awardId], references: [id])
+  projectId  String
+  project    Project @relation(fields: [projectId], references: [id])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorId     String
+  action      String
+  targetType  String?
+  targetId    String?
+  metadata    Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
+
+model PlatformSettings {
+  id                    String   @id @default("singleton")
+  hackathonName         String
+  logoUrl               String?
+  bannerUrl             String?
+  registrationOpen      Boolean  @default(false)
+  submissionDeadline    DateTime?
+  phase1ReviewWindowStart DateTime?
+  phase1ReviewWindowEnd   DateTime?
+  evaluationWindowStart   DateTime?
+  evaluationWindowEnd     DateTime?
+  announcementBanner    String?
+}
