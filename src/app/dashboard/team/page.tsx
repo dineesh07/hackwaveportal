@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { StatCard } from '@/components/ui/StatCard'
 import { StatusRibbon } from '@/components/ui/StatusRibbon'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { Clock, ClipboardList, Mic, Lock, Layers, CheckCircle2, Loader, FileCheck } from 'lucide-react'
+import { Clock, ClipboardList, Mic, Lock, Layers, CheckCircle2, Loader, FileCheck, MessageSquareText } from 'lucide-react'
 import styles from '../dashboard.module.css'
 import SubmissionForm from './SubmissionForm'
 import ResultsCenter from './ResultsCenter'
@@ -97,6 +97,30 @@ export default async function TeamDashboardPage() {
                     Mentor Tasks
                   </h2>
                   <TeamTasks tasks={project.tasks} />
+                </Card>
+              )}
+
+              {project?.mentorFeedback && project.mentorFeedback.length > 0 && (
+                <Card style={{ marginTop: '2rem' }}>
+                  <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <MessageSquareText size={20} />
+                    Mentor Feedback
+                  </h2>
+                  {project.mentorFeedback.map(fb => (
+                    <div key={fb.id} className={styles.noteItem}>
+                      <div className={styles.noteHeader}>
+                        <strong style={{ color: 'var(--flame-red)' }}>Overall Feedback</strong>
+                        <span className={styles.muted}>{new Date(fb.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', marginBottom: '0.75rem' }}>{fb.overallFeedback}</p>
+                      {fb.suggestions && (
+                        <>
+                          <strong className={styles.muted} style={{ fontWeight: 700 }}>Suggestions</strong>
+                          <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap' }}>{fb.suggestions}</p>
+                        </>
+                      )}
+                    </div>
+                  ))}
                 </Card>
               )}
 

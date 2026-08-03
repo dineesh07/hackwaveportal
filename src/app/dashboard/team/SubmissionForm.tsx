@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input, Textarea, Select } from '@/components/ui/FormControls'
@@ -250,6 +250,39 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
       setIsSaving(false)
     }
   }
+
+  // Autosave draft every 30s when the form has content and isn't being saved
+  const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const formDataRef = useRef(formData);
+  const isSavingRef = useRef(isSaving);
+  useEffect(() => { formDataRef.current = formData; });
+  useEffect(() => { isSavingRef.current = isSaving; });
+
+  const autosave = useCallback(async () => {
+    const data = formDataRef.current;
+    const hasContent = data.projectTitle.length > 0 || data.problemStatement.length > 0 ||
+      data.proposedSolution.length > 0 || data.architectureFileUrl.length > 0;
+    if (!hasContent || isSavingRef.current) return;
+
+    try {
+      const res = await fetch('/api/team/project', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, status: 'DRAFT' })
+      });
+      if (!res.ok) return;
+      setSuccess('Draft autosaved at ' + new Date().toLocaleTimeString());
+    } catch {
+      // Silently ignore autosave failures
+    }
+  }, []);
+
+  useEffect(() => {
+    autosaveTimer.current = setInterval(autosave, 30000);
+    return () => {
+      if (autosaveTimer.current) clearInterval(autosaveTimer.current);
+    };
+  }, [autosave]);
 
   const isChecklistComplete =
     formData.problemStatement.length > 0 &&
