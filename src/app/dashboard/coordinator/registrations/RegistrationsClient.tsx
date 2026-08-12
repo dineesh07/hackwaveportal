@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Search, Eye, Filter } from 'lucide-react'
 import RegistrationActions from '../RegistrationActions'
 import RegistrationModal from './RegistrationModal'
-import { Team, TeamMember } from '@prisma/client'
+import { Team, TeamMember } from '@/generated/prisma/client'
 
 type FullTeam = Team & { members: TeamMember[] }
 

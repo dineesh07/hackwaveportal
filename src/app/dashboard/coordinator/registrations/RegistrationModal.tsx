@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { X, CheckCircle2, AlertCircle } from 'lucide-react'
-import { Team, TeamMember } from '@prisma/client'
+import { Team, TeamMember } from '@/generated/prisma/client'
 import { Button } from '@/components/ui/Button'
 import RegistrationActions from '../RegistrationActions'
 
