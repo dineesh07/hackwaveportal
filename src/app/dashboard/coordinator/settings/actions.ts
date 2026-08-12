@@ -21,7 +21,7 @@ export async function updateProfileName(newName: string) {
     });
 
     // Update the NextAuth JWT token
-    await unstable_update({ name: newName.trim() });
+    await unstable_update({ user: { name: newName.trim() } });
 
     revalidatePath('/', 'layout');
     
