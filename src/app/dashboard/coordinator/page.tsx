@@ -1,5 +1,4 @@
 import React from 'react'
-import { SidebarLayout } from '@/components/SidebarLayout'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/Button'
@@ -11,17 +10,6 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { CheckCircle2, Users, UserCheck, FileCheck, CheckCheck, Clock, ClipboardList, ListChecks, AlertTriangle, UserPlus } from 'lucide-react'
 import styles from '../dashboard.module.css'
 import RegistrationActions from './RegistrationActions'
-
-const navLinks = [
-  { label: 'Dashboard', href: '/dashboard/coordinator', active: true },
-  { label: 'Team Management', href: '/dashboard/coordinator/teams' },
-  { label: 'Mentors & Reviews', href: '/dashboard/coordinator/mentors' },
-  { label: 'Jury Mapping', href: '/dashboard/coordinator/jury' },
-  { label: 'Monitoring', href: '/dashboard/coordinator/monitoring' },
-  { label: 'Tasks & Notes', href: '/dashboard/coordinator/tasks' },
-  { label: 'Leaderboard & Results', href: '/dashboard/coordinator/results' },
-  { label: 'Awards', href: '/dashboard/coordinator/awards' },
-];
 
 export default async function CoordinatorDashboardPage() {
   const session = await auth()
@@ -75,7 +63,7 @@ export default async function CoordinatorDashboardPage() {
   })
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
@@ -84,12 +72,6 @@ export default async function CoordinatorDashboardPage() {
           </div>
           <StatusRibbon label="Phase 1 · Live" tone="hot" />
         </header>
-
-        <div className={styles.navLinks}>
-          {navLinks.map(l => (
-            <Button key={l.href} href={l.href} variant={l.active ? 'primary' : 'secondary'} size="sm">{l.label}</Button>
-          ))}
-        </div>
 
         <section className={styles.metricsGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '2.5rem' }}>
           <StatCard label="Total Teams" value={totalTeams} icon={<Users size={18} />} />
@@ -162,6 +144,6 @@ export default async function CoordinatorDashboardPage() {
           </section>
         </div>
       </div>
-    </SidebarLayout>
+    </>
   )
 }

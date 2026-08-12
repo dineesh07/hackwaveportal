@@ -1,5 +1,4 @@
 import React from 'react'
-import { SidebarLayout } from '@/components/SidebarLayout'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { StatusRibbon } from '@/components/ui/StatusRibbon'
@@ -39,7 +38,7 @@ export default async function JuryEvaluationPage({ params }: { params: Promise<{
   const evaluation = project.juryEvaluations[0] || null;
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
@@ -54,6 +53,6 @@ export default async function JuryEvaluationPage({ params }: { params: Promise<{
 
         <EvaluationClient project={project} initialEvaluation={evaluation} />
       </div>
-    </SidebarLayout>
+    </>
   )
 }

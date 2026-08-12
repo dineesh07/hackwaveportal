@@ -1,10 +1,9 @@
 import React from 'react';
-import { SidebarLayout } from '@/components/SidebarLayout';
 import { auth } from '@/auth';
 import { StatusRibbon } from '@/components/ui/StatusRibbon';
 import styles from '../../dashboard.module.css';
 import { PasswordUpdateForm } from '@/components/PasswordUpdateForm';
-
+import { ProfileUpdateForm } from '@/components/ProfileUpdateForm';
 export default async function CoordinatorSettingsPage() {
   const session = await auth();
   
@@ -13,7 +12,7 @@ export default async function CoordinatorSettingsPage() {
   }
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
@@ -24,9 +23,10 @@ export default async function CoordinatorSettingsPage() {
         </header>
 
         <section style={{ maxWidth: '600px', marginTop: '2rem' }}>
+          <ProfileUpdateForm currentName={session.user.name || ''} />
           <PasswordUpdateForm />
         </section>
       </div>
-    </SidebarLayout>
+    </>
   );
 }

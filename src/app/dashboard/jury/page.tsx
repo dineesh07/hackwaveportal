@@ -1,5 +1,4 @@
 import React from 'react'
-import { SidebarLayout } from '@/components/SidebarLayout'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { Card } from '@/components/ui/Card'
@@ -63,7 +62,7 @@ export default async function JuryDashboardPage() {
   });
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
@@ -96,6 +95,6 @@ export default async function JuryDashboardPage() {
           />
         )}
       </div>
-    </SidebarLayout>
+    </>
   )
 }

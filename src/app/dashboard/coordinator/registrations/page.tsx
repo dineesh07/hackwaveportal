@@ -3,22 +3,21 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { StatusRibbon } from '@/components/ui/StatusRibbon'
 import styles from '../../dashboard.module.css'
-import AwardsClient from './AwardsClient'
+import RegistrationsClient from './RegistrationsClient'
 
-export default async function CoordinatorAwardsPage() {
+export default async function CoordinatorRegistrationsPage() {
   const session = await auth()
 
   if (!session?.user?.id || session.user.role !== 'COORDINATOR') {
     return <div>Unauthorized.</div>
   }
 
-  const awards = await prisma.award.findMany();
-
-  const projects = await prisma.project.findMany({
-    where: { phase: 1 },
+  const teams = await prisma.team.findMany({
     include: {
-      team: true,
-      awards: { include: { award: true } }
+      members: true
+    },
+    orderBy: {
+      registeredAt: 'desc'
     }
   });
 
@@ -27,13 +26,13 @@ export default async function CoordinatorAwardsPage() {
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
-            <h1 className={styles.title}>Awards Center</h1>
-            <p className={styles.subtitle}>Manage Custom Awards</p>
+            <h1 className={styles.title}>Registrations Viewer</h1>
+            <p className={styles.subtitle}>View full registration forms and manage approvals</p>
           </div>
-          <StatusRibbon label="Awards" tone="hot" />
+          <StatusRibbon label="Registrations" tone="neutral" />
         </header>
 
-        <AwardsClient awards={awards} projects={projects} />
+        <RegistrationsClient initialTeams={teams} />
       </div>
     </>
   )

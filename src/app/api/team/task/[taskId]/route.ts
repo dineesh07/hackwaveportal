@@ -12,13 +12,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ taskId
 
     const task = await prisma.task.findUnique({
       where: { id: taskId },
-      include: { project: { select: { team: { select: { userId: true } } } } },
+      include: { project: { select: { team: { select: { userId: true, members: true } } } } },
     });
     if (!task) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    const isTeamMember = task.project.team.userId === session.user.id;
+    const isTeamMember = task.project.team.userId === session.user.id || task.project.team.members.some(m => m.rollNo === session.user.rollNo);
 
     if (session.user.role === 'TEAM' && !isTeamMember) {
       return NextResponse.json({ error: 'Not your team' }, { status: 403 });

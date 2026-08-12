@@ -6,12 +6,15 @@ export const authConfig = {
   },
   providers: [], // we add providers in auth.ts
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.rollNo = user.rollNo;
         token.role = user.role;
         token.mustChangePassword = user.mustChangePassword;
+      }
+      if (trigger === 'update' && session?.name) {
+        token.name = session.name;
       }
       return token;
     },
@@ -21,6 +24,9 @@ export const authConfig = {
         session.user.rollNo = token.rollNo as string | undefined;
         session.user.role = token.role as string | undefined;
         session.user.mustChangePassword = token.mustChangePassword as boolean | undefined;
+        if (token.name) {
+          session.user.name = token.name as string;
+        }
       }
       return session;
     },

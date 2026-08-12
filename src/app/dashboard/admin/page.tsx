@@ -1,5 +1,4 @@
 import React from 'react'
-import { SidebarLayout } from '@/components/SidebarLayout'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/Button'
@@ -51,7 +50,7 @@ export default async function AdminDashboardPage() {
   })
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
@@ -141,6 +140,6 @@ export default async function AdminDashboardPage() {
           </div>
         </Card>
       </div>
-    </SidebarLayout>
+    </>
   )
 }

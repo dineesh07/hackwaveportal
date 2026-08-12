@@ -107,7 +107,7 @@ model Project {
   techApis           String[]
   techOther          String[]
 
-  architectureFileUrl String
+  architectureFileUrl String?
 
   mockupFileUrl       String?
   prototypeLinkUrl    String?

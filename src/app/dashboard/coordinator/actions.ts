@@ -20,48 +20,94 @@ export async function approveTeam(teamId: string) {
     // Hash default password
     const passwordHash = await bcrypt.hash('12345', 10)
 
-    // Transaction: Create User, Update Team
-    await prisma.$transaction(async (tx) => {
-      const newUser = await tx.user.create({
-        data: {
-          name: team.leaderName,
-          rollNo: team.leaderRollNo,
-          email: team.leaderEmail,
-          phone: team.leaderPhone,
-          passwordHash,
-          mustChangePassword: true,
-          role: 'TEAM',
-          status: 'ACTIVE'
+      // Transaction: Create/Link User for ALL members, Update Team
+      await prisma.$transaction(async (tx) => {
+        // First, get all members of the team
+        const members = await tx.teamMember.findMany({ where: { teamId: team.id } });
+        let leaderUserId: string | null = null;
+  
+        // Iterate through all members and create/update their User accounts
+        for (const member of members) {
+          if (!member.rollNo) continue; // Skip if no roll number is provided
+  
+          const userConditions: any[] = [{ rollNo: member.rollNo }];
+          if (member.email && member.email.trim() !== '') {
+            userConditions.push({ email: member.email.trim() });
+          }
+  
+          let user = await tx.user.findFirst({
+            where: { OR: userConditions }
+          });
+  
+          if (user) {
+            // If this is the leader, check if they are already leading another team
+            if (member.rollNo === team.leaderRollNo) {
+              const existingTeam = await tx.team.findFirst({ where: { userId: user.id } });
+              if (existingTeam && existingTeam.id !== teamId) {
+                throw new Error(`The leader is already the leader of another team (${existingTeam.teamName}).`);
+              }
+            }
+  
+            user = await tx.user.update({
+              where: { id: user.id },
+              data: {
+                name: member.name,
+                phone: member.phone
+              }
+            });
+          } else {
+            const finalEmail = member.email && member.email.trim() !== '' ? member.email.trim() : null;
+            user = await tx.user.create({
+              data: {
+                name: member.name,
+                rollNo: member.rollNo,
+                email: finalEmail,
+                phone: member.phone,
+                passwordHash,
+                mustChangePassword: true,
+                role: 'TEAM',
+                status: 'ACTIVE'
+              }
+            });
+          }
+  
+          // Keep track of the leader's user ID to link to the Team
+          if (member.rollNo === team.leaderRollNo) {
+            leaderUserId = user.id;
+          }
         }
+  
+        await tx.team.update({
+          where: { id: teamId },
+          data: {
+            registrationStatus: 'ACCOUNT_CREATED',
+            userId: leaderUserId,
+            verifiedAt: new Date()
+          }
+        })
+  
+        await tx.auditLog.create({
+          data: {
+            actorId: session.user.id,
+            action: 'TEAM_APPROVE',
+            targetType: 'Team',
+            targetId: teamId,
+            metadata: { rollNo: team.leaderRollNo },
+          }
+        })
+      }, {
+        maxWait: 5000, // default is 2000
+        timeout: 15000 // default is 5000, we need more time for multiple bcrypt ops or slow queries
       })
-
-      await tx.team.update({
-        where: { id: teamId },
-        data: {
-          registrationStatus: 'ACCOUNT_CREATED',
-          userId: newUser.id,
-          verifiedAt: new Date()
-        }
-      })
-
-      await tx.auditLog.create({
-        data: {
-          actorId: session.user.id,
-          action: 'TEAM_APPROVE',
-          targetType: 'Team',
-          targetId: teamId,
-          metadata: { rollNo: team.leaderRollNo },
-        }
-      })
-    })
-
-    revalidatePath('/dashboard/coordinator')
-    return { success: true }
-  } catch (error) {
-    console.error('Approve Team Error:', error)
-    return { error: 'Internal server error' }
+  
+      revalidatePath('/dashboard/coordinator')
+      return { success: true }
+    } catch (error: any) {
+      console.error('Approve Team Error:', error)
+      const message = error instanceof Error ? error.message : String(error)
+      return { error: message }
+    }
   }
-}
 
 export async function rejectTeam(teamId: string, reason: string) {
   try {

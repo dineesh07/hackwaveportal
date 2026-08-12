@@ -10,8 +10,13 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const team = await prisma.team.findUnique({
-      where: { userId: session.user.id },
+    const team = await prisma.team.findFirst({
+      where: {
+        OR: [
+          { userId: session.user.id },
+          { members: { some: { rollNo: session.user.rollNo } } }
+        ]
+      },
       include: {
         projects: {
           where: { phase: 1 },
@@ -41,7 +46,14 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const team = await prisma.team.findUnique({ where: { userId: session.user.id } });
+    const team = await prisma.team.findFirst({
+      where: {
+        OR: [
+          { userId: session.user.id },
+          { members: { some: { rollNo: session.user.rollNo } } }
+        ]
+      }
+    });
     if (!team) return NextResponse.json({ error: 'Team not found' }, { status: 404 });
 
     const body = await req.json();

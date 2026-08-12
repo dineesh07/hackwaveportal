@@ -1,7 +1,6 @@
 import React from 'react'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import { SidebarLayout } from '@/components/SidebarLayout'
 import { Card } from '@/components/ui/Card'
 import { StatCard } from '@/components/ui/StatCard'
 import { Tag } from '@/components/ui/Tag'
@@ -63,7 +62,7 @@ export default async function MentorDashboardPage() {
   });
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem', paddingBottom: '1rem' }}>
           <div>
@@ -95,6 +94,6 @@ export default async function MentorDashboardPage() {
           />
         )}
       </div>
-    </SidebarLayout>
+    </>
   )
 }

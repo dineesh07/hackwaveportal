@@ -32,7 +32,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const team = await prisma.team.findUnique({ where: { userId: session.user.id } });
+    const team = await prisma.team.findFirst({
+      where: {
+        OR: [
+          { userId: session.user.id },
+          { members: { some: { rollNo: session.user.rollNo } } }
+        ]
+      }
+    });
     if (!team) return NextResponse.json({ error: 'Team not found' }, { status: 404 });
 
     const formData = await req.formData();

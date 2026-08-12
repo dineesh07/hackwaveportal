@@ -1,5 +1,4 @@
 import React from 'react'
-import { SidebarLayout } from '@/components/SidebarLayout'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/Button'
@@ -33,7 +32,7 @@ export default async function AdminAuditPage() {
   })
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
@@ -63,6 +62,6 @@ export default async function AdminAuditPage() {
           actors={actors.map(a => ({ id: a.id, name: a.name, rollNo: a.rollNo, role: a.role }))}
         />
       </div>
-    </SidebarLayout>
+    </>
   )
 }

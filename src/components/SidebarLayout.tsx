@@ -52,6 +52,7 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
   } else if (role === 'COORDINATOR') {
     navItems = [
       { label: 'Dashboard', href: '/dashboard/coordinator', icon: <LayoutDashboard size={20} /> },
+      { label: 'Registrations', href: '/dashboard/coordinator/registrations', icon: <ClipboardList size={20} /> },
       { label: 'Team Management', href: '/dashboard/coordinator/teams', icon: <Users size={20} /> },
       { label: 'Mentor Mapping', href: '/dashboard/coordinator/mentors', icon: <UserCheck size={20} /> },
       { label: 'Jury Mapping', href: '/dashboard/coordinator/jury', icon: <Scale size={20} /> },
@@ -82,49 +83,50 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
         color: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
         position: 'fixed',
         top: 0,
         left: 0,
         bottom: 0,
         zIndex: 100
       }}>
-        <div>
-          {/* Logo / Brand Area (Optional in sidebar if top bar is used, but good to have) */}
-          <div style={{ height: '80px', display: 'flex', alignItems: 'center', padding: '0 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, letterSpacing: '1px' }}>HACKWAVE</h2>
-          </div>
-
-          <nav style={{ padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link key={item.href} href={item.href} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.875rem 1rem',
-                  borderRadius: '8px',
-                  backgroundColor: isActive ? 'var(--sidebar-active)' : 'transparent',
-                  color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
-                  textDecoration: 'none',
-                  fontWeight: isActive ? 600 : 500,
-                  transition: 'background-color 0.2s, color 0.2s'
-                }}>
-                  {item.icon}
-                  {item.label}
-                  {isActive && <span style={{ marginLeft: 'auto' }}>&rarr;</span>}
-                </Link>
-              );
-            })}
-          </nav>
+        {/* Logo / Brand Area */}
+        <div style={{ height: '80px', flexShrink: 0, display: 'flex', alignItems: 'center', padding: '0 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <img src="/logo.png" alt="Hackwave Logo" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
         </div>
 
-        {/* Footer Area */}
-        <div style={{ padding: '1.5rem 1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', padding: '0 0.5rem', color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem' }}>
-            <UserCheck size={16} />
-            <span>Logged in as <strong>{userName}</strong> ({role.toLowerCase()})</span>
+        {/* Scrollable Nav Area */}
+        <nav className="no-scrollbar" style={{ flex: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto' }}>
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link key={item.href} href={item.href} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.875rem 1rem',
+                borderRadius: '8px',
+                backgroundColor: isActive ? 'var(--sidebar-active)' : 'transparent',
+                color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
+                textDecoration: 'none',
+                fontWeight: isActive ? 600 : 500,
+                transition: 'background-color 0.2s, color 0.2s'
+              }}>
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{item.icon}</div>
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
+                {isActive && <span style={{ marginLeft: 'auto', flexShrink: 0 }}>&rarr;</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Footer Area (always at bottom) */}
+        <div style={{ flexShrink: 0, padding: '1.25rem 1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1rem', padding: '0 0.5rem', color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem' }}>
+            <UserCheck size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <span style={{ color: '#ffffff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userName}</span>
+              <span style={{ fontSize: '0.75rem', textTransform: 'capitalize', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{role.toLowerCase()}</span>
+            </div>
           </div>
           <button 
             onClick={() => signOut({ callbackUrl: '/login' })}
@@ -139,11 +141,12 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
               color: '#ffffff',
               border: '1px solid rgba(255,255,255,0.1)',
               cursor: 'pointer',
-              fontWeight: 500
+              fontWeight: 500,
+              transition: 'background-color 0.2s'
             }}
           >
-            <LogOut size={18} />
-            Logout
+            <LogOut size={18} style={{ flexShrink: 0 }} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>

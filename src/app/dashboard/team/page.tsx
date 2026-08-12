@@ -1,7 +1,6 @@
 import React from 'react'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
-import { SidebarLayout } from '@/components/SidebarLayout'
 import { Card } from '@/components/ui/Card'
 import { StatCard } from '@/components/ui/StatCard'
 import { StatusRibbon } from '@/components/ui/StatusRibbon'
@@ -21,8 +20,13 @@ export default async function TeamDashboardPage() {
 
   if (!session?.user?.id) return null;
 
-  const team = await prisma.team.findUnique({
-    where: { userId: session.user.id },
+  const team = await prisma.team.findFirst({
+    where: { 
+      OR: [
+        { userId: session.user.id },
+        { members: { some: { rollNo: session.user.rollNo } } }
+      ]
+    },
     include: {
       projects: {
         where: { phase: 1 },
@@ -44,7 +48,7 @@ export default async function TeamDashboardPage() {
     : null;
 
   return (
-    <SidebarLayout role={session.user.role} userName={session.user.name || 'User'} mustChangePassword={session.user.mustChangePassword} rollNo={session.user.rollNo}>
+    <>
       <div className={styles.dashboardContainer} style={{ paddingTop: 0 }}>
         <header className={styles.header} style={{ marginBottom: '1.5rem', paddingBottom: '1rem' }}>
           <div>
@@ -129,6 +133,6 @@ export default async function TeamDashboardPage() {
           )}
         </section>
       </div>
-    </SidebarLayout>
+    </>
   )
 }

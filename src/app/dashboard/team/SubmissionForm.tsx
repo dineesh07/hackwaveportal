@@ -222,7 +222,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
 
     try {
       if (status === 'SUBMITTED') {
-        const required = ['projectTitle', 'oneLiner', 'problemStatement', 'proposedSolution', 'architectureFileUrl'];
+        const required = ['projectTitle', 'oneLiner', 'problemStatement', 'proposedSolution'];
         for (const req of required) {
           if (!(formData as Record<string, unknown>)[req]) throw new Error(`Missing required field: ${req}`);
         }
@@ -289,7 +289,6 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
     formData.proposedSolution.length > 0 &&
     formData.coreFeatures.length > 0 &&
     (formData.techFrontend.length > 0 || formData.techBackend.length > 0) &&
-    formData.architectureFileUrl.length > 0 &&
     formData.questionsForMentors.length > 0;
 
   const checklist = [
@@ -297,7 +296,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
     { label: 'Solution Explained', done: formData.proposedSolution.length > 0 },
     { label: 'Features Listed', done: formData.coreFeatures.length > 0 },
     { label: 'Tech Stack Added', done: formData.techFrontend.length > 0 || formData.techBackend.length > 0 },
-    { label: 'Architecture Uploaded', done: formData.architectureFileUrl.length > 0 },
+    { label: 'Architecture Uploaded (Optional)', done: formData.architectureFileUrl.length > 0 },
     { label: 'Mockup Added (Optional)', done: formData.mockupFileUrl.length > 0 },
     { label: 'References Added (Optional)', done: formData.references.length > 0 },
     { label: 'Mentor Questions Added', done: formData.questionsForMentors.length > 0 },
@@ -398,7 +397,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
         <div className={`${styles.grid} ${styles.grid2}`}>
           <div>
             <FileUploader
-              label="Solution Architecture *"
+              label="Solution Architecture"
               fieldName="architecture"
               value={formData.architectureFileUrl}
               onChange={url => setFormData({ ...formData, architectureFileUrl: url })}

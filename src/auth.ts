@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authConfig } from "./auth.config";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
   ...authConfig,
   providers: [
     CredentialsProvider({
@@ -16,8 +16,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.rollNo || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { rollNo: credentials.rollNo as string }
+        const user = await prisma.user.findFirst({
+          where: { rollNo: { equals: credentials.rollNo as string, mode: 'insensitive' } }
         });
 
         if (!user) return null;
