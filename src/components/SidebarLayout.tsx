@@ -14,7 +14,9 @@ import {
   ClipboardList,
   Scale,
   UserCheck,
-  Target
+  Target,
+  FileText,
+  Lightbulb
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
@@ -37,6 +39,10 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
   if (role === 'TEAM') {
     navItems = [
       { label: 'Dashboard', href: '/dashboard/team', icon: <LayoutDashboard size={20} /> },
+      { label: 'Submission', href: '/dashboard/team/submission', icon: <FileText size={20} /> },
+      { label: 'My Team', href: '/dashboard/team/my-team', icon: <Users size={20} /> },
+      { label: 'Problem Statements', href: '/dashboard/team/problem-statements', icon: <Lightbulb size={20} /> },
+      { label: 'Mentor Tasks', href: '/dashboard/team/tasks', icon: <ClipboardList size={20} /> },
       { label: 'Settings', href: '/dashboard/team/settings', icon: <Settings size={20} /> }
     ];
   } else if (role === 'MENTOR') {
@@ -154,33 +160,7 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
       {/* Main Content Area */}
       <div style={{ flex: 1, marginLeft: '260px', display: 'flex', flexDirection: 'column' }}>
         
-        {/* Top Header */}
-        <header style={{
-          height: '80px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 2rem',
-          borderBottom: '1px solid var(--line)',
-          backgroundColor: '#ffffff'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {/* Can put a small logo here if needed, matching the design request */}
-            <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--ink)' }}>Portal Dashboard</h1>
-          </div>
-          <div>
-            <span style={{ 
-              backgroundColor: 'rgba(56, 189, 248, 0.1)', 
-              color: '#0369a1', 
-              padding: '0.5rem 1rem', 
-              borderRadius: '999px', 
-              fontSize: '0.875rem', 
-              fontWeight: 600 
-            }}>
-              Academic Year 2026-27
-            </span>
-          </div>
-        </header>
+
 
         {/* Page Content */}
         <main style={{ padding: '2rem', backgroundColor: '#ffffff', flex: 1 }}>
