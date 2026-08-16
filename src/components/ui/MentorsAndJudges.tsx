@@ -7,14 +7,16 @@ import { Lock } from "lucide-react";
 import styles from "./MentorsAndJudges.module.css";
 
 const mentors = [
-  { name: "Sarah Johnson", role: "Senior Software Engineer", company: "Google", img: "/mentors/mentor-1.svg" },
-  { name: "Michael Chen", role: "AI Research Scientist", company: "OpenAI", img: "/mentors/mentor-2.svg" },
-  { name: "Emily Rodriguez", role: "Security Architect", company: "Microsoft", img: "/mentors/mentor-3.svg" },
-  { name: "Dr. Robert Williams", role: "Associate Professor", company: "MIT", img: "/mentors/mentor-4.svg" },
-  { name: "Lisa Patel", role: "Product Lead", company: "Amazon", img: "/mentors/mentor-5.svg" },
-  { name: "David Kim", role: "Principal Engineer", company: "Zoho", img: "/mentors/mentor-6.svg" },
-  { name: "James Wilson", role: "Full Stack Developer", company: "Freshworks", img: "/mentors/mentor-7.svg" },
-  { name: "Anita Kumar", role: "CTO", company: "TCS", img: "/mentors/mentor-8.svg" },
+  { name: "Jayakkavin E", role: "Software Engineer", company: "Payoda Technology", img: "/mentors/mentor1.jpeg" },
+  { name: "Vignesh K", role: "Senior Associate Technical Consultant", company: "4i Apps Solutions", img: "/mentors/mentor2.jpeg", objectPosition: "top" },
+  { name: "Shree Sanjai", role: "Associate Product Developer", company: "Lumel Technologies", img: "/mentors/mentor3.jpeg" },
+  { name: "Harini M", role: "Solution Consultant", company: "Francium Tech", img: "/mentors/mentor4.jpeg" },
+  { name: "Indhumathi Radhakrishnan", role: "Team Lead", company: "FirstQA Systems", img: "/mentors/mentor5.jpeg" },
+  { name: "Sudharsanam", role: "Software Engineer", company: "Appsentinels Pvt Ltd", img: "/mentors/mentor6.jpeg" },
+  { name: "Sakthiganesan", role: "Automation Engineer", company: "Lumel Technologies", img: "/mentors/mentor7.jpeg" },
+  { name: "Harshath", role: "Associate Software Developer", company: "Rently", img: "/mentors/mentor8.jpeg", objectPosition: "top" },
+  { name: "Samyugtha K", role: "AI/ML & Computational Science Analyst", company: "Accenture", img: "/mentors/mentor9.png", objectPosition: "top" },
+  { name: "Aswinraj S", role: "Software Development Engineer & Prompt Engineer", company: "CloudAssert", img: "/mentors/mentor-placeholder.svg" },
 ];
 
 const containerVariants: Variants = {
@@ -27,24 +29,25 @@ const containerVariants: Variants = {
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
+  visible: {
+    opacity: 1,
+    y: 0,
     scale: 1,
     transition: { type: "spring", stiffness: 100, damping: 20 }
   }
 };
 
-const ImageWithShimmer = ({ src, alt }: { src: string, alt: string }) => {
+const ImageWithShimmer = ({ src, alt, objectPosition }: { src: string, alt: string, objectPosition?: string }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   return (
     <div className={styles.cardImageWrapper}>
       {!isLoaded && <div className={styles.shimmer} />}
-      <Image 
+      <Image
         src={src}
         alt={alt}
         fill
         className={styles.image}
+        style={objectPosition ? { objectPosition } : undefined}
         onLoad={() => setIsLoaded(true)}
       />
       <div className={styles.vignette}></div>
@@ -55,7 +58,7 @@ const ImageWithShimmer = ({ src, alt }: { src: string, alt: string }) => {
 const MentorCard = ({ mentor }: { mentor: typeof mentors[0] }) => {
   return (
     <motion.div variants={cardVariants} className={styles.card}>
-      <ImageWithShimmer src={mentor.img} alt={mentor.name} />
+      <ImageWithShimmer src={mentor.img} alt={mentor.name} objectPosition={mentor.objectPosition} />
       <div className={styles.cardInfo}>
         <div className={styles.name}>{mentor.name}</div>
         <div className={styles.role}>{mentor.role}</div>
@@ -69,8 +72,8 @@ const JudgeCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
-    <motion.div 
-      variants={cardVariants} 
+    <motion.div
+      variants={cardVariants}
       className={styles.flipContainer}
       onMouseEnter={() => setIsFlipped(true)}
       onMouseLeave={() => setIsFlipped(false)}
@@ -94,7 +97,7 @@ const JudgeCard = () => {
           <Lock size={64} strokeWidth={2} color="rgba(255,255,255,0.8)" className="mb-6 z-10 relative" />
           <div className={styles.comingSoon}>COMING SOON</div>
           <div className={styles.backSubtitle}>
-            Our industry experts and jury panel will be revealed soon.<br/>
+            Our industry experts and jury panel will be revealed soon.<br />
             Stay tuned for the official announcement.
           </div>
           <div className={styles.revealingBadge}>REVEALING SOON</div>
@@ -109,13 +112,13 @@ export default function MentorsAndJudges() {
   return (
     <section className={styles.section}>
       <div className="container">
-        
+
         {/* MENTORS SECTION */}
         <div className={styles.titleContainer}>
           <h2 className={styles.title}>Mentors</h2>
         </div>
 
-        <motion.div 
+        <motion.div
           className={styles.grid}
           variants={containerVariants}
           initial="hidden"
@@ -132,7 +135,7 @@ export default function MentorsAndJudges() {
           <h2 className={styles.title}>Judges</h2>
         </div>
 
-        <motion.div 
+        <motion.div
           className={styles.grid}
           variants={containerVariants}
           initial="hidden"
