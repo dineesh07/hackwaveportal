@@ -4,8 +4,8 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { Field, Select } from '@/components/ui/FormControls'
-import { UserPlus, Scale, Link2 } from 'lucide-react'
+import { Field, Select, Input } from '@/components/ui/FormControls'
+import { UserPlus, Scale, Link2, Search, ChevronDown, ChevronUp } from 'lucide-react'
 import styles from '../../dashboard.module.css'
 
 type JuryData = { id: string; name: string; email: string | null; organization: string | null };
@@ -16,6 +16,21 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [assignment, setAssignment] = useState<{ juryId: string; projectIds: string[] }>({ juryId: '', projectIds: [] });
+  const [projectSearch, setProjectSearch] = useState('');
+  const [expandedJury, setExpandedJury] = useState<string | null>(null);
+
+  const filteredProjects = projects.filter(p => 
+    (p.team.teamCode || '').toLowerCase().includes(projectSearch.toLowerCase()) || 
+    p.teamName.toLowerCase().includes(projectSearch.toLowerCase()) ||
+    p.projectTitle.toLowerCase().includes(projectSearch.toLowerCase())
+  );
+
+  const groupedAssignments = assignments.reduce((acc, curr) => {
+    const key = curr.jury.name;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(curr);
+    return acc;
+  }, {} as Record<string, AssignmentData[]>);
 
   const toggleProject = (id: string) => {
     setAssignment(prev => ({
@@ -105,8 +120,17 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
             </Field>
 
             <Field label="Select Projects (Multiple)">
+              <div style={{ position: 'relative', marginBottom: '0.5rem' }}>
+                <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-40)' }} />
+                <Input 
+                  placeholder="Search team ID, name, or project..." 
+                  value={projectSearch} 
+                  onChange={e => setProjectSearch(e.target.value)}
+                  style={{ paddingLeft: '2rem', fontSize: '0.875rem' }}
+                />
+              </div>
               <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: '0.5rem' }}>
-                {projects.map(p => (
+                {filteredProjects.map(p => (
                   <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem', cursor: 'pointer', borderBottom: '1px solid var(--line)' }}>
                     <input 
                       type="checkbox" 
@@ -118,7 +142,7 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
                     </span>
                   </label>
                 ))}
-                {projects.length === 0 && <div style={{ fontSize: '0.875rem', padding: '0.5rem', color: 'var(--ink-60)' }}>No projects available</div>}
+                {filteredProjects.length === 0 && <div style={{ fontSize: '0.875rem', padding: '0.5rem', color: 'var(--ink-60)' }}>No projects match search</div>}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--ink-60)', marginTop: '0.5rem' }}>
                 {assignment.projectIds.length} projects selected
@@ -145,21 +169,39 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
             <thead>
               <tr>
                 <th className={styles.th}>Jury Member</th>
-                <th className={styles.th}>Assigned Project</th>
-                <th className={styles.th}>Actions</th>
+                <th className={styles.th}>Projects Assigned</th>
+                <th className={styles.th} style={{ width: '40px' }}></th>
               </tr>
             </thead>
             <tbody>
-              {assignments.map((a) => (
-                <tr key={a.id} className={styles.tr}>
-                  <td className={styles.td}><strong>{a.jury.name}</strong></td>
-                  <td className={styles.td}>{a.project.team.teamCode ? `${a.project.team.teamCode} - ` : ''}{a.project.teamName} — {a.project.projectTitle}</td>
-                  <td className={styles.td}>
-                    <Button onClick={() => removeAssignment(a.id)} variant="danger" size="sm" disabled={isSubmitting}>Remove</Button>
-                  </td>
-                </tr>
+              {Object.entries(groupedAssignments).map(([juryName, juryAssignments]) => (
+                <React.Fragment key={juryName}>
+                  <tr className={styles.tr} style={{ cursor: 'pointer' }} onClick={() => setExpandedJury(expandedJury === juryName ? null : juryName)}>
+                    <td className={styles.td}><strong>{juryName}</strong></td>
+                    <td className={styles.td}>{juryAssignments.length} Projects</td>
+                    <td className={styles.td}>
+                      {expandedJury === juryName ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </td>
+                  </tr>
+                  {expandedJury === juryName && (
+                    <tr className={styles.tr}>
+                      <td colSpan={3} style={{ padding: 0 }}>
+                        <div style={{ padding: '1rem', background: 'var(--surface-50)' }}>
+                          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {juryAssignments.map(a => (
+                              <li key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--paper)', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
+                                <span style={{ fontSize: '0.875rem' }}><strong>{a.project.team.teamCode || 'N/A'}</strong> - {a.project.teamName} — {a.project.projectTitle}</span>
+                                <Button onClick={() => removeAssignment(a.id)} variant="danger" size="sm" disabled={isSubmitting}>Remove</Button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
-              {assignments.length === 0 && (
+              {Object.keys(groupedAssignments).length === 0 && (
                 <tr><td colSpan={3} className={styles.emptyState}>No jury members assigned yet.</td></tr>
               )}
             </tbody>

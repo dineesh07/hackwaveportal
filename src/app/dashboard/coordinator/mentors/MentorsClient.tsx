@@ -4,8 +4,8 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { Field, Select } from '@/components/ui/FormControls'
-import { UserPlus, UserCheck, Link2 } from 'lucide-react'
+import { Field, Select, Input } from '@/components/ui/FormControls'
+import { UserPlus, UserCheck, Link2, Search, ChevronDown, ChevronUp } from 'lucide-react'
 import styles from '../../dashboard.module.css'
 
 type MentorData = { id: string; name: string; email: string | null; organization: string | null };
@@ -16,6 +16,21 @@ export default function MentorsClient({ mentors, teams, assignments }: { mentors
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [assignment, setAssignment] = useState<{ mentorId: string; teamIds: string[] }>({ mentorId: '', teamIds: [] });
+  const [teamSearch, setTeamSearch] = useState('');
+  const [expandedMentor, setExpandedMentor] = useState<string | null>(null);
+
+  const filteredTeams = teams.filter(t => 
+    (t.teamCode || '').toLowerCase().includes(teamSearch.toLowerCase()) || 
+    t.teamName.toLowerCase().includes(teamSearch.toLowerCase()) ||
+    (t.id).toLowerCase().includes(teamSearch.toLowerCase())
+  );
+
+  const groupedAssignments = assignments.reduce((acc, curr) => {
+    const key = curr.mentor.name;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(curr);
+    return acc;
+  }, {} as Record<string, AssignmentData[]>);
 
   const toggleTeam = (id: string) => {
     setAssignment(prev => ({
@@ -94,8 +109,17 @@ export default function MentorsClient({ mentors, teams, assignments }: { mentors
             </Field>
             
             <Field label="Select Teams (Multiple)">
+              <div style={{ position: 'relative', marginBottom: '0.5rem' }}>
+                <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-40)' }} />
+                <Input 
+                  placeholder="Search team ID or name..." 
+                  value={teamSearch} 
+                  onChange={e => setTeamSearch(e.target.value)}
+                  style={{ paddingLeft: '2rem', fontSize: '0.875rem' }}
+                />
+              </div>
               <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: '0.5rem' }}>
-                {teams.map(t => (
+                {filteredTeams.map(t => (
                   <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem', cursor: 'pointer', borderBottom: '1px solid var(--line)' }}>
                     <input 
                       type="checkbox" 
@@ -107,7 +131,7 @@ export default function MentorsClient({ mentors, teams, assignments }: { mentors
                     </span>
                   </label>
                 ))}
-                {teams.length === 0 && <div style={{ fontSize: '0.875rem', padding: '0.5rem', color: 'var(--ink-60)' }}>No teams available</div>}
+                {filteredTeams.length === 0 && <div style={{ fontSize: '0.875rem', padding: '0.5rem', color: 'var(--ink-60)' }}>No teams match search</div>}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--ink-60)', marginTop: '0.5rem' }}>
                 {assignment.teamIds.length} teams selected
@@ -134,21 +158,39 @@ export default function MentorsClient({ mentors, teams, assignments }: { mentors
             <thead>
               <tr>
                 <th className={styles.th}>Mentor Name</th>
-                <th className={styles.th}>Assigned Team</th>
-                <th className={styles.th}>Actions</th>
+                <th className={styles.th}>Teams Assigned</th>
+                <th className={styles.th} style={{ width: '40px' }}></th>
               </tr>
             </thead>
             <tbody>
-              {assignments.map((a) => (
-                <tr key={a.id} className={styles.tr}>
-                  <td className={styles.td}><strong>{a.mentor.name}</strong></td>
-                  <td className={styles.td}>{a.team.teamCode ? `${a.team.teamCode} - ` : ''}{a.team.teamName}</td>
-                  <td className={styles.td}>
-                    <Button onClick={() => removeAssignment(a.id)} variant="danger" size="sm" disabled={isSubmitting}>Remove</Button>
-                  </td>
-                </tr>
+              {Object.entries(groupedAssignments).map(([mentorName, mentorAssignments]) => (
+                <React.Fragment key={mentorName}>
+                  <tr className={styles.tr} style={{ cursor: 'pointer' }} onClick={() => setExpandedMentor(expandedMentor === mentorName ? null : mentorName)}>
+                    <td className={styles.td}><strong>{mentorName}</strong></td>
+                    <td className={styles.td}>{mentorAssignments.length} Teams</td>
+                    <td className={styles.td}>
+                      {expandedMentor === mentorName ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </td>
+                  </tr>
+                  {expandedMentor === mentorName && (
+                    <tr className={styles.tr}>
+                      <td colSpan={3} style={{ padding: 0 }}>
+                        <div style={{ padding: '1rem', background: 'var(--surface-50)' }}>
+                          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {mentorAssignments.map(a => (
+                              <li key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--paper)', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
+                                <span style={{ fontSize: '0.875rem' }}><strong>{a.team.teamCode || 'N/A'}</strong> - {a.team.teamName}</span>
+                                <Button onClick={() => removeAssignment(a.id)} variant="danger" size="sm" disabled={isSubmitting}>Remove</Button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
-              {assignments.length === 0 && (
+              {Object.keys(groupedAssignments).length === 0 && (
                 <tr><td colSpan={3} className={styles.emptyState}>No mentors assigned yet.</td></tr>
               )}
             </tbody>
