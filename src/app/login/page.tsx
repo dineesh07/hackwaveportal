@@ -31,18 +31,8 @@ export default function LoginPage() {
       if (res?.error) {
         setError('Invalid Roll Number or Password')
       } else {
-        const session = await getSession();
-        if (session?.user?.role === 'COORDINATOR') {
-          window.location.href = '/dashboard/coordinator';
-        } else if (session?.user?.role === 'TEAM') {
-          window.location.href = '/dashboard/team';
-        } else if (session?.user?.role === 'MENTOR') {
-          window.location.href = '/dashboard/mentor';
-        } else if (session?.user?.role === 'JURY') {
-          window.location.href = '/dashboard/jury';
-        } else {
-          window.location.href = '/';
-        }
+        // Let the middleware handle role-based routing by refreshing the login page with the new session cookie
+        window.location.href = '/login';
       }
     } catch {
       setError('An unexpected error occurred')
