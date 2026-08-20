@@ -22,7 +22,10 @@ export default async function AdminAuditPage() {
 
   const logs = await prisma.auditLog.findMany({
     where: {
-      targetType: { not: 'PlatformSettings' }
+      OR: [
+        { targetType: { not: 'PlatformSettings' } },
+        { targetType: null }
+      ]
     },
     orderBy: { createdAt: 'desc' },
     take: 100,
