@@ -2,7 +2,7 @@ import React from 'react'
 import { prisma } from '@/lib/prisma'
 import { Card } from '@/components/ui/Card'
 import { Tag } from '@/components/ui/Tag'
-import { Trophy, Star, Medal, Sparkles, FileText } from 'lucide-react'
+import { Trophy, Star, Medal, Sparkles, FileText, MessageSquare } from 'lucide-react'
 import { AwardIcon } from '@/components/ui/AwardIcon'
 
 export default async function ResultsCenter({ projectId }: { projectId: string }) {
@@ -101,6 +101,33 @@ export default async function ResultsCenter({ projectId }: { projectId: string }
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {project.mentorFeedback.length > 0 && (
+            <div style={{ border: '1px solid var(--line)', padding: '1.5rem', borderRadius: 'var(--radius)' }}>
+              <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <MessageSquare size={18} />
+                Mentor Feedback
+              </h3>
+              {project.mentorFeedback.map((feedback, i) => (
+                <div key={feedback.id} style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--line)' }}>
+                  <div style={{ marginTop: '0.5rem' }}>
+                    {feedback.overallFeedback && (
+                      <>
+                        <strong style={{ color: 'var(--ink)' }}>Overall Feedback:</strong>
+                        <p style={{ fontSize: '0.875rem', marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>{feedback.overallFeedback}</p>
+                      </>
+                    )}
+                    {feedback.suggestions && (
+                      <>
+                        <strong style={{ color: 'var(--ink)' }}>Suggestions for Improvement:</strong>
+                        <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap' }}>{feedback.suggestions}</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 

@@ -26,8 +26,23 @@ type WorkspaceProject = {
   problemStatement: string
   proposedSolution: string
   architectureFileUrl: string | null
+  mockupFileUrl: string | null
+  prototypeLinkUrl: string | null
+  githubRepoUrl: string | null
+  demoVideoUrl: string | null
+  targetUsers: string[]
+  techFrontend: string[]
+  techBackend: string[]
+  techDatabase: string[]
+  techAiMl: string[]
+  techCloud: string[]
+  techApis: string[]
+  techOther: string[]
+  potentialChallenges: string | null
   questionsForMentors: string | null
   coreFeatures: { id: string; title: string; description: string }[]
+  futureEnhancements: { id: string; title: string; description: string }[]
+  references: { id: string; title: string; url: string }[]
   tasks: WorkspaceTask[]
   mentorFeedback: { overallFeedback: string | null; suggestions: string | null }[]
   privateNotes: { note: string | null }[]
@@ -159,6 +174,15 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                 <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>{project.proposedSolution}</p>
               </div>
 
+              {project.targetUsers && project.targetUsers.length > 0 && (
+                <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
+                  <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Target Users</h4>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {project.targetUsers.map(user => <Tag key={user} tone="neutral">{user}</Tag>)}
+                  </div>
+                </div>
+              )}
+
               {project.coreFeatures.length > 0 && (
                 <div>
                   <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Core Features</h4>
@@ -168,12 +192,76 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                 </div>
               )}
 
-              {project.architectureFileUrl && (
+              {project.futureEnhancements && project.futureEnhancements.length > 0 && (
                 <div>
-                  <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Solution Architecture</h4>
-                  <a href={project.architectureFileUrl} target="_blank" rel="noreferrer" className={styles.linkButton}>
-                    View Architecture Diagram <ExternalLink size={12} />
-                  </a>
+                  <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Future Enhancements</h4>
+                  <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
+                    {project.futureEnhancements.map(f => <li key={f.id}><strong>{f.title}:</strong> {f.description}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              <div>
+                <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Tech Stack</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
+                  {project.techFrontend.length > 0 && <div><strong>Frontend:</strong> {project.techFrontend.join(', ')}</div>}
+                  {project.techBackend.length > 0 && <div><strong>Backend:</strong> {project.techBackend.join(', ')}</div>}
+                  {project.techDatabase.length > 0 && <div><strong>Database:</strong> {project.techDatabase.join(', ')}</div>}
+                  {project.techAiMl.length > 0 && <div><strong>AI/ML:</strong> {project.techAiMl.join(', ')}</div>}
+                  {project.techCloud.length > 0 && <div><strong>Cloud:</strong> {project.techCloud.join(', ')}</div>}
+                  {project.techApis.length > 0 && <div><strong>APIs:</strong> {project.techApis.join(', ')}</div>}
+                  {project.techOther.length > 0 && <div><strong>Other:</strong> {project.techOther.join(', ')}</div>}
+                </div>
+              </div>
+
+              {project.potentialChallenges && (
+                <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
+                  <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Potential Challenges</h4>
+                  <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>{project.potentialChallenges}</p>
+                </div>
+              )}
+
+              <div>
+                <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Links & Attachments</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {project.architectureFileUrl && (
+                    <a href={project.architectureFileUrl} target="_blank" rel="noreferrer" className={styles.linkButton}>
+                      View Architecture Diagram <ExternalLink size={12} />
+                    </a>
+                  )}
+                  {project.githubRepoUrl && (
+                    <a href={project.githubRepoUrl} target="_blank" rel="noreferrer" className={styles.linkButton}>
+                      GitHub Repository <ExternalLink size={12} />
+                    </a>
+                  )}
+                  {project.mockupFileUrl && (
+                    <a href={project.mockupFileUrl} target="_blank" rel="noreferrer" className={styles.linkButton}>
+                      Screenshots / Mockup <ExternalLink size={12} />
+                    </a>
+                  )}
+                  {project.prototypeLinkUrl && (
+                    <a href={project.prototypeLinkUrl} target="_blank" rel="noreferrer" className={styles.linkButton}>
+                      Prototype Link <ExternalLink size={12} />
+                    </a>
+                  )}
+                  {project.demoVideoUrl && (
+                    <a href={project.demoVideoUrl} target="_blank" rel="noreferrer" className={styles.linkButton}>
+                      Demo Video <ExternalLink size={12} />
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {project.references && project.references.length > 0 && (
+                <div>
+                  <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>References</h4>
+                  <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
+                    {project.references.map(r => (
+                      <li key={r.id}>
+                        <a href={r.url} target="_blank" rel="noreferrer" style={{ color: 'var(--flame-red)' }}>{r.title}</a>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 

@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input, Textarea, Select } from '@/components/ui/FormControls'
-import { Check, Circle, Plus, X, FileText, Lightbulb, Sparkles, Cpu, Network, Compass, Link2, Video, ListChecks, ChevronLeft, ChevronRight, AlertCircle, Target } from 'lucide-react'
+import { Check, Circle, Plus, X, FileText, Lightbulb, Sparkles, Cpu, Network, Compass, Link2, Video, ListChecks, ChevronLeft, ChevronRight, AlertCircle, Target, Eye } from 'lucide-react'
 import styles from './SubmissionForm.module.css'
 import { PROBLEM_STATEMENTS } from './components/ProblemStatementsTab'
 
@@ -168,6 +168,7 @@ const WIZARD_STEPS = [
   { num: 9, title: 'References', icon: <Link2 size={16} /> },
   { num: 10, title: 'Demo Video', icon: <Video size={16} /> },
   { num: 11, title: 'Mentor Guidance', icon: <Compass size={16} /> },
+  { num: 12, title: 'Preview', icon: <Eye size={16} /> },
 ];
 
 export default function SubmissionForm({ initialData }: { initialData: ProjectInitialData | null }) {
@@ -262,6 +263,8 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
         return formData.demoVideoUrl.trim().length > 0;
       case 11:
         return formData.questionsForMentors.trim().length > 0;
+      case 12:
+        return true;
       default:
         return false;
     }
@@ -339,7 +342,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
 
   // Handle Next
   const handleNext = async () => {
-    if (currentStep < 11) {
+    if (currentStep < 12) {
       setCurrentStep(prev => prev + 1);
       await autosave(); // Trigger autosave on step change
     }
@@ -356,11 +359,10 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
       {error && <div role="alert" className={`${styles.banner} ${styles.bannerError}`}>{error}</div>}
       {success && <div className={`${styles.banner} ${styles.bannerSuccess}`}>{success}</div>}
 
-      {/* Progress Bar */}
       <div className={styles.progressBarContainer}>
         <div 
           className={styles.progressBarFill} 
-          style={{ width: `${(currentStep / 11) * 100}%` }}
+          style={{ width: `${(currentStep / 12) * 100}%` }}
         />
       </div>
 
@@ -621,8 +623,118 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
             </Section>
           )}
 
-          {currentStep === 11 && (
+          {currentStep === 12 && (
             <>
+              <Section icon={<Eye size={18} />} title="Section 12: Preview">
+                <span className={styles.helper} style={{ marginBottom: '1.5rem', display: 'block' }}>
+                  Please review your submission details before saving or submitting.
+                </span>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', textAlign: 'left', background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
+                  
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Project Title</h4>
+                    <p>{formData.projectTitle || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}</p>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>One-Liner</h4>
+                    <p>{formData.oneLiner || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}</p>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div>
+                      <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Track</h4>
+                      <p>{formData.track.replace(/_/g, ' ')}</p>
+                    </div>
+                    <div>
+                      <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Status</h4>
+                      <p>{formData.projectStatus.replace(/_/g, ' ')}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Problem Statement</h4>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{formData.problemStatement || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}</p>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Proposed Solution</h4>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{formData.proposedSolution || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}</p>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Target Users</h4>
+                    {formData.targetUsers.length > 0 ? (
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                        {formData.targetUsers.map((t, i) => <span key={i} style={{ background: 'var(--line)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.875rem' }}>{t}</span>)}
+                      </div>
+                    ) : <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Core Features</h4>
+                    {formData.coreFeatures.length > 0 ? (
+                      <ul style={{ paddingLeft: '1.25rem', marginTop: '0.5rem' }}>
+                        {formData.coreFeatures.map((f, i) => <li key={i}><strong>{f.title}:</strong> {f.description}</li>)}
+                      </ul>
+                    ) : <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Future Enhancements</h4>
+                    {formData.futureEnhancements.length > 0 ? (
+                      <ul style={{ paddingLeft: '1.25rem', marginTop: '0.5rem' }}>
+                        {formData.futureEnhancements.map((f, i) => <li key={i}><strong>{f.title}:</strong> {f.description}</li>)}
+                      </ul>
+                    ) : <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Tech Stack</h4>
+                    <ul style={{ paddingLeft: '1.25rem', marginTop: '0.5rem' }}>
+                      {formData.techFrontend.length > 0 && <li><strong>Frontend:</strong> {formData.techFrontend.join(', ')}</li>}
+                      {formData.techBackend.length > 0 && <li><strong>Backend:</strong> {formData.techBackend.join(', ')}</li>}
+                      {formData.techDatabase.length > 0 && <li><strong>Database:</strong> {formData.techDatabase.join(', ')}</li>}
+                      {formData.techAiMl.length > 0 && <li><strong>AI/ML:</strong> {formData.techAiMl.join(', ')}</li>}
+                      {formData.techCloud.length > 0 && <li><strong>Cloud:</strong> {formData.techCloud.join(', ')}</li>}
+                      {formData.techApis.length > 0 && <li><strong>APIs:</strong> {formData.techApis.join(', ')}</li>}
+                      {formData.techOther.length > 0 && <li><strong>Other:</strong> {formData.techOther.join(', ')}</li>}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Potential Challenges</h4>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{formData.potentialChallenges || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Questions for Mentors</h4>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{formData.questionsForMentors || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}</p>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Links & Resources</h4>
+                    <ul style={{ paddingLeft: '1.25rem', marginTop: '0.5rem', wordBreak: 'break-all' }}>
+                      <li><strong>Architecture:</strong> {formData.architectureFileUrl ? <a href={formData.architectureFileUrl} target="_blank" rel="noreferrer">{formData.architectureFileUrl}</a> : 'N/A'}</li>
+                      <li><strong>GitHub Repo:</strong> {formData.githubRepoUrl ? <a href={formData.githubRepoUrl} target="_blank" rel="noreferrer">{formData.githubRepoUrl}</a> : 'N/A'}</li>
+                      <li><strong>Mockups/Screenshots:</strong> {formData.mockupFileUrl ? <a href={formData.mockupFileUrl} target="_blank" rel="noreferrer">{formData.mockupFileUrl}</a> : 'N/A'}</li>
+                      <li><strong>Prototype:</strong> {formData.prototypeLinkUrl ? <a href={formData.prototypeLinkUrl} target="_blank" rel="noreferrer">{formData.prototypeLinkUrl}</a> : 'N/A'}</li>
+                      <li><strong>Demo Video:</strong> {formData.demoVideoUrl ? <a href={formData.demoVideoUrl} target="_blank" rel="noreferrer">{formData.demoVideoUrl}</a> : 'N/A'}</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>References</h4>
+                    {formData.references.length > 0 ? (
+                      <ul style={{ paddingLeft: '1.25rem', marginTop: '0.5rem' }}>
+                        {formData.references.map((r, i) => <li key={i}><a href={r.url} target="_blank" rel="noreferrer">{r.title}</a></li>)}
+                      </ul>
+                    ) : <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}
+                  </div>
+
+                </div>
+              </Section>
               <Section icon={<Compass size={18} />} title="Section 11: Mentor Guidance">
                 <label className={styles.tagsLabel}>Questions for Mentors (Optional)</label>
                 <span className={styles.helper}>Mention the questions, doubts, or areas where you would like mentor guidance.</span>
@@ -684,7 +796,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
               </Button>
             )}
 
-            {currentStep < 11 ? (
+            {currentStep < 12 ? (
               <Button 
                 type="button" 
                 variant="primary" 
