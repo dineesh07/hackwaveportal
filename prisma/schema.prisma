@@ -52,6 +52,7 @@ model Team {
   leaderPhone         String
   leaderEmail         String?
   userId              String?  @unique
+  teamCode            String?  @unique
   registrationStatus  RegistrationStatus @default(PENDING_VERIFICATION)
   registeredAt        DateTime @default(now())
   verifiedAt          DateTime?
@@ -93,6 +94,7 @@ model Project {
   projectStatus      ProjectStatus
 
   problemStatement   String   @db.Text
+  problemStatementId String?
   proposedSolution   String   @db.Text
   targetUsers        String[]
 

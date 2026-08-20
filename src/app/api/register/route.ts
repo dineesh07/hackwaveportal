@@ -27,10 +27,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Leader roll number is already registered' }, { status: 400 });
     }
 
+    // Generate a unique teamCode (e.g. TEAM-001)
+    let nextNum = 1;
+    const latestTeam = await prisma.team.findFirst({
+      orderBy: { createdAt: 'desc' },
+      select: { teamCode: true }
+    });
+    if (latestTeam?.teamCode && latestTeam.teamCode.startsWith('TEAM-')) {
+      const parsed = parseInt(latestTeam.teamCode.replace('TEAM-', ''), 10);
+      if (!isNaN(parsed)) nextNum = parsed + 1;
+    }
+    
+    let teamCode = `TEAM-${String(nextNum).padStart(3, '0')}`;
+    let isUnique = false;
+    while (!isUnique) {
+      const exists = await prisma.team.findUnique({ where: { teamCode } });
+      if (exists) {
+        nextNum++;
+        teamCode = `TEAM-${String(nextNum).padStart(3, '0')}`;
+      } else {
+        isUnique = true;
+      }
+    }
+
     // Create the Team and TeamMembers in a transaction
     const newTeam = await prisma.$transaction(async (tx) => {
       const team = await tx.team.create({
         data: {
+          teamCode,
           teamName,
           leaderName,
           leaderRollNo,
