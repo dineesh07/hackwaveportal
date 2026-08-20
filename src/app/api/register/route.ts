@@ -27,34 +27,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Leader roll number is already registered' }, { status: 400 });
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { rollNo: leaderRollNo }
-    });
-    if (existingUser) {
-      return NextResponse.json({ error: 'User with this roll number already exists' }, { status: 400 });
-    }
-
-    // Hash default password
-    const hashedPassword = await hash('12345', 10);
-
-    // Create the Team, User, and TeamMembers in a transaction
+    // Create the Team and TeamMembers in a transaction
     const newTeam = await prisma.$transaction(async (tx) => {
-      // 1. Create User
-      const user = await tx.user.create({
-        data: {
-          name: leaderName,
-          rollNo: leaderRollNo,
-          email: leaderEmail || null,
-          phone: leaderPhone || null,
-          passwordHash: hashedPassword,
-          mustChangePassword: true,
-          role: 'TEAM',
-          status: 'ACTIVE',
-        }
-      });
-
-      // 2. Create Team linked to User
       const team = await tx.team.create({
         data: {
           teamName,
@@ -63,8 +37,7 @@ export async function POST(req: Request) {
           leaderPhone,
           leaderEmail,
           institution: department, // Storing department in institution field
-          registrationStatus: 'ACCOUNT_CREATED', // Mark as account created
-          userId: user.id, // Link the user
+          registrationStatus: 'PENDING_VERIFICATION',
           members: {
             create: [
               // Add leader as a member
