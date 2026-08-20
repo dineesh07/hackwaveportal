@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/Button";
 import { X } from "lucide-react";
 import styles from "./page.module.css";
@@ -232,7 +231,6 @@ export default function RegisterPage() {
           </form>
         </div>
       </main>
-      <Footer />
     </>
   );
 }
