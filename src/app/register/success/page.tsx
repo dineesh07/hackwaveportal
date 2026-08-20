@@ -3,33 +3,56 @@
 import React from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/Button";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Info } from "lucide-react";
+import styles from "./page.module.css";
 
 export default function RegisterSuccessPage() {
   return (
     <>
       <Navbar />
-      <main className="container flex justify-center items-center py-24">
-        <div className="max-w-[650px] bg-[var(--surface)] border border-[var(--line)] rounded-lg p-8 text-center flex flex-col items-center">
-          <CheckCircle size={64} color="var(--success)" className="mb-6" />
-          <h1 className="text-2xl font-bold display-title mb-4">Registration Submitted!</h1>
+      <main className={styles.container}>
+        <div className={styles.card}>
+          <div className={styles.iconWrapper}>
+            <CheckCircle size={56} color="var(--success)" />
+          </div>
+          <h1 className={`${styles.title} display-title`}>Registration Submitted!</h1>
           
-          <div className="bg-[var(--success)]/10 border border-[var(--success)] p-6 rounded-md mb-8 text-left w-full space-y-4">
-            <p>Your registration is currently <strong>pending review</strong> by the coordinator.</p>
-            
-            <p>Once approved, an individual account will be automatically created for <strong>every team member</strong> listed in your registration &mdash; including the team leader.</p>
-            
-            <div>
-              <div>Username: <strong>Your Roll Number</strong></div>
-              <div>Default Password: <strong>12345</strong></div>
+          <p className={styles.subtitle}>
+            Your team has successfully registered for HACKWAVE 2026.
+          </p>
+          
+          <div className={styles.infoBox}>
+            <div className={styles.infoTitle}>
+              <Info size={24} color="var(--flame-red)" />
+              Important Next Steps
             </div>
             
-            <p className="text-[var(--flame-red)] font-semibold">
+            <ul className={styles.infoList}>
+              <li>
+                <div className={styles.bullet}></div>
+                <div>Your registration is currently <strong>pending review</strong> by the coordinator.</div>
+              </li>
+              <li>
+                <div className={styles.bullet}></div>
+                <div>Once approved, an individual account will be automatically created for <strong>every team member</strong> listed in your registration &mdash; including the team leader.</div>
+              </li>
+              <li>
+                <div className={styles.bullet}></div>
+                <div>
+                  Username: <strong>Your Roll Number</strong><br />
+                  Default Password: <code className={styles.codeBlock}>12345</code>
+                </div>
+              </li>
+            </ul>
+            
+            <div className={styles.warningText}>
               Each member must log in separately using their own roll number, and will be required to change their password immediately on first login.
-            </p>
+            </div>
           </div>
           
-          <Button href="/" variant="primary">Return to Homepage</Button>
+          <div className={styles.actions}>
+            <Button href="/" variant="primary">Return to Homepage</Button>
+          </div>
         </div>
       </main>
     </>
