@@ -10,6 +10,7 @@ import styles from '../../dashboard.module.css'
 
 type TeamRow = {
   teamId: string;
+  teamCode: string | null;
   teamName: string;
   institution: string | null;
   leaderName: string;
@@ -45,7 +46,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
     if (statusFilter && t.projectStatus !== statusFilter) return false;
     if (search) {
       const q = search.toLowerCase();
-      const haystack = `${t.teamName} ${t.leaderName} ${t.leaderRollNo} ${t.projectTitle} ${t.track || ''}`.toLowerCase();
+      const haystack = `${t.teamCode || ''} ${t.teamName} ${t.leaderName} ${t.leaderRollNo} ${t.projectTitle} ${t.track || ''}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
@@ -53,13 +54,37 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
 
   const toggle = (teamId: string) => setExpanded(expanded === teamId ? null : teamId);
 
+  const exportCSV = () => {
+    const headers = ['Team Code', 'Team Name', 'Leader Name', 'Leader Roll No', 'Status', 'Mentor', 'Project Title', 'Track'];
+    const rows = filtered.map(t => [
+      t.teamCode || 'N/A',
+      t.teamName,
+      t.leaderName,
+      t.leaderRollNo,
+      t.projectStatus,
+      t.mentorName || 'Unassigned',
+      t.projectTitle,
+      t.track || 'N/A'
+    ]);
+    
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "teams_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div>
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
           <Search size={16} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-40)' }} />
           <Input
-            placeholder="Search team, leader, project, or track..."
+            placeholder="Search team, code, leader, project, or track..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             style={{ paddingLeft: '2.25rem' }}
@@ -74,6 +99,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
             <option value="NONE">No Submission</option>
           </Select>
         </div>
+        <Button variant="outline" onClick={exportCSV}>Export CSV</Button>
         <span className={styles.muted}>{filtered.length} of {teams.length} teams</span>
       </div>
 
@@ -96,7 +122,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
               <React.Fragment key={t.teamId}>
                 <tr className={styles.tr} onClick={() => toggle(t.teamId)} style={{ cursor: 'pointer' }}>
                   <td className={styles.td}>
-                    <strong>{t.teamName}</strong>
+                    <strong>{t.teamCode ? `${t.teamCode} - ` : ''}{t.teamName}</strong>
                     <div className={styles.muted}>{t.leaderName} · {t.leaderRollNo}</div>
                   </td>
                   <td className={styles.td}>{t.projectTitle}</td>
@@ -117,6 +143,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
                         <div>
                           <div className={styles.drillTitle}><Users size={14} /> Team Details</div>
+                          <p className={styles.drillRow}><span>Team Code</span><strong>{t.teamCode || '—'}</strong></p>
                           <p className={styles.drillRow}><span>Institution</span><strong>{t.institution || '—'}</strong></p>
                           <p className={styles.drillRow}><span>Leader</span><strong>{t.leaderName}</strong></p>
                           <p className={styles.drillRow}><span>Roll No</span><strong>{t.leaderRollNo}</strong></p>

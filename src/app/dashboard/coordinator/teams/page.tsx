@@ -17,6 +17,7 @@ export default async function CoordinatorTeamsPage() {
     orderBy: { createdAt: 'asc' },
     select: {
       id: true,
+      teamCode: true,
       teamName: true,
       institution: true,
       leaderName: true,
@@ -54,6 +55,7 @@ export default async function CoordinatorTeamsPage() {
     const project = t.projects[0] || null;
     return {
       teamId: t.id,
+      teamCode: t.teamCode,
       teamName: t.teamName,
       institution: t.institution,
       leaderName: t.leaderName,

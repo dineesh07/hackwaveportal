@@ -9,16 +9,23 @@ import { UserPlus, Scale, Link2 } from 'lucide-react'
 import styles from '../../dashboard.module.css'
 
 type JuryData = { id: string; name: string; email: string | null; organization: string | null };
-type ProjectData = { id: string; projectTitle: string; teamName: string };
-type AssignmentData = { id: string; jury: { name: string }; project: { projectTitle: string; teamName: string } };
+type ProjectData = { id: string; projectTitle: string; teamName: string; team: { teamCode: string | null } };
+type AssignmentData = { id: string; jury: { name: string }; project: { projectTitle: string; teamName: string; team: { teamCode: string | null } } };
 
 export default function JuryClient({ juries, projects, assignments }: { juries: JuryData[], projects: ProjectData[], assignments: AssignmentData[] }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [assignment, setAssignment] = useState({ juryId: '', projectId: '' });
+  const [assignment, setAssignment] = useState<{ juryId: string; projectIds: string[] }>({ juryId: '', projectIds: [] });
+
+  const toggleProject = (id: string) => {
+    setAssignment(prev => ({
+      ...prev,
+      projectIds: prev.projectIds.includes(id) ? prev.projectIds.filter(p => p !== id) : [...prev.projectIds, id]
+    }));
+  };
 
   const assignJury = async () => {
-    if (!assignment.juryId || !assignment.projectId) return;
+    if (!assignment.juryId || assignment.projectIds.length === 0) return;
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/coordinator/jury/assign', {
@@ -31,7 +38,7 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
         alert(data.error || "Failed to assign jury member.");
         return;
       }
-      setAssignment({ juryId: '', projectId: '' });
+      setAssignment({ juryId: '', projectIds: [] });
       router.refresh();
       alert("Jury member assigned.");
     } catch {
@@ -61,9 +68,28 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
     setIsSubmitting(false);
   }
 
+  const exportCSV = () => {
+    const headers = ['Team Code', 'Team Name', 'Project Title', 'Jury Name'];
+    const rows = assignments.map(a => [
+      a.project.team.teamCode || 'N/A',
+      a.project.teamName,
+      a.project.projectTitle,
+      a.jury.name
+    ]);
+    
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "jury_assignments.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem' }}>
-
       <section>
         <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <UserPlus size={20} color="var(--flame-red)" />
@@ -77,24 +103,43 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
                 {juries.map(j => <option key={j.id} value={j.id}>{j.name} ({j.organization || 'No Organization'})</option>)}
               </Select>
             </Field>
-            <Field label="Select Project">
-              <Select value={assignment.projectId} onChange={e => setAssignment({...assignment, projectId: e.target.value})}>
-                <option value="">-- Select Project --</option>
-                {projects.map(p => <option key={p.id} value={p.id}>{p.teamName} — {p.projectTitle}</option>)}
-              </Select>
+
+            <Field label="Select Projects (Multiple)">
+              <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--line)', borderRadius: 'var(--radius)', padding: '0.5rem' }}>
+                {projects.map(p => (
+                  <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem', cursor: 'pointer', borderBottom: '1px solid var(--line)' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={assignment.projectIds.includes(p.id)} 
+                      onChange={() => toggleProject(p.id)} 
+                    />
+                    <span style={{ fontSize: '0.875rem' }}>
+                      <strong>{p.team.teamCode || 'No Code'}</strong> - {p.teamName} <span style={{ color: 'var(--ink-60)', fontSize: '0.75rem' }}>({p.projectTitle})</span>
+                    </span>
+                  </label>
+                ))}
+                {projects.length === 0 && <div style={{ fontSize: '0.875rem', padding: '0.5rem', color: 'var(--ink-60)' }}>No projects available</div>}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--ink-60)', marginTop: '0.5rem' }}>
+                {assignment.projectIds.length} projects selected
+              </div>
             </Field>
-            <Button onClick={assignJury} disabled={isSubmitting || !assignment.juryId || !assignment.projectId}>
-              <Link2 size={16} /> Assign Jury Member
+
+            <Button onClick={assignJury} disabled={isSubmitting || !assignment.juryId || assignment.projectIds.length === 0}>
+              <Link2 size={16} /> Assign Jury Member to Selected
             </Button>
           </div>
         </Card>
       </section>
 
       <section>
-        <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <Scale size={20} color="var(--flame-orange)" />
-          Current Assignments
-        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <h2 className={styles.sectionTitle} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <Scale size={20} color="var(--flame-orange)" />
+            Current Assignments
+          </h2>
+          <Button variant="outline" size="sm" onClick={exportCSV}>Export CSV</Button>
+        </div>
         <div className={styles.tableContainer}>
           <table className={styles.table}>
             <thead>
@@ -108,7 +153,7 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
               {assignments.map((a) => (
                 <tr key={a.id} className={styles.tr}>
                   <td className={styles.td}><strong>{a.jury.name}</strong></td>
-                  <td className={styles.td}>{a.project.teamName} — {a.project.projectTitle}</td>
+                  <td className={styles.td}>{a.project.team.teamCode ? `${a.project.team.teamCode} - ` : ''}{a.project.teamName} — {a.project.projectTitle}</td>
                   <td className={styles.td}>
                     <Button onClick={() => removeAssignment(a.id)} variant="danger" size="sm" disabled={isSubmitting}>Remove</Button>
                   </td>

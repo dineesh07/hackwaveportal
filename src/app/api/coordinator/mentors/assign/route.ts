@@ -10,29 +10,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { mentorId, teamId } = await req.json();
+    const { mentorId, teamIds } = await req.json();
 
-    const existing = await prisma.mentorAssignment.findUnique({
-      where: { mentorId_teamId_phase: { mentorId, teamId, phase: 1 } }
-    });
-
-    if (existing) {
-      return NextResponse.json({ error: 'Mentor already assigned to this team.' }, { status: 400 });
+    if (!mentorId || !Array.isArray(teamIds) || teamIds.length === 0) {
+      return NextResponse.json({ error: 'Mentor and at least one team required' }, { status: 400 });
     }
 
-    await prisma.mentorAssignment.create({
-      data: {
-        mentorId,
-        teamId,
-        phase: 1
-      }
+    const existing = await prisma.mentorAssignment.findMany({
+      where: { mentorId, phase: 1, teamId: { in: teamIds } }
     });
+    
+    const existingTeamIds = existing.map(e => e.teamId);
+    const newTeamIds = teamIds.filter(id => !existingTeamIds.includes(id));
+
+    if (newTeamIds.length > 0) {
+      await prisma.mentorAssignment.createMany({
+        data: newTeamIds.map(teamId => ({
+          mentorId,
+          teamId,
+          phase: 1
+        }))
+      });
+    }
 
     await writeAuditLog({
       actorId: session.user.id,
       action: 'MENTOR_ASSIGN',
       targetType: 'MentorAssignment',
-      metadata: { mentorId, teamId },
+      metadata: { mentorId, teamIds, newAssignmentsCount: newTeamIds.length },
       ipAddress: getClientIp(req),
     });
 

@@ -59,7 +59,7 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const {
       projectTitle, oneLiner, track, projectStatus,
-      problemStatement, proposedSolution, targetUsers,
+      problemStatement, problemStatementId, proposedSolution, targetUsers,
       techFrontend, techBackend, techDatabase, techAiMl, techCloud, techApis, techOther,
       architectureFileUrl, mockupFileUrl, prototypeLinkUrl, githubRepoUrl, liveDemoUrl,
       potentialChallenges, demoVideoUrl, questionsForMentors, status,
@@ -90,6 +90,7 @@ export async function PUT(req: Request) {
       track: track || 'OTHERS',
       projectStatus: projectStatus || 'IDEATION_COMPLETE',
       problemStatement: problemStatement || '',
+      problemStatementId: problemStatementId || '',
       proposedSolution: proposedSolution || '',
       targetUsers: targetUsers || [],
       techFrontend: techFrontend || [],

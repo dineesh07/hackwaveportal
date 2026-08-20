@@ -22,6 +22,7 @@ export default async function CoordinatorMentorsPage() {
     select: {
       id: true,
       teamName: true,
+      teamCode: true,
       projects: {
         where: { phase: 1 },
         select: { track: true }
@@ -32,13 +33,14 @@ export default async function CoordinatorMentorsPage() {
   const teams = teamsRaw.map(t => ({
     id: t.id,
     teamName: t.teamName,
+    teamCode: t.teamCode,
     track: t.projects[0]?.track || 'NO_TRACK'
   }));
 
   const assignments = await prisma.mentorAssignment.findMany({
     where: { phase: 1 },
     include: {
-      team: { select: { teamName: true } },
+      team: { select: { teamName: true, teamCode: true } },
       mentor: { select: { name: true } }
     }
   });

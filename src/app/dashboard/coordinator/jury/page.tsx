@@ -22,20 +22,20 @@ export default async function CoordinatorJuryPage() {
     select: {
       id: true,
       projectTitle: true,
-      team: { select: { teamName: true } }
+      team: { select: { teamName: true, teamCode: true } }
     }
-  })).map(p => ({ id: p.id, projectTitle: p.projectTitle, teamName: p.team.teamName }));
+  })).map(p => ({ id: p.id, projectTitle: p.projectTitle, teamName: p.team.teamName, team: { teamCode: p.team.teamCode } }));
 
   const assignments = (await prisma.juryAssignment.findMany({
     where: { phase: 1 },
     include: {
-      project: { select: { projectTitle: true, team: { select: { teamName: true } } } },
+      project: { select: { projectTitle: true, team: { select: { teamName: true, teamCode: true } } } },
       jury: { select: { name: true } }
     }
   })).map(a => ({
     id: a.id,
     jury: { name: a.jury.name },
-    project: { projectTitle: a.project.projectTitle, teamName: a.project.team.teamName },
+    project: { projectTitle: a.project.projectTitle, teamName: a.project.team.teamName, team: { teamCode: a.project.team.teamCode } },
   }));
 
   return (

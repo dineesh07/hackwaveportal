@@ -134,6 +134,7 @@ type ProjectInitialData = {
   track?: string | null;
   projectStatus?: string | null;
   problemStatement?: string | null;
+  problemStatementId?: string | null;
   proposedSolution?: string | null;
   targetUsers?: string[];
   coreFeatures?: FeatureItem[];
@@ -182,6 +183,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
     track: initialData?.track || 'WEB_DEVELOPMENT',
     projectStatus: initialData?.projectStatus || 'IDEATION_COMPLETE',
     problemStatement: initialData?.problemStatement || '',
+    problemStatementId: initialData?.problemStatementId || '',
     proposedSolution: initialData?.proposedSolution || '',
     targetUsers: initialData?.targetUsers || [],
 
@@ -437,7 +439,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                   return (
                     <div 
                       key={ps.id} 
-                      onClick={() => setFormData({ ...formData, problemStatement: ps.title })}
+                      onClick={() => setFormData({ ...formData, problemStatement: ps.title, problemStatementId: ps.id })}
                       style={{ 
                         padding: '1.25rem', 
                         border: `2px solid ${isSelected ? 'var(--flame-red)' : 'var(--line)'}`, 

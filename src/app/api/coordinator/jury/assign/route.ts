@@ -10,28 +10,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { juryId, projectId } = await req.json();
-    if (!juryId || !projectId) {
-      return NextResponse.json({ error: 'Jury and project are required' }, { status: 400 });
+    const { juryId, projectIds } = await req.json();
+    if (!juryId || !Array.isArray(projectIds) || projectIds.length === 0) {
+      return NextResponse.json({ error: 'Jury and at least one project are required' }, { status: 400 });
     }
 
-    const existing = await prisma.juryAssignment.findUnique({
-      where: { juryId_projectId_phase: { juryId, projectId, phase: 1 } }
+    const existing = await prisma.juryAssignment.findMany({
+      where: { juryId, phase: 1, projectId: { in: projectIds } }
     });
 
-    if (existing) {
-      return NextResponse.json({ error: 'Jury member already assigned to this project.' }, { status: 400 });
+    const existingProjectIds = existing.map(e => e.projectId);
+    const newProjectIds = projectIds.filter(id => !existingProjectIds.includes(id));
+
+    if (newProjectIds.length > 0) {
+      await prisma.juryAssignment.createMany({
+        data: newProjectIds.map(projectId => ({
+          juryId,
+          projectId,
+          phase: 1
+        }))
+      });
     }
-
-    await prisma.juryAssignment.create({
-      data: { juryId, projectId, phase: 1 }
-    });
 
     await writeAuditLog({
       actorId: session.user.id,
       action: 'JURY_ASSIGN',
       targetType: 'JuryAssignment',
-      metadata: { juryId, projectId },
+      metadata: { juryId, projectIds, newAssignmentsCount: newProjectIds.length },
       ipAddress: getClientIp(req),
     });
 
