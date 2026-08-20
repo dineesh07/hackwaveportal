@@ -162,7 +162,7 @@ export default function JuryClient({ juries, projects, assignments }: { juries: 
             <Scale size={20} color="var(--flame-orange)" />
             Current Assignments
           </h2>
-          <Button variant="outline" size="sm" onClick={exportCSV}>Export CSV</Button>
+          <Button variant="secondary" size="sm" onClick={exportCSV}>Export CSV</Button>
         </div>
         <div className={styles.tableContainer}>
           <table className={styles.table}>

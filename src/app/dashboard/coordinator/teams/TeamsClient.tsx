@@ -99,7 +99,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
             <option value="NONE">No Submission</option>
           </Select>
         </div>
-        <Button variant="outline" onClick={exportCSV}>Export CSV</Button>
+        <Button variant="secondary" onClick={exportCSV}>Export CSV</Button>
         <span className={styles.muted}>{filtered.length} of {teams.length} teams</span>
       </div>
 
