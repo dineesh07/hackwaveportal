@@ -15,11 +15,20 @@ const syncopate = Syncopate({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://hackwaveportal.vercel.app'),
   title: "HACKWAVE 2026 | Dept. of CT - PG Hackathon",
   description: "Two Phases. One Big Idea. The premier hackathon for CT-PG students.",
+  keywords: ["hackathon", "HACKWAVE", "CT-PG", "coding competition", "college hackathon", "student projects", "tech event"],
   openGraph: {
     title: "HACKWAVE 2026",
     description: "Dept. of CT - PG Hackathon 2026. Register your team now.",
+    url: 'https://hackwaveportal.vercel.app',
+    siteName: 'HACKWAVE 2026',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
   }
 };
 
