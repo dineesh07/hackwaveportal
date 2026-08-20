@@ -42,19 +42,18 @@ export default function RegisterSuccessPage() {
               </li>
               <li className="flex gap-4 items-start">
                 <div className="w-2 h-2 rounded-full bg-[var(--primary)] mt-2.5 shrink-0 shadow-[0_0_8px_var(--primary)]"></div>
-                <p className="opacity-90 leading-relaxed">Once approved, an account will automatically be created for your team leader.</p>
+                <p className="opacity-90 leading-relaxed">Once approved, an individual account will be automatically created for <strong className="font-semibold text-[var(--text)]">every team member</strong> listed in your registration &mdash; including the team leader.</p>
               </li>
               <li className="flex gap-4 items-start">
                 <div className="w-2 h-2 rounded-full bg-[var(--primary)] mt-2.5 shrink-0 shadow-[0_0_8px_var(--primary)]"></div>
-                <p className="opacity-90 leading-relaxed">Your username will be your <strong className="font-semibold text-[var(--text)]">Roll Number</strong>.</p>
-              </li>
-              <li className="flex gap-4 items-start">
-                <div className="w-2 h-2 rounded-full bg-[var(--primary)] mt-2.5 shrink-0 shadow-[0_0_8px_var(--primary)]"></div>
-                <p className="opacity-90 leading-relaxed">Your default password will be set to <code className="bg-[var(--surface)] text-[var(--primary)] border border-[var(--line)] px-2 py-1 rounded-md font-mono font-bold text-sm tracking-wider">12345</code>.</p>
+                <div className="opacity-90 leading-relaxed">
+                  <span className="block">Username: <strong className="font-semibold text-[var(--text)]">Your Roll Number</strong></span>
+                  <span className="block mt-1">Default Password: <code className="bg-[var(--surface)] text-[var(--primary)] border border-[var(--line)] px-2 py-1 rounded-md font-mono font-bold text-sm tracking-wider">12345</code></span>
+                </div>
               </li>
               <li className="flex gap-4 items-start bg-[var(--flame-red)]/5 -mx-4 px-4 py-3 rounded-lg border-l-2 border-[var(--flame-red)]">
                 <div className="w-2 h-2 rounded-full bg-[var(--flame-red)] mt-2.5 shrink-0 shadow-[0_0_8px_var(--flame-red)]"></div>
-                <p className="text-[var(--flame-red)] font-medium leading-relaxed">You must change this password immediately upon your first login.</p>
+                <p className="text-[var(--flame-red)] font-medium leading-relaxed">Each member must log in separately using their own roll number, and will be required to change their password immediately on first login.</p>
               </li>
             </ul>
           </div>
