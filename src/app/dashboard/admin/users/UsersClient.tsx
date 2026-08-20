@@ -121,63 +121,65 @@ export default function UsersClient({ users }: { users: WorkspaceUser[] }) {
         </div>
       </Card>
 
-      <div className={styles.tableContainer} style={{ marginBottom: 0 }}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th className={styles.th}>User</th>
-              <th className={styles.th}>Roll No</th>
-              <th className={styles.th}>Role</th>
-              <th className={styles.th}>Status</th>
-              <th className={styles.th}>Created</th>
-              <th className={styles.th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id} className={styles.tr}>
-                <td className={styles.td}>
-                  <strong>{u.name}</strong>
-                  {u.organization && <div className={styles.muted}>{u.organization}</div>}
-                  {u.mustChangePassword && <div className={styles.muted} style={{ color: 'var(--flame-gold)', fontWeight: 600 }}>Must change password</div>}
-                </td>
-                <td className={styles.td}>{u.rollNo}</td>
-                <td className={styles.td}>
-                  <Select
-                    value={u.role}
-                    onChange={(e) => updateUserRole(u.id, e.target.value)}
-                    disabled={isSubmitting}
-                    style={{ padding: '0.35rem 0.5rem', fontSize: '0.8125rem', width: 'auto' }}
-                  >
-                    {ROLE_OPTIONS.map(r => <option key={r.value} value={r.value}>{r.value}</option>)}
-                  </Select>
-                </td>
-                <td className={styles.td}>
-                  <Tag tone={u.status === 'ACTIVE' ? 'success' : u.status === 'LOCKED' ? 'danger' : 'neutral'}>{u.status}</Tag>
-                </td>
-                <td className={styles.td}>{new Date(u.createdAt).toLocaleDateString()}</td>
-                <td className={styles.td}>
-                  <div className={styles.actionCell} style={{ flexWrap: 'wrap' }}>
-                    <Button
-                      size="sm"
-                      variant={u.status === 'ACTIVE' ? 'ghost' : 'success'}
-                      onClick={() => updateUserStatus(u.id, u.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
-                      disabled={isSubmitting}
-                    >
-                      {u.status === 'ACTIVE' ? <><ShieldOff size={13} /> Deactivate</> : <><ShieldCheck size={13} /> Activate</>}
-                    </Button>
-                    <Button size="sm" variant="secondary" onClick={() => resetPassword(u.id)} disabled={isSubmitting}>
-                      <RotateCcw size={13} /> Reset
-                    </Button>
-                    <Button size="sm" variant="danger" onClick={() => deleteUser(u.id)} disabled={isSubmitting}>
-                      <Trash2 size={13} /> Delete
-                    </Button>
-                  </div>
-                </td>
+      <div style={{ minWidth: 0, overflowX: 'auto', paddingBottom: '1rem' }}>
+        <div className={styles.tableContainer} style={{ marginBottom: 0 }}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.th}>User</th>
+                <th className={styles.th}>Roll No</th>
+                <th className={styles.th}>Role</th>
+                <th className={styles.th}>Status</th>
+                <th className={styles.th}>Created</th>
+                <th className={styles.th}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id} className={styles.tr}>
+                  <td className={styles.td}>
+                    <strong>{u.name}</strong>
+                    {u.organization && <div className={styles.muted}>{u.organization}</div>}
+                    {u.mustChangePassword && <div className={styles.muted} style={{ color: 'var(--flame-gold)', fontWeight: 600 }}>Must change password</div>}
+                  </td>
+                  <td className={styles.td}>{u.rollNo}</td>
+                  <td className={styles.td}>
+                    <Select
+                      value={u.role}
+                      onChange={(e) => updateUserRole(u.id, e.target.value)}
+                      disabled={isSubmitting}
+                      style={{ padding: '0.35rem 0.5rem', fontSize: '0.8125rem', width: 'auto' }}
+                    >
+                      {ROLE_OPTIONS.map(r => <option key={r.value} value={r.value}>{r.value}</option>)}
+                    </Select>
+                  </td>
+                  <td className={styles.td}>
+                    <Tag tone={u.status === 'ACTIVE' ? 'success' : u.status === 'LOCKED' ? 'danger' : 'neutral'}>{u.status}</Tag>
+                  </td>
+                  <td className={styles.td}>{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td className={styles.td}>
+                    <div className={styles.actionCell} style={{ flexWrap: 'wrap' }}>
+                      <Button
+                        size="sm"
+                        variant={u.status === 'ACTIVE' ? 'ghost' : 'success'}
+                        onClick={() => updateUserStatus(u.id, u.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
+                        disabled={isSubmitting}
+                      >
+                        {u.status === 'ACTIVE' ? <><ShieldOff size={13} /> Deactivate</> : <><ShieldCheck size={13} /> Activate</>}
+                      </Button>
+                      <Button size="sm" variant="secondary" onClick={() => resetPassword(u.id)} disabled={isSubmitting}>
+                        <RotateCcw size={13} /> Reset
+                      </Button>
+                      <Button size="sm" variant="danger" onClick={() => deleteUser(u.id)} disabled={isSubmitting}>
+                        <Trash2 size={13} /> Delete
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
