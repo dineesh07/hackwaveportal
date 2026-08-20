@@ -16,7 +16,7 @@ const mentors = [
   { name: "Sakthiganesan", role: "Automation Engineer", company: "Lumel Technologies", img: "/mentors/mentor7.jpeg" },
   { name: "Harshath", role: "Associate Software Developer", company: "Rently", img: "/mentors/mentor8.jpeg", objectPosition: "top" },
   { name: "Samyugtha K", role: "AI/ML & Computational Science Analyst", company: "Accenture", img: "/mentors/mentor9.png", objectPosition: "top" },
-  { name: "Aswinraj S", role: "Software Development Engineer & Prompt Engineer", company: "CloudAssert", img: "/mentors/mentor-placeholder.svg" },
+  { name: "Aswinraj S", role: "Software Development Engineer & Prompt Engineer", company: "CloudAssert", img: "/mentors/mentor10.jpeg", objectPosition: "top", scale: 1.15 },
 ];
 
 const containerVariants: Variants = {
@@ -37,7 +37,7 @@ const cardVariants: Variants = {
   }
 };
 
-const ImageWithShimmer = ({ src, alt, objectPosition }: { src: string, alt: string, objectPosition?: string }) => {
+const ImageWithShimmer = ({ src, alt, objectPosition, scale }: { src: string, alt: string, objectPosition?: string, scale?: number }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   return (
     <div className={styles.cardImageWrapper}>
@@ -47,7 +47,10 @@ const ImageWithShimmer = ({ src, alt, objectPosition }: { src: string, alt: stri
         alt={alt}
         fill
         className={styles.image}
-        style={objectPosition ? { objectPosition } : undefined}
+        style={{ 
+          objectPosition: objectPosition || undefined,
+          transform: scale ? `scale(${scale})` : undefined
+        }}
         onLoad={() => setIsLoaded(true)}
       />
       <div className={styles.vignette}></div>
@@ -55,10 +58,10 @@ const ImageWithShimmer = ({ src, alt, objectPosition }: { src: string, alt: stri
   );
 };
 
-const MentorCard = ({ mentor }: { mentor: typeof mentors[0] }) => {
+const MentorCard = ({ mentor }: { mentor: typeof mentors[0] & { scale?: number } }) => {
   return (
     <motion.div variants={cardVariants} className={styles.card}>
-      <ImageWithShimmer src={mentor.img} alt={mentor.name} objectPosition={mentor.objectPosition} />
+      <ImageWithShimmer src={mentor.img} alt={mentor.name} objectPosition={mentor.objectPosition} scale={(mentor as any).scale} />
       <div className={styles.cardInfo}>
         <div className={styles.name}>{mentor.name}</div>
         <div className={styles.role}>{mentor.role}</div>
