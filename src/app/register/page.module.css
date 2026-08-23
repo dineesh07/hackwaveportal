@@ -1,20 +1,121 @@
+.splitLayout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.leftPane {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* Align mascot to the bottom */
+  position: relative;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+.leftPane::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, rgba(0, 0, 0, 0) 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.leftPane::after {
+  content: "";
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 80vw;
+  height: 80vw;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(255, 107, 53, 0.2) 40%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .leftPane {
+    display: flex;
+  }
+}
+
+.leftContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.mascot {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: -1rem; /* ground it visually to the bottom edge */
+  transform: scale(1.25);
+  transform-origin: bottom center;
+  animation: slightFloat 5s ease-in-out infinite;
+}
+
+@keyframes slightFloat {
+  0% { transform: scale(1.25) translateY(0px); }
+  50% { transform: scale(1.25) translateY(-10px); }
+  100% { transform: scale(1.25) translateY(0px); }
+}
+
+.rightPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  position: relative;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.backLinkContainer {
+  padding: 2rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+}
+
+.formWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center; /* Center it vertically */
+  justify-content: center;
+  padding: 6rem 2rem 4rem 2rem; /* Adjusted padding */
+  min-height: min-content;
+}
+
 .formContainer {
-  max-width: 800px;
-  margin: 4rem auto;
-  padding: 2.5rem;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 700px; /* narrowed slightly for better alignment */
+  padding: 2rem 0;
+  margin: 0 auto;
 }
 
 .title {
-  text-align: center;
+  text-align: left;
   margin-bottom: 0.5rem;
+  font-size: 2.25rem;
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .subtitle {
-  text-align: center;
+  text-align: left;
   color: rgba(17, 24, 39, 0.6);
   margin-bottom: 2rem;
 }
@@ -117,4 +218,83 @@
   border-radius: 6px;
   margin-bottom: 1.5rem;
   font-weight: 500;
+}
+
+/* Success Message Styles */
+.successIconWrapper {
+  display: inline-flex;
+  background: rgba(31, 146, 84, 0.1);
+  padding: 1rem;
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  border: 6px solid rgba(31, 146, 84, 0.05);
+}
+
+.successTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.infoBox {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.infoTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.infoList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  line-height: 1.6;
+}
+
+.bullet {
+  width: 6px;
+  height: 6px;
+  background: var(--flame-red);
+  border-radius: 50%;
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.codeBlock {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.95em;
+}
+
+.warningText {
+  color: var(--danger);
+  font-weight: 600;
+  background: rgba(200, 30, 58, 0.05);
+  padding: 1rem;
+  border-left: 4px solid var(--danger);
+  border-radius: 4px;
+  margin-top: 1.5rem;
 }

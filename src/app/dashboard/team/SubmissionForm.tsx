@@ -13,7 +13,6 @@ const TRACKS = [
   { value: 'WEB_DEVELOPMENT', label: 'Web Development' },
   { value: 'MOBILE_DEVELOPMENT', label: 'Mobile Development' },
   { value: 'HEALTHCARE', label: 'Healthcare' },
-  { value: 'EDUCATION', label: 'Education' },
   { value: 'AGRICULTURE', label: 'Agriculture' },
   { value: 'SUSTAINABILITY', label: 'Sustainability' },
   { value: 'FINTECH', label: 'FinTech' },

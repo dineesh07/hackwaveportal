@@ -1,7 +1,8 @@
 "use client"
 import React, { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import styles from './page.module.css'
 
@@ -42,17 +43,34 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="hero-bg" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '2rem', position: 'relative', zIndex: 50 }}>
-        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#000000', textDecoration: 'none', fontWeight: 600 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Back to Home
-        </Link>
+    <main className={styles.splitLayout}>
+      {/* Left Pane: Gradient + Mascot */}
+      <div className={styles.leftPane}>
+        <div className={styles.leftContent}>
+          <Image 
+            src="/signinMascot.png" 
+            alt="Sign In Mascot" 
+            width={1688} 
+            height={1688} 
+            className={styles.mascot}
+            priority
+          />
+        </div>
       </div>
-      <div className="container" style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className={styles.loginContainer} style={{ marginTop: '-4rem' }}>
-          <h1 className={`${styles.title} display-title`}>Welcome Back</h1>
-            <p className={styles.subtitle}>Sign in to your HACKWAVE 2026 Portal</p>
+
+      {/* Right Pane: Login Form */}
+      <div className={styles.rightPane}>
+        <div className={styles.backLinkContainer}>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#111827', textDecoration: 'none', fontWeight: 600 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Back to Home
+          </Link>
+        </div>
+
+        <div className={styles.formWrapper}>
+          <div className={styles.loginContainer}>
+            <h1 className={styles.title}>Login</h1>
+            <p className={styles.subtitle}>Log in to access your dashboard</p>
             
             {error && <div role="alert" className={styles.errorText}>{error}</div>}
             
@@ -82,13 +100,14 @@ export default function LoginPage() {
               </div>
               
               <div className={styles.actions}>
-                <Button type="submit" variant="primary" disabled={isSubmitting}>
+                <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full">
                   {isSubmitting ? 'Authenticating...' : 'Sign In'}
                 </Button>
               </div>
             </form>
           </div>
         </div>
-      </main>
+      </div>
+    </main>
   )
 }

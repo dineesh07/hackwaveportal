@@ -57,6 +57,9 @@
 /* MENTOR CARD */
 .card {
   height: 430px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
   background-color: #151515;
   border: 1px solid #2A2A2A;
   border-radius: 32px;

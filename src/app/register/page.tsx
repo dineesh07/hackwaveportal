@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Navbar } from "@/components/Navbar";
+import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
-import { X } from "lucide-react";
+import { X, CheckCircle, Info } from "lucide-react";
 import styles from "./page.module.css";
 
 interface TeamMember {
@@ -25,10 +26,11 @@ export default function RegisterPage() {
     department: "CT - PG",
   });
 
-  const [members, setMembers] = useState<TeamMember[]>([]);
+  const [members, setMembers] = useState<TeamMember[]>([{ name: "", rollNo: "", phone: "" }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -45,13 +47,17 @@ export default function RegisterPage() {
   };
 
   const addMember = () => {
-    setMembers([...members, { name: "", rollNo: "", phone: "" }]);
+    if (members.length < 3) {
+      setMembers([...members, { name: "", rollNo: "", phone: "" }]);
+    }
   };
 
   const removeMember = (index: number) => {
-    const updated = [...members];
-    updated.splice(index, 1);
-    setMembers(updated);
+    if (members.length > 1) {
+      const updated = [...members];
+      updated.splice(index, 1);
+      setMembers(updated);
+    }
   };
 
   const validate = () => {
@@ -66,6 +72,10 @@ export default function RegisterPage() {
       if (!m.name.trim()) newErrors[`member_${i}_name`] = "Required";
       if (!m.rollNo.trim()) newErrors[`member_${i}_rollNo`] = "Required";
     });
+
+    const totalMembers = 1 + members.length;
+    if (totalMembers < 2) newErrors.general = "A team must have at least 2 members.";
+    if (totalMembers > 4) newErrors.general = "A team can have a maximum of 4 members.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -91,7 +101,7 @@ export default function RegisterPage() {
         throw new Error(data.error || "Registration failed");
       }
       
-      router.push("/register/success");
+      setIsSuccess(true);
     } catch (err) {
       setServerError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -100,17 +110,84 @@ export default function RegisterPage() {
   };
 
   return (
-    <>
-      <Navbar />
-      <main className="container">
-        <div className={styles.formContainer}>
-          <h1 className={`${styles.title} display-title`}>Team Registration</h1>
-          <p className={styles.subtitle}>Register your team for Phase 1 of HACKWAVE 2026.</p>
-          
-          {serverError && <div className={styles.formError}>{serverError}</div>}
-          
-          <form onSubmit={handleSubmit}>
-            <div className={styles.sectionTitle}>Team Details</div>
+    <main className={styles.splitLayout}>
+      {/* Left Pane: Gradient + Mascot */}
+      <div className={styles.leftPane}>
+        <div className={styles.leftContent}>
+          <Image 
+            src="/registerMascot.png" 
+            alt="Register Mascot" 
+            width={1125} 
+            height={1125} 
+            className={styles.mascot}
+            priority
+          />
+        </div>
+      </div>
+
+      {/* Right Pane: Registration Form */}
+      <div className={styles.rightPane}>
+        <div className={styles.backLinkContainer}>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#111827', textDecoration: 'none', fontWeight: 600 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Back to Home
+          </Link>
+        </div>
+
+        <div className={styles.formWrapper}>
+          <div className={styles.formContainer}>
+            {isSuccess ? (
+              <div style={{ textAlign: 'center' }}>
+                <div className={styles.successIconWrapper}>
+                  <CheckCircle size={56} color="var(--success)" />
+                </div>
+                <h1 className={`${styles.successTitle} display-title`}>Registration Submitted!</h1>
+                
+                <p className={styles.subtitle} style={{ textAlign: 'center' }}>
+                  Your team has successfully registered for HACKWAVE 2026.
+                </p>
+                
+                <div className={styles.infoBox}>
+                  <div className={styles.infoTitle}>
+                    <Info size={24} color="var(--flame-red)" />
+                    Important Next Steps
+                  </div>
+                  
+                  <ul className={styles.infoList}>
+                    <li>
+                      <div className={styles.bullet}></div>
+                      <div>Your registration is currently <strong>pending review</strong> by the coordinator.</div>
+                    </li>
+                    <li>
+                      <div className={styles.bullet}></div>
+                      <div>Once approved, an individual account will be automatically created for <strong>every team member</strong> listed in your registration &mdash; including the team leader.</div>
+                    </li>
+                    <li>
+                      <div className={styles.bullet}></div>
+                      <div>
+                        Username: <strong>Your Roll Number</strong><br />
+                        Default Password: <code className={styles.codeBlock}>12345</code>
+                      </div>
+                    </li>
+                  </ul>
+                  
+                  <div className={styles.warningText}>
+                    Each member must log in separately using their own roll number, and will be required to change their password immediately on first login.
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button onClick={() => window.location.href = "/"} variant="primary">Return to Homepage</Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <h1 className={styles.title}>Team Registration</h1>
+                
+                {serverError && <div className={styles.formError}>{serverError}</div>}
+                {errors.general && <div className={styles.formError}>{errors.general}</div>}
+                
+                <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>
               <label className={styles.label}>Team Name <span className={styles.required}>*</span></label>
               <input 
@@ -182,15 +259,19 @@ export default function RegisterPage() {
             </div>
 
             <div className="flex justify-between items-center mb-4 mt-8 border-b border-[var(--line)] pb-2">
-              <div className="text-xl font-bold">Team Members (Optional)</div>
-              <Button type="button" variant="secondary" onClick={addMember} className="!py-1">+ Add Member</Button>
+              <div className="text-xl font-bold">Additional Team Members</div>
+              {members.length < 3 && (
+                <Button type="button" variant="secondary" onClick={addMember} className="!py-1">+ Add Member</Button>
+              )}
             </div>
             
             {members.map((member, index) => (
               <div key={index} className={styles.memberRow}>
-                <button type="button" className={styles.removeBtn} onClick={() => removeMember(index)}>
-                  <X size={20} />
-                </button>
+                {members.length > 1 && (
+                  <button type="button" className={styles.removeBtn} onClick={() => removeMember(index)}>
+                    <X size={20} />
+                  </button>
+                )}
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Member Name <span className={styles.required}>*</span></label>
                   <input 
@@ -229,8 +310,11 @@ export default function RegisterPage() {
               </Button>
             </div>
           </form>
+          </>
+            )}
+          </div>
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

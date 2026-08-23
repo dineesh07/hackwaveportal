@@ -1,25 +1,113 @@
+.splitLayout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.leftPane {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* Align mascot to the bottom */
+  position: relative;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+.leftPane::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 70vw;
+  height: 70vw;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, rgba(0, 0, 0, 0) 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.leftPane::after {
+  content: "";
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 80vw;
+  height: 80vw;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, rgba(255, 107, 53, 0.2) 40%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .leftPane {
+    display: flex;
+  }
+}
+
+.leftContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.mascot {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: -1rem; /* ground it visually to the bottom edge */
+  transform: scale(1.25);
+  transform-origin: bottom center;
+}
+
+.rightPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.backLinkContainer {
+  padding: 2rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+}
+
+.formWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
 .loginContainer {
-  max-width: 480px;
-  margin: 6rem auto;
-  padding: 3rem 2.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(229, 231, 235, 0.5);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem 0;
 }
 
 .title {
-  text-align: center;
+  text-align: left;
   margin-bottom: 0.5rem;
-  font-size: 2rem;
+  font-size: 2.25rem;
   color: var(--ink);
+  font-weight: 700;
 }
 
 .subtitle {
-  text-align: center;
+  text-align: left;
   color: rgba(17, 24, 39, 0.6);
   margin-bottom: 2.5rem;
+  font-size: 1rem;
 }
 
 .formGroup {
@@ -31,6 +119,7 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
+  color: var(--ink);
 }
 
 .input {
@@ -38,16 +127,16 @@
   padding: 0.875rem 1rem;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--surface);
+  background: white;
   transition: all 0.2s ease;
   font-size: 1rem;
+  color: var(--ink);
 }
 
 .input:focus {
   outline: none;
   border-color: var(--flame-red);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-  background: var(--paper);
 }
 
 .actions {

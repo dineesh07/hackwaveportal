@@ -16,40 +16,40 @@ interface TimelineItem {
 }
 
 const timelineData: TimelineItem[] = [
-  { 
-    step: "01", 
-    title: "Registration Opens", 
-    date: "07 AUG", 
-    description: "Registrations are now live. Form your team, explore the tracks, and start building your next big idea.", 
-    badge: "NOW LIVE" 
+  {
+    step: "01",
+    title: "Registration Opens",
+    date: "25 AUG",
+    description: "Registrations are now live. Form your team, explore the tracks, and start building your next big idea.",
+    badge: "NOW LIVE"
   },
-  { 
-    step: "02", 
-    title: "Registration Closes", 
-    date: "14 AUG", 
-    description: "Team registrations officially close. Ensure your submission is complete before the deadline.", 
-    badge: "DEADLINE" 
+  {
+    step: "02",
+    title: "Registration Closes",
+    date: "01 SEP",
+    description: "Team registrations officially close. Ensure your submission is complete before the deadline.",
+    badge: "DEADLINE"
   },
-  { 
-    step: "03", 
-    title: "Review 1", 
-    date: "24 AUG", 
-    description: "Present your prototype to mentors, receive constructive feedback, and refine your solution before Phase 1.", 
-    badge: "MENTOR REVIEW" 
+  {
+    step: "03",
+    title: "Review Completed",
+    date: "12 SEP",
+    description: "Present your prototype to mentors, receive constructive feedback, and refine your solution before Phase 1.",
+    badge: "MENTOR REVIEW"
   },
-  { 
-    step: "04", 
-    title: "Phase 1", 
-    date: "21 SEP", 
-    description: "Showcase your working prototype before the jury. Top-performing teams move on to the next phase.", 
-    badge: "MAIN EVENT" 
+  {
+    step: "04",
+    title: "HACKWAVE IGNITE",
+    date: "21 SEP",
+    description: "Showcase your working prototype before the jury. Top-performing teams move on to the next phase.",
+    badge: "MAIN EVENT"
   },
-  { 
-    step: "05", 
-    title: "Phase 2", 
-    date: "TBA", 
-    description: "Shortlisted teams return with improved solutions, advanced features, and refined presentations for the final showdown.", 
-    badge: "COMING SOON" 
+  {
+    step: "05",
+    title: "HACKWAVE INNNOVATE",
+    date: "TBA",
+    description: "Shortlisted teams return with improved solutions, advanced features, and refined presentations for the final showdown.",
+    badge: "COMING SOON"
   },
 ];
 
@@ -62,14 +62,14 @@ const TimelineCard = ({ item, index, scrollYProgress }: { item: TimelineItem; in
   const bp = BREAKPOINTS[index];
   const isLast = index === timelineData.length - 1;
   const nextBp = isLast ? 1.0 : BREAKPOINTS[index + 1];
-  
+
   const hasFadeIn = bp > 0;
-  
-  const opacityInputs = isLast 
+
+  const opacityInputs = isLast
     ? (hasFadeIn ? [bp - 0.05, bp] : [0, 1])
     : (hasFadeIn ? [bp - 0.05, bp, nextBp - 0.05, nextBp] : [0, nextBp - 0.05, nextBp]);
-    
-  const opacityOutputs = isLast 
+
+  const opacityOutputs = isLast
     ? (hasFadeIn ? [0, 1] : [1, 1])
     : (hasFadeIn ? [0, 1, 1, 0.4] : [1, 1, 0.4]);
 
@@ -94,7 +94,7 @@ const TimelineCard = ({ item, index, scrollYProgress }: { item: TimelineItem; in
   return (
     <div className={styles.cardContainer}>
       <div className={styles.nodeWrapper}>
-        <motion.div 
+        <motion.div
           className={styles.nodeCore}
           style={{
             borderColor: useTransform(hasReached, (reached) => reached ? "#E8283F" : "#4b5563"),
@@ -109,7 +109,7 @@ const TimelineCard = ({ item, index, scrollYProgress }: { item: TimelineItem; in
         />
       </div>
 
-      <motion.div 
+      <motion.div
         className={styles.connectingLine}
         style={{
           height: 40,
@@ -118,7 +118,7 @@ const TimelineCard = ({ item, index, scrollYProgress }: { item: TimelineItem; in
         }}
       />
 
-      <motion.div 
+      <motion.div
         className={styles.cardOuter}
         style={{ opacity, y, scale }}
       >
@@ -136,15 +136,15 @@ const TimelineCard = ({ item, index, scrollYProgress }: { item: TimelineItem; in
         >
           <div className={styles.cardBodyInner}>
             <div className={styles.watermark}>{item.step}</div>
-            
+
             <div className={styles.cardHeader}>
               <span className={styles.dateBox}>{item.date}</span>
             </div>
 
             <h3 className={styles.cardTitle}>{item.title}</h3>
-            
+
             <p className={styles.cardDesc}>{item.description}</p>
-            
+
             <div className={styles.badgeWrapper}>
               <span className={`${styles.cardBadge} ${isPhase1 ? styles.badgeSpecial : ''}`}>{item.badge}</span>
             </div>
@@ -160,14 +160,14 @@ const TimelineCard = ({ item, index, scrollYProgress }: { item: TimelineItem; in
 export function TimelineScroller() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mascotRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
   const [isMobile, setIsMobile] = React.useState(false);
-  
+
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -178,11 +178,11 @@ export function TimelineScroller() {
   // On mobile, card is ~90vw and gap is 15vw (we will adjust CSS to 15vw) -> distance is 105vw. 4 * 105 = 420vw.
   // On desktop, card is ~25vw and gap is 40vw -> distance is 65vw. 4 * 65 = 260vw. -300vw gives some padding.
   const trackX = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "-420vw" : "-300vw"]);
-  
+
   const springScroll = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-  
+
   const mascotX = useTransform(springScroll, [0, 1], ["30vw", isMobile ? "85vw" : "75vw"]);
-  
+
   const trackProgressWidth = useTransform(springScroll, [0, 1], ["30vw", isMobile ? "450vw" : "375vw"]);
 
   const endOpacity = useTransform(scrollYProgress, [0.95, 1], [0, 1]);
@@ -192,21 +192,21 @@ export function TimelineScroller() {
       <section ref={containerRef} className={styles.timelineSection}>
         <div className={styles.stickyContainer}>
           <div className={`container ${styles.headerContainer}`}>
-             <h2 className={styles.mainTitle} style={{ fontFamily: "var(--font-syncopate), sans-serif", fontWeight: 700 }}>
-               <span style={{ color: "var(--flame-red)" }}>Mark</span> your <span className={styles.outlineText}>calendar.</span>
-             </h2>
+            <h2 className={styles.mainTitle} style={{ fontFamily: "var(--font-syncopate), sans-serif", fontWeight: 700 }}>
+              <span style={{ color: "var(--flame-red)" }}>Mark</span> your <span className={styles.outlineText}>calendar.</span>
+            </h2>
           </div>
 
           <div className={styles.trackContainer}>
             {/* The Moving Track */}
             <motion.div style={{ x: trackX }} className={styles.movingTrack}>
               <div className={styles.dashedLine}></div>
-              
-              <motion.div 
-                className={styles.gradientLine} 
-                style={{ width: trackProgressWidth }} 
+
+              <motion.div
+                className={styles.gradientLine}
+                style={{ width: trackProgressWidth }}
               />
-              
+
               <div className={styles.cardsWrapper}>
                 {timelineData.map((item, idx) => (
                   <TimelineCard key={item.step} item={item} index={idx} scrollYProgress={scrollYProgress} />
@@ -215,7 +215,7 @@ export function TimelineScroller() {
             </motion.div>
 
             {/* The Mascot */}
-            <motion.div 
+            <motion.div
               ref={mascotRef}
               style={{ left: mascotX }}
               className={styles.mascotWrapper}
@@ -229,9 +229,9 @@ export function TimelineScroller() {
                 }}
                 className={styles.mascotInner}
               >
-                <Image 
-                  src="/flyingMascot.png" 
-                  alt="Wavey the Mascot" 
+                <Image
+                  src="/flyingMascot.png"
+                  alt="Wavey the Mascot"
                   width={280}
                   height={280}
                   className={styles.mascotImage}
@@ -240,9 +240,9 @@ export function TimelineScroller() {
               </motion.div>
             </motion.div>
           </div>
-          
+
           {/* Ending Experience */}
-          <motion.div 
+          <motion.div
             style={{ opacity: endOpacity, pointerEvents: useTransform(endOpacity, v => v > 0.8 ? "auto" : "none") }}
             className={styles.endOverlay}
           >

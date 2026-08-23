@@ -415,7 +415,7 @@
 
 @media (min-width: 768px) {
   .bentoGrid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -425,16 +425,6 @@
 
 .bentoItemBottom {
   grid-column: span 1;
-}
-
-@media (min-width: 768px) {
-  .bentoItemTop {
-    grid-column: span 2;
-  }
-
-  .bentoItemBottom {
-    grid-column: span 3;
-  }
 }
 
 .trackCard {

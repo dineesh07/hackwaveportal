@@ -33,8 +33,8 @@ export default function Home() {
                     MAKE <span style={{ color: 'var(--flame-red)' }}>WAVES.</span><br />BUILD THE FUTURE.
                   </h1>
 
-                  <p className={styles.subheadline}>
-                    Organized by the Coding Club of CT-PG, <b>HACKWAVE IGNITE</b> is a two-phase innovation hackathon where ideas evolve into impactful solutions through mentorship, collaboration, and competition.
+                  <p className={styles.subheadline} style={{ textAlign: 'justify' }}>
+                    Organized by the Coding Club of CT-PG, <b>HACKWAVE</b> is a two-phase innovation hackathon by the <b>M.Sc. Software Systems</b> department, where ideas evolve into impactful solutions through mentorship, collaboration, and competition.
                   </p>
 
                   <div className={styles.heroControls}>
@@ -57,7 +57,7 @@ export default function Home() {
 
                     <div className={styles.heroControlsRight}>
                       <div className={styles.countdownWrapper}>
-                        <div className={styles.countdownHeader}>Phase 1 Evaluation • 21 September 2026</div>
+                        <div className={styles.countdownHeader}>HACKWAVE IGNITE • 21 September 2026</div>
                         <Countdown />
 
                         <a href="/register" className={styles.btnFullPrimary}>
@@ -93,11 +93,11 @@ export default function Home() {
                   <h2 className={`${styles.sectionTitle}`} style={{ textAlign: 'left', marginBottom: '1.5rem' }}>
                     <span style={{ color: 'var(--flame-red)' }}>What</span> is <span className={styles.outlineText}>HACKWAVE?</span>
                   </h2>
-                  <p>
-                    Organized by the Coding Club of CT-PG, <b>HACKWAVE</b> is designed to go beyond traditional hackathons by emphasizing continuous learning, mentorship, and innovation.
+                  <p style={{ textAlign: 'justify' }}>
+                    Organized by the <b>Coding Club of CT-PG</b>, <b>HACKWAVE</b> is an innovation-driven hackathon from the <b>M.Sc. Software Systems community</b>, designed to go beyond traditional hackathons by emphasizing continuous learning, mentorship, and innovation.
                   </p>
-                  <p>
-                    Teams begin by building a working prototype, receive valuable guidance from dedicated mentors, and iterate on their solutions before presenting them to an expert jury. This ensures every participant experiences the complete product development journey—from ideation to execution.
+                  <p style={{ textAlign: 'justify' }}>
+                    Teams begin by building a working prototype, receive valuable guidance from dedicated mentors, and iterate on their solutions before presenting them to an expert jury. This ensures every participant experiences the complete product development journey, from ideation to execution.
                   </p>
                 </div>
                 <div className="flex justify-center md:justify-end">
@@ -131,8 +131,7 @@ export default function Home() {
                   { icon: <Bot size={32} />, title: "Agentic & Generative AI", desc: "Build autonomous AI agents, LLM-powered applications, copilots, and intelligent systems that automate workflows, enhance decision-making, and solve real-world challenges.", itemClass: styles.bentoItemTop },
                   { icon: <Globe size={32} />, title: "Web Development", desc: "Design and develop modern, scalable, and user-centric web applications with exceptional performance, seamless user experiences, and robust backend architectures.", itemClass: styles.bentoItemTop },
                   { icon: <ShieldCheck size={32} />, title: "Cybersecurity", desc: "Create secure, resilient, and privacy-focused solutions that protect digital systems through threat detection, secure authentication, digital forensics, and cyber defense.", itemClass: styles.bentoItemTop },
-                  { icon: <Cpu size={32} />, title: "Computer Vision & Deep Learning", desc: "Develop intelligent vision systems powered by deep learning for image analysis, object detection, medical imaging, autonomous technologies, and beyond.", itemClass: styles.bentoItemBottom },
-                  { icon: <GraduationCap size={32} />, title: "EdTech", desc: "Transform the future of education by building innovative learning platforms, AI-powered tutors, accessibility tools, personalized learning experiences, and digital assessment solutions.", itemClass: styles.bentoItemBottom }
+                  { icon: <Cpu size={32} />, title: "Computer Vision & Deep Learning", desc: "Develop intelligent vision systems powered by deep learning for image analysis, object detection, medical imaging, autonomous technologies, and beyond.", itemClass: styles.bentoItemBottom }
                 ].map((track, i) => (
                   <BorderGlow
                     key={i}

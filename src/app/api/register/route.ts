@@ -11,12 +11,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required leader details' }, { status: 400 });
     }
 
-    // Check if team name already exists
-    const existingTeamName = await prisma.team.findFirst({
-      where: { teamName: { equals: teamName, mode: 'insensitive' } }
-    });
-    if (existingTeamName) {
-      return NextResponse.json({ error: 'Team name is already taken' }, { status: 400 });
+    const totalMembers = 1 + (members?.length || 0);
+    if (totalMembers < 2 || totalMembers > 4) {
+      return NextResponse.json({ error: 'A team must have between 2 and 4 members (including the leader).' }, { status: 400 });
     }
 
     // Check if leader roll number is already registered in another team

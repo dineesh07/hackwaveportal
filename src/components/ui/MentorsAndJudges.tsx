@@ -8,10 +8,10 @@ import styles from "./MentorsAndJudges.module.css";
 
 const mentors = [
   { name: "Jayakkavin E", role: "Software Engineer", company: "Payoda Technology", img: "/mentors/mentor1.jpeg" },
-  { name: "Vignesh K", role: "Senior Associate Technical Consultant", company: "4i Apps Solutions", img: "/mentors/mentor2.jpeg", objectPosition: "top" },
+  { name: "Vignesh K", role: "Senior Associate Technical Consultant", company: "4i Apps Solutions", img: "/mentors/mentor2.jpeg", objectPosition: "0% 20%" },
   { name: "Shree Sanjai", role: "Associate Product Developer", company: "Lumel Technologies", img: "/mentors/mentor3.jpeg" },
   { name: "Harini M", role: "Solution Consultant", company: "Francium Tech", img: "/mentors/mentor4.jpeg" },
-  { name: "Indhumathi Radhakrishnan", role: "Team Lead", company: "FirstQA Systems", img: "/mentors/mentor5.jpeg" },
+  { name: "Indhumathi Radhakrishnan", role: "Team Lead", company: "FirstQA Systems", img: "/mentors/mentor5.jpeg", objectPosition: "top" },
   { name: "Sudharsanam", role: "Software Engineer", company: "Appsentinels Pvt Ltd", img: "/mentors/mentor6.jpeg" },
   { name: "Sakthiganesan", role: "Automation Engineer", company: "Lumel Technologies", img: "/mentors/mentor7.jpeg" },
   { name: "Harshath", role: "Associate Software Developer", company: "Rently", img: "/mentors/mentor8.jpeg", objectPosition: "top" },
@@ -38,10 +38,8 @@ const cardVariants: Variants = {
 };
 
 const ImageWithShimmer = ({ src, alt, objectPosition, scale }: { src: string, alt: string, objectPosition?: string, scale?: number }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
   return (
     <div className={styles.cardImageWrapper}>
-      {!isLoaded && <div className={styles.shimmer} />}
       <Image
         src={src}
         alt={alt}
@@ -51,7 +49,6 @@ const ImageWithShimmer = ({ src, alt, objectPosition, scale }: { src: string, al
           objectPosition: objectPosition || undefined,
           transform: scale ? `scale(${scale})` : undefined
         }}
-        onLoad={() => setIsLoaded(true)}
       />
       <div className={styles.vignette}></div>
     </div>
@@ -126,7 +123,7 @@ export default function MentorsAndJudges() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.1 }}
         >
           {mentors.map((mentor, i) => (
             <MentorCard key={i} mentor={mentor} />
@@ -143,7 +140,7 @@ export default function MentorsAndJudges() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.1 }}
           style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", maxWidth: "1050px", margin: "0 auto" }}
         >
           <JudgeCard />
