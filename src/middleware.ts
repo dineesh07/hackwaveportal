@@ -13,7 +13,7 @@ export default NextAuth(authConfig).auth((req) => {
     return NextResponse.next();
   }
 
-  if (publicRoutes.includes(pathname) || pathname.startsWith("/_next/") || pathname.match(/\.(png|jpg|jpeg|svg|gif|ico)$/)) {
+  if (publicRoutes.includes(pathname) || pathname.startsWith("/_next/") || pathname.match(/\.(png|jpg|jpeg|svg|gif|ico|html)$/)) {
     // Redirect logged-in users away from login page
     if (isLoggedIn && pathname === "/login" && user?.role) {
       return NextResponse.redirect(new URL(`/dashboard/${user.role.toLowerCase()}`, req.nextUrl));
