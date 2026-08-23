@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard/', '/api/'],
     },
-    sitemap: 'https://hackwaveportal.vercel.app/sitemap.xml',
+    sitemap: 'https://hackwave26.vercel.app/sitemap.xml',
   }
 }
