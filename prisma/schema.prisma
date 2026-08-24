@@ -270,19 +270,25 @@ model JuryEvaluation {
   jury        User     @relation("JuryUserEvals", fields: [juryId], references: [id])
   phase       Int      @default(1)
 
-  scoreProblemUnderstanding Int
-  scoreInnovation           Int
-  scoreTechnicalImpl        Int
-  scorePrototypeFunc        Int
-  scoreUiUx                 Int
-  scoreScalability           Int
-  scorePresentation          Int
-  scoreImpactPotential       Int
-  totalScore                 Int
+  // Review 1 (50 Marks)
+  r1ProblemUnderstanding Int @default(0)
+  r1ProposedSolution     Int @default(0)
+  r1TechUnderstanding    Int @default(0)
+  r1PrototypeDev         Int @default(0)
+  r1UiUx                 Int @default(0)
+  r1TeamUnderstanding    Int @default(0)
+  r1Remark               String @db.Text @default("")
 
-  strengths            String  @db.Text
-  areasForImprovement  String  @db.Text
-  overallComments      String  @db.Text
+  // Review 2 (50 Marks)
+  r2FeedbackImplementation Int @default(0)
+  r2Improvements           Int @default(0)
+  r2PrototypeFunctionality Int @default(0)
+  r2TechImplementation     Int @default(0)
+  r2TestingValidation      Int @default(0)
+  r2TeamPresentation       Int @default(0)
+  r2Remark                 String @db.Text @default("")
+
+  totalScore                 Int @default(0)
 
   status       EvaluationStatus @default(DRAFT)
   submittedAt  DateTime?

@@ -12,9 +12,8 @@ export async function POST(req: Request) {
 
     const { 
       projectId, status, totalScore,
-      scoreProblemUnderstanding, scoreInnovation, scoreTechnicalImpl,
-      scorePrototypeFunc, scoreUiUx, scoreScalability, scorePresentation, scoreImpactPotential,
-      strengths, areasForImprovement, overallComments
+      r1ProblemUnderstanding, r1ProposedSolution, r1TechUnderstanding, r1PrototypeDev, r1UiUx, r1TeamUnderstanding, r1Remark,
+      r2FeedbackImplementation, r2Improvements, r2PrototypeFunctionality, r2TechImplementation, r2TestingValidation, r2TeamPresentation, r2Remark
     } = await req.json();
 
     const assignment = await prisma.juryAssignment.findUnique({
@@ -34,18 +33,21 @@ export async function POST(req: Request) {
     }
 
     const data = {
-      scoreProblemUnderstanding: Number(scoreProblemUnderstanding),
-      scoreInnovation: Number(scoreInnovation),
-      scoreTechnicalImpl: Number(scoreTechnicalImpl),
-      scorePrototypeFunc: Number(scorePrototypeFunc),
-      scoreUiUx: Number(scoreUiUx),
-      scoreScalability: Number(scoreScalability),
-      scorePresentation: Number(scorePresentation),
-      scoreImpactPotential: Number(scoreImpactPotential),
+      r1ProblemUnderstanding: Number(r1ProblemUnderstanding),
+      r1ProposedSolution: Number(r1ProposedSolution),
+      r1TechUnderstanding: Number(r1TechUnderstanding),
+      r1PrototypeDev: Number(r1PrototypeDev),
+      r1UiUx: Number(r1UiUx),
+      r1TeamUnderstanding: Number(r1TeamUnderstanding),
+      r1Remark: r1Remark || "",
+      r2FeedbackImplementation: Number(r2FeedbackImplementation),
+      r2Improvements: Number(r2Improvements),
+      r2PrototypeFunctionality: Number(r2PrototypeFunctionality),
+      r2TechImplementation: Number(r2TechImplementation),
+      r2TestingValidation: Number(r2TestingValidation),
+      r2TeamPresentation: Number(r2TeamPresentation),
+      r2Remark: r2Remark || "",
       totalScore: Number(totalScore),
-      strengths,
-      areasForImprovement,
-      overallComments,
       status: evalStatus,
       submittedAt: evalStatus === 'SUBMITTED' ? new Date() : null,
     };

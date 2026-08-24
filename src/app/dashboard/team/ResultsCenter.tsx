@@ -131,30 +131,6 @@ export default async function ResultsCenter({ projectId }: { projectId: string }
             </div>
           )}
 
-          {project.juryEvaluations.length > 0 && (
-            <div style={{ border: '1px solid var(--line)', padding: '1.5rem', borderRadius: 'var(--radius)' }}>
-              <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FileText size={18} />
-                Jury Feedback Summary
-              </h3>
-              {project.juryEvaluations.map((evalData, i) => (
-                <div key={evalData.id} style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--line)' }}>
-                  <h4 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    Jury {i + 1}
-                    <Tag tone={evalData.status === 'SUBMITTED' ? 'success' : 'neutral'}>{evalData.status}</Tag>
-                  </h4>
-                  <div style={{ marginTop: '0.5rem' }}>
-                    <strong style={{ color: 'var(--success)' }}>Strengths:</strong>
-                    <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>{evalData.strengths}</p>
-                    <strong style={{ color: 'var(--danger)' }}>Areas for Improvement:</strong>
-                    <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem' }}>{evalData.areasForImprovement}</p>
-                    <strong>Overall Comments:</strong>
-                    <p style={{ fontSize: '0.875rem' }}>{evalData.overallComments}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </Card>

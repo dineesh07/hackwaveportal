@@ -53,6 +53,8 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
   } else if (role === 'JURY') {
     navItems = [
       { label: 'Dashboard', href: '/dashboard/jury', icon: <LayoutDashboard size={20} /> },
+      { label: 'Projects', href: '/dashboard/jury/projects', icon: <ClipboardList size={20} /> },
+      { label: 'Problem Statements', href: '/dashboard/jury/problem-statements', icon: <Lightbulb size={20} /> },
       { label: 'Settings', href: '/dashboard/jury/settings', icon: <Settings size={20} /> }
     ];
   } else if (role === 'COORDINATOR') {

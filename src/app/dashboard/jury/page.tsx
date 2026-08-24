@@ -53,8 +53,7 @@ export default async function JuryDashboardPage() {
             <h3>{project.team.teamCode ? `${project.team.teamCode} - ` : ''}{project.team.teamName}</h3>
             <ChevronRight size={18} color="var(--ink-40)" />
           </div>
-          <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--ink)' }}>{project.projectTitle}</p>
-          <div className={styles.muted} style={{ marginBottom: '1rem' }}>Track: {project.track.replace(/_/g, ' ')}</div>
+          <div className={styles.muted} style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>Track: {project.track.replace(/_/g, ' ')}</div>
           <Tag tone={evalTone(evalStatus)}>{evalLabel(evalStatus)}</Tag>
         </Card>
       </Link>

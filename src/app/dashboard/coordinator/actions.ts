@@ -143,3 +143,27 @@ export async function rejectTeam(teamId: string, reason: string) {
     return { error: 'Internal server error' }
   }
 }
+
+export async function bulkApproveTeams(teamIds: string[]) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) return { error: 'Unauthorized' }
+
+    let successful = 0;
+    let failed = 0;
+
+    for (const id of teamIds) {
+      const res = await approveTeam(id);
+      if (res.success) {
+        successful++;
+      } else {
+        failed++;
+      }
+    }
+
+    return { success: true, successful, failed };
+  } catch (error: any) {
+    console.error('Bulk Approve Error:', error);
+    return { error: error.message || 'Internal server error' };
+  }
+}

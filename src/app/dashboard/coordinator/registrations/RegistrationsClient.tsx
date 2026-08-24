@@ -1,10 +1,12 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
-import { Search, Eye, Filter } from 'lucide-react'
+import { Search, Eye, Filter, CheckSquare } from 'lucide-react'
 import RegistrationActions from '../RegistrationActions'
 import RegistrationModal from './RegistrationModal'
+import { bulkApproveTeams } from '../actions'
 import { Team, TeamMember } from '@/generated/prisma/client'
 
 type FullTeam = Team & { members: TeamMember[] }
@@ -13,6 +15,9 @@ export default function RegistrationsClient({ initialTeams }: { initialTeams: Fu
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('PENDING');
   const [search, setSearch] = useState('');
   const [selectedTeam, setSelectedTeam] = useState<FullTeam | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const router = useRouter();
 
   const filteredTeams = initialTeams.filter(t => {
     let matchesStatus = false;
@@ -27,6 +32,36 @@ export default function RegistrationsClient({ initialTeams }: { initialTeams: Fu
 
     return matchesStatus && matchesSearch;
   });
+
+  const handleBulkApprove = async () => {
+    if (selectedIds.length === 0) return;
+    const confirmed = confirm(`Are you sure you want to approve ${selectedIds.length} team(s)?`);
+    if (!confirmed) return;
+
+    setBulkLoading(true);
+    const res = await bulkApproveTeams(selectedIds);
+    setBulkLoading(false);
+
+    if (res?.error) {
+      alert(res.error);
+    } else {
+      alert(`Successfully approved ${res.successful} team(s). Failed: ${res.failed}.`);
+      setSelectedIds([]);
+      router.refresh();
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredTeams.filter(t => t.registrationStatus === 'PENDING_VERIFICATION').length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredTeams.filter(t => t.registrationStatus === 'PENDING_VERIFICATION').map(t => t.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -71,12 +106,30 @@ export default function RegistrationsClient({ initialTeams }: { initialTeams: Fu
           />
         </div>
       </div>
+      {selectedIds.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'rgba(31, 146, 84, 0.1)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--success)' }}>
+          <span style={{ fontWeight: 600, color: 'var(--success)' }}>{selectedIds.length} team(s) selected</span>
+          <Button variant="success" onClick={handleBulkApprove} disabled={bulkLoading}>
+            <CheckSquare size={16} style={{ marginRight: '0.5rem' }} />
+            {bulkLoading ? 'Approving...' : 'Bulk Approve'}
+          </Button>
+        </div>
+      )}
 
       {/* Table */}
       <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid var(--line)', overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
             <tr style={{ backgroundColor: 'var(--paper)', borderBottom: '1px solid var(--line)' }}>
+              <th style={{ padding: '1rem', width: '40px' }}>
+                <input 
+                  type="checkbox" 
+                  onChange={toggleSelectAll} 
+                  checked={selectedIds.length > 0 && selectedIds.length === filteredTeams.filter(t => t.registrationStatus === 'PENDING_VERIFICATION').length}
+                  disabled={filteredTeams.filter(t => t.registrationStatus === 'PENDING_VERIFICATION').length === 0}
+                  style={{ cursor: 'pointer' }}
+                />
+              </th>
               <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Team Name</th>
               <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Leader</th>
               <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Institution</th>
@@ -93,7 +146,17 @@ export default function RegistrationsClient({ initialTeams }: { initialTeams: Fu
               </tr>
             ) : (
               filteredTeams.map(team => (
-                <tr key={team.id} style={{ borderBottom: '1px solid var(--line)' }}>
+                <tr key={team.id} style={{ borderBottom: '1px solid var(--line)', backgroundColor: selectedIds.includes(team.id) ? 'rgba(31, 146, 84, 0.05)' : 'transparent' }}>
+                  <td style={{ padding: '1rem' }}>
+                    {team.registrationStatus === 'PENDING_VERIFICATION' ? (
+                      <input 
+                        type="checkbox" 
+                        checked={selectedIds.includes(team.id)} 
+                        onChange={() => toggleSelect(team.id)} 
+                        style={{ cursor: 'pointer' }}
+                      />
+                    ) : null}
+                  </td>
                   <td style={{ padding: '1rem', fontWeight: 500 }}>{team.teamName}</td>
                   <td style={{ padding: '1rem' }}>
                     {team.leaderName}

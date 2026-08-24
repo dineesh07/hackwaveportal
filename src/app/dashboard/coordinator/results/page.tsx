@@ -20,8 +20,12 @@ export default async function CoordinatorResultsPage() {
         include: { jury: { select: { id: true, name: true, rollNo: true } } },
       },
       leaderboardEntry: true,
+      awards: { include: { award: true } },
     }
   });
+
+  const shortlistDecisions = await prisma.shortlistDecision.findMany({ where: { phase: 1 } });
+  const shortlistedSet = new Set(shortlistDecisions.filter(s => s.isShortlisted).map(s => s.projectId));
 
   const leaderboard = projects.map(p => {
     const evals = p.juryEvaluations;
@@ -32,11 +36,13 @@ export default async function CoordinatorResultsPage() {
     return {
       projectId: p.id,
       teamName: p.team.teamName,
+      teamCode: p.team.teamCode || null,
       projectTitle: p.projectTitle,
       avgScore,
       evalCount: submittedEvals.length,
       totalAssigned: evals.length,
       isPublished: !!p.leaderboardEntry?.scoresPublishedAt,
+      isShortlisted: shortlistedSet.has(p.id),
       rank: p.leaderboardEntry?.rank || null,
       lockedEvaluations: evals
         .filter(e => e.status === 'SUBMITTED')

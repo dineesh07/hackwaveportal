@@ -41,7 +41,24 @@ export default async function TeamWorkspaceLayout({
       <header className={styles.header} style={{ marginBottom: '1.5rem', paddingBottom: '1rem' }}>
         <div>
           <h1 className={styles.title}>Team Workspace</h1>
-          <p className={styles.subtitle} style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--ink)' }}>{team.teamName}</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem' }}>
+            <p className={styles.subtitle} style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--ink)', margin: 0 }}>
+              {team.teamName}
+            </p>
+              {team.teamCode && (
+              <span style={{ 
+                background: 'var(--surface-sunken)', 
+                color: 'var(--ink-50)', 
+                padding: '0.25rem 0.6rem', 
+                borderRadius: '6px', 
+                fontSize: '0.8rem', 
+                fontWeight: 700,
+                border: '1px solid var(--line)'
+              }}>
+                {team.teamCode}
+              </span>
+              )}
+          </div>
         </div>
         <StatusRibbon label={`Phase 1 · ${statusLabel(status)}`} tone="hot" />
       </header>
