@@ -30,7 +30,7 @@ export default async function CoordinatorTasksPage() {
     orderBy: { createdAt: 'desc' },
     include: {
       project: {
-        select: { team: { select: { teamName: true } } }
+        select: { team: { select: { teamName: true, teamCode: true } } }
       }
     }
   });
@@ -46,6 +46,14 @@ export default async function CoordinatorTasksPage() {
 
   const tasks = tasksRaw.map(t => ({ ...t, mentor: { name: getMentorName(t.mentorId) } }));
   const notes = notesRaw.map(n => ({ ...n, mentor: { name: getMentorName(n.mentorId) } }));
+  
+  // Group notes by team
+  const groupedNotes = notes.reduce((acc, note) => {
+    const teamId = note.projectId; // assuming project 1:1 team mapping per phase
+    if (!acc[teamId]) acc[teamId] = { team: note.project.team, notes: [] };
+    acc[teamId].notes.push(note);
+    return acc;
+  }, {} as Record<string, { team: { teamName: string, teamCode: string | null }, notes: typeof notes }>);
 
   const priorityTone = (p: string): "neutral" | "success" | "danger" | "gold" | "blue" | "accent" => p === 'HIGH' ? 'danger' : p === 'MEDIUM' ? 'gold' : 'neutral';
 
@@ -112,20 +120,33 @@ export default async function CoordinatorTasksPage() {
               <StickyNote size={20} color="var(--flame-orange)" />
               Private Notes
             </h2>
-            <Card className={styles.notesCard}>
+            <Card className={styles.notesCard} style={{ padding: '1.5rem' }}>
               {notes.length === 0 && <p style={{ textAlign: 'center', color: 'var(--ink-60)' }}>No private notes recorded.</p>}
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                {notes.map(n => (
-                  <li key={n.id} className={styles.noteItem}>
-                    <div className={styles.noteHeader}>
-                      <strong style={{ color: 'var(--flame-red)' }}>{n.project.team.teamName}</strong>
-                      <span className={styles.muted}>{new Date(n.createdAt).toLocaleDateString()}</span>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {Object.values(groupedNotes).map((group, idx) => (
+                  <details key={idx} style={{ background: 'var(--surface)', borderRadius: 'var(--radius)', border: '1px solid var(--line)', overflow: 'hidden' }}>
+                    <summary style={{ padding: '1rem', cursor: 'pointer', fontWeight: 600, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>
+                        {group.team.teamCode ? <Tag tone="neutral" style={{ marginRight: '0.5rem' }}>{group.team.teamCode}</Tag> : ''}
+                        {group.team.teamName}
+                      </span>
+                      <Tag tone="accent">{group.notes.length} Note{group.notes.length > 1 ? 's' : ''}</Tag>
+                    </summary>
+                    <div style={{ padding: '1rem', borderTop: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                      {group.notes.map(n => (
+                        <div key={n.id} style={{ background: 'var(--background)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+                            <strong style={{ color: 'var(--ink)' }}>{n.mentor.name}</strong>
+                            <span className={styles.muted}>{new Date(n.createdAt).toLocaleString()}</span>
+                          </div>
+                          <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap' }}>{n.note}</p>
+                        </div>
+                      ))}
                     </div>
-                    <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', marginBottom: '0.5rem' }}>{n.note}</p>
-                    <div className={styles.muted} style={{ textAlign: 'right' }}>- {n.mentor.name}</div>
-                  </li>
+                  </details>
                 ))}
-              </ul>
+              </div>
             </Card>
           </section>
 

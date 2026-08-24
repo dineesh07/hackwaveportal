@@ -50,7 +50,7 @@ export default async function JuryDashboardPage() {
       <Link href={`/dashboard/jury/project/${project.id}`} key={project.id} style={{ textDecoration: 'none' }}>
         <Card interactive className={styles.juryCard}>
           <div className={styles.juryCardTop}>
-            <h3>{project.team.teamName}</h3>
+            <h3>{project.team.teamCode ? `${project.team.teamCode} - ` : ''}{project.team.teamName}</h3>
             <ChevronRight size={18} color="var(--ink-40)" />
           </div>
           <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--ink)' }}>{project.projectTitle}</p>

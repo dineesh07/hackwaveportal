@@ -108,7 +108,8 @@ export default function MyTeamTab({ team }: any) {
                 <div>
                   <h4 style={{ fontWeight: 700, margin: 0, color: 'var(--success)' }}>{assignment.mentor.name}</h4>
                   <div style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginTop: '0.25rem' }}>
-                    <div><strong>Phase:</strong> {assignment.phase}</div>
+                    {assignment.mentor.organization && <div><strong>Organization:</strong> {assignment.mentor.organization}</div>}
+                    {assignment.mentor.phone && <div><strong>Phone:</strong> {assignment.mentor.phone}</div>}
                     {assignment.mentor.email && <div><strong>Email:</strong> {assignment.mentor.email}</div>}
                   </div>
                 </div>

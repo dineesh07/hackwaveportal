@@ -33,7 +33,12 @@ export default NextAuth(authConfig).auth((req) => {
     
     // If they are not accessing their specific role dashboard
     if (roleStr && !pathname.startsWith(`/dashboard/${roleStr}`)) {
-      return NextResponse.redirect(new URL(`/dashboard/${roleStr}`, req.nextUrl));
+      // Allow COORDINATOR and ADMIN to access mentor team workspace
+      const isCrossRoleAllowed = (roleStr === 'coordinator' || roleStr === 'admin') && pathname.startsWith('/dashboard/mentor/team/');
+      
+      if (!isCrossRoleAllowed) {
+        return NextResponse.redirect(new URL(`/dashboard/${roleStr}`, req.nextUrl));
+      }
     }
   }
 

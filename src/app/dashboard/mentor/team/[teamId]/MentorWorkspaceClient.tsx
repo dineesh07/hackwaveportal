@@ -44,8 +44,8 @@ type WorkspaceProject = {
   futureEnhancements: { id: string; title: string; description: string }[]
   references: { id: string; title: string; url: string }[]
   tasks: WorkspaceTask[]
-  mentorFeedback: { overallFeedback: string | null; suggestions: string | null }[]
-  privateNotes: { note: string | null }[]
+  mentorFeedback: { overallFeedback: string | null; suggestions: string | null; createdAt?: Date | string }[]
+  privateNotes: { note: string | null; createdAt?: Date | string }[]
 }
 
 type WorkspaceTeam = {
@@ -65,8 +65,8 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
   const [activeTab, setActiveTab] = useState<TabId>('project');
 
   const [feedback, setFeedback] = useState({
-    overallFeedback: project?.mentorFeedback?.[0]?.overallFeedback || '',
-    suggestions: project?.mentorFeedback?.[0]?.suggestions || '',
+    overallFeedback: '',
+    suggestions: '',
   });
 
   const [note, setNote] = useState({
@@ -84,14 +84,15 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
     { id: 'notes', label: 'Private Notes', icon: <Lock size={16} /> },
   ];
 
-  const submitFeedback = async () => {
+  const submitFeedback = async (action: 'REVIEWED' | 'NEEDS_REVISION') => {
     setIsSubmitting(true);
     try {
       await fetch(`/api/mentor/team/${team.id}/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...feedback, projectId: project?.id })
+        body: JSON.stringify({ ...feedback, projectId: project?.id, action })
       });
+      setFeedback({ overallFeedback: '', suggestions: '' });
       router.refresh();
       alert("Feedback saved successfully.");
     } catch {
@@ -108,6 +109,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...note, projectId: project?.id })
       });
+      setNote({ note: '' });
       router.refresh();
       alert("Private note saved successfully.");
     } catch {
@@ -302,14 +304,43 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
         {activeTab === 'feedback' && (
           <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <h3 style={{ fontWeight: 700 }}>Mentor Feedback</h3>
+            
+            {project?.mentorFeedback && project.mentorFeedback.length > 0 && (
+              <div style={{ marginBottom: '1rem' }}>
+                <h4 style={{ fontWeight: 700, marginBottom: '1rem' }}>Feedback History</h4>
+                {project.mentorFeedback.map((fb, idx) => (
+                  <div key={idx} style={{ background: 'var(--surface)', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1rem' }}>
+                    {fb.createdAt && <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginBottom: '0.5rem' }}>{new Date(fb.createdAt).toLocaleString()}</p>}
+                    <p style={{ fontWeight: 'bold' }}>Overall Feedback:</p>
+                    <p style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem' }}>{fb.overallFeedback}</p>
+                    <p style={{ fontWeight: 'bold' }}>Suggestions:</p>
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{fb.suggestions}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <h4 style={{ fontWeight: 700 }}>Add New Feedback</h4>
             <Field label="Overall Feedback">
-              <Textarea rows={5} value={feedback.overallFeedback} onChange={e => setFeedback({...feedback, overallFeedback: e.target.value})} />
+              <Textarea rows={5} value={feedback.overallFeedback} onChange={e => setFeedback({...feedback, overallFeedback: e.target.value})} placeholder="Provide your overall feedback..." />
             </Field>
             <Field label="Suggestions for Improvement">
-              <Textarea rows={5} value={feedback.suggestions} onChange={e => setFeedback({...feedback, suggestions: e.target.value})} />
+              <Textarea rows={5} value={feedback.suggestions} onChange={e => setFeedback({...feedback, suggestions: e.target.value})} placeholder="List actionable suggestions for the team..." />
             </Field>
-            <div>
-              <Button onClick={submitFeedback} disabled={isSubmitting || !project}>Submit Feedback</Button>
+            
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--line)' }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Project looks good?</p>
+                <Button onClick={() => submitFeedback('REVIEWED')} disabled={isSubmitting || !project || !feedback.overallFeedback} style={{ width: '100%' }}>
+                  Approve Submission
+                </Button>
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Changes needed?</p>
+                <Button onClick={() => submitFeedback('NEEDS_REVISION')} variant="secondary" disabled={isSubmitting || !project || !feedback.overallFeedback} style={{ width: '100%' }}>
+                  Request Revision
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -366,11 +397,25 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
         {activeTab === 'notes' && (
           <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <h3 style={{ fontWeight: 700 }}>Private Notes <span style={{ fontSize: '0.875rem', fontWeight: 400, color: 'var(--ink-60)' }}>(Visible only to Staff Coordinator)</span></h3>
+            
+            {project?.privateNotes && project.privateNotes.length > 0 && (
+              <div style={{ marginBottom: '1rem' }}>
+                <h4 style={{ fontWeight: 700, marginBottom: '1rem' }}>Note History</h4>
+                {project.privateNotes.map((pn, idx) => (
+                  <div key={idx} style={{ background: 'var(--surface)', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1rem' }}>
+                    {pn.createdAt && <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginBottom: '0.5rem' }}>{new Date(pn.createdAt).toLocaleString()}</p>}
+                    <p style={{ whiteSpace: 'pre-wrap' }}>{pn.note}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <h4 style={{ fontWeight: 700 }}>Add New Private Note</h4>
             <Field label="Note">
               <Textarea rows={5} value={note.note} onChange={e => setNote({...note, note: e.target.value})} placeholder="e.g. Team requires additional guidance, Scope is too ambitious..." />
             </Field>
             <div>
-              <Button onClick={submitNote} disabled={isSubmitting || !project}>Save Private Note</Button>
+              <Button onClick={submitNote} disabled={isSubmitting || !project || !note.note}>Save Private Note</Button>
             </div>
           </div>
         )}

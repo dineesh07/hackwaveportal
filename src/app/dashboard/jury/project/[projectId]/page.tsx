@@ -43,7 +43,7 @@ export default async function JuryEvaluationPage({ params }: { params: Promise<{
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
             <h1 className={styles.title}>Evaluation Workspace</h1>
-            <p className={styles.subtitle}>{project.team.teamName} · {project.projectTitle}</p>
+            <p className={styles.subtitle}>{project.team.teamCode ? `${project.team.teamCode} - ` : ''}{project.team.teamName} · {project.projectTitle}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <Link href="/dashboard/jury" style={{ color: 'var(--flame-red)', textDecoration: 'none', fontWeight: 600 }}>&larr; Back to Dashboard</Link>

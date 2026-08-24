@@ -172,6 +172,7 @@ enum Track {
   IOT
   BLOCKCHAIN_WEB3
   CLOUD_COMPUTING
+  COMPUTER_VISION
   OTHERS
 }
 
@@ -185,6 +186,7 @@ enum ProjectStatus {
 enum SubmissionStatus {
   DRAFT
   SUBMITTED
+  NEEDS_REVISION
   UNDER_REVIEW
   REVIEWED
 }

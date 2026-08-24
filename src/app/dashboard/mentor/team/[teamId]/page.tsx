@@ -10,16 +10,21 @@ export default async function MentorTeamWorkspacePage({ params }: { params: Prom
   const { teamId } = await params;
   const session = await auth()
 
-  if (!session?.user?.id || session.user.role !== 'MENTOR') {
+  if (!session?.user?.id || !session.user.role || !['MENTOR', 'COORDINATOR', 'ADMIN'].includes(session.user.role)) {
     return <div>Unauthorized.</div>
   }
 
-  const assignment = await prisma.mentorAssignment.findUnique({
-    where: { mentorId_teamId_phase: { mentorId: session.user.id, teamId, phase: 1 } }
-  });
+  const role = session.user.role;
+  const isCoordinatorOrAdmin = ['COORDINATOR', 'ADMIN'].includes(role);
 
-  if (!assignment) {
-    return <div>You are not assigned to this team.</div>
+  if (!isCoordinatorOrAdmin) {
+    const assignment = await prisma.mentorAssignment.findUnique({
+      where: { mentorId_teamId_phase: { mentorId: session.user.id, teamId, phase: 1 } }
+    });
+
+    if (!assignment) {
+      return <div>You are not assigned to this team.</div>
+    }
   }
 
   const team = await prisma.team.findUnique({
@@ -32,9 +37,9 @@ export default async function MentorTeamWorkspacePage({ params }: { params: Prom
           coreFeatures: true,
           futureEnhancements: true,
           references: true,
-          mentorFeedback: { where: { mentorId: session.user.id } },
-          privateNotes: { where: { mentorId: session.user.id } },
-          tasks: { where: { mentorId: session.user.id } }
+          mentorFeedback: isCoordinatorOrAdmin ? true : { where: { mentorId: session.user.id } },
+          privateNotes: isCoordinatorOrAdmin ? true : { where: { mentorId: session.user.id } },
+          tasks: isCoordinatorOrAdmin ? true : { where: { mentorId: session.user.id } }
         }
       }
     }
@@ -49,10 +54,10 @@ export default async function MentorTeamWorkspacePage({ params }: { params: Prom
         <header className={styles.header} style={{ marginBottom: '1.5rem' }}>
           <div>
             <h1 className={styles.title}>Team Workspace</h1>
-            <p className={styles.subtitle}>{team.teamName}</p>
+            <p className={styles.subtitle}>{team.teamCode ? `${team.teamCode} - ` : ''}{team.teamName}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link href="/dashboard/mentor" style={{ color: 'var(--flame-red)', textDecoration: 'none', fontWeight: 600 }}>&larr; Back to Dashboard</Link>
+            <Link href={role === 'MENTOR' ? "/dashboard/mentor" : `/dashboard/${role.toLowerCase()}/teams`} style={{ color: 'var(--flame-red)', textDecoration: 'none', fontWeight: 600 }}>&larr; Back to Dashboard</Link>
             <StatusRibbon label="Phase 1" tone="hot" />
           </div>
         </header>

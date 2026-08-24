@@ -22,6 +22,7 @@ type WorkspaceUser = {
   name: string;
   rollNo: string;
   email: string | null;
+  phone: string | null;
   role: string;
   status: string;
   organization: string | null;
@@ -32,7 +33,7 @@ type WorkspaceUser = {
 export default function UsersClient({ users }: { users: WorkspaceUser[] }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', rollNo: '', password: '', role: 'MENTOR', organization: '' });
+  const [newUser, setNewUser] = useState({ name: '', email: '', phone: '', rollNo: '', password: '', role: 'MENTOR', organization: '' });
 
   const createUser = async () => {
     if (!newUser.name || !newUser.rollNo || !newUser.password) return alert("Name, roll number, and password required.");
@@ -48,7 +49,7 @@ export default function UsersClient({ users }: { users: WorkspaceUser[] }) {
         alert(data.error || "Failed to create user.");
         return;
       }
-      setNewUser({ name: '', email: '', rollNo: '', password: '', role: 'MENTOR', organization: '' });
+      setNewUser({ name: '', email: '', phone: '', rollNo: '', password: '', role: 'MENTOR', organization: '' });
       router.refresh();
       alert("User created.");
     } catch {
@@ -104,6 +105,9 @@ export default function UsersClient({ users }: { users: WorkspaceUser[] }) {
           <Field label="Email">
             <Input type="email" value={newUser.email} onChange={e => setNewUser({...newUser, email: e.target.value})} />
           </Field>
+          <Field label="Phone">
+            <Input type="tel" value={newUser.phone} onChange={e => setNewUser({...newUser, phone: e.target.value})} />
+          </Field>
           <Field label="Password" required helper="Defaults to 12345 if left blank">
             <Input type="password" value={newUser.password} onChange={e => setNewUser({...newUser, password: e.target.value})} />
           </Field>
@@ -140,6 +144,7 @@ export default function UsersClient({ users }: { users: WorkspaceUser[] }) {
                   <td className={styles.td}>
                     <strong>{u.name}</strong>
                     {u.organization && <div className={styles.muted}>{u.organization}</div>}
+                    {u.phone && <div className={styles.muted}>Phone: {u.phone}</div>}
                     {u.mustChangePassword && <div className={styles.muted} style={{ color: 'var(--flame-gold)', fontWeight: 600 }}>Must change password</div>}
                   </td>
                   <td className={styles.td}>{u.rollNo}</td>

@@ -24,6 +24,7 @@ export async function POST(req: Request) {
         data: {
           name: body.name,
           email: body.email || null,
+          phone: body.phone || null,
           rollNo,
           passwordHash: hashedPassword,
           mustChangePassword: password === '12345',

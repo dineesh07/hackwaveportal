@@ -148,7 +148,6 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
                           <p className={styles.drillRow}><span>Leader</span><strong>{t.leaderName}</strong></p>
                           <p className={styles.drillRow}><span>Roll No</span><strong>{t.leaderRollNo}</strong></p>
                           <p className={styles.drillRow}><span>Registered</span><strong>{new Date(t.createdAt).toLocaleDateString()}</strong></p>
-                          <p className={styles.drillRow}><span>Registration</span><Tag tone={statusTone(t.registrationStatus)}>{t.registrationStatus.replace(/_/g, ' ')}</Tag></p>
                         </div>
                         <div>
                           <div className={styles.drillTitle}><FolderGit2 size={14} /> Project</div>
@@ -156,10 +155,17 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
                           <p className={styles.drillRow}><span>Track</span><strong>{t.track?.replace(/_/g, ' ') || '—'}</strong></p>
                           <p className={styles.drillRow}><span>Status</span><Tag tone={statusTone(t.projectStatus)}>{t.projectStatus}</Tag></p>
                           <p className={styles.drillRow}><span>Submitted</span><strong>{t.submittedAt ? new Date(t.submittedAt).toLocaleDateString() : '—'}</strong></p>
+                          {t.projectId && (
+                            <div style={{ marginTop: '1rem' }}>
+                              <Button size="sm" variant="secondary" onClick={() => router.push(`/dashboard/mentor/team/${t.teamId}`)} style={{ width: '100%' }}>
+                                <FolderGit2 size={13} style={{ marginRight: '0.4rem' }} /> View Project Workspace
+                              </Button>
+                            </div>
+                          )}
                         </div>
                         <div>
                           <div className={styles.drillTitle}><MessageSquareText size={14} /> Feedback</div>
-                          <p className={styles.drillRow}><span>Entries</span><strong>{t.feedbackCount}</strong></p>
+                          <p className={styles.drillRow}><span>Reviews Attended</span><strong>{t.feedbackCount}</strong></p>
                           <div className={styles.drillTitle} style={{ marginTop: '1rem' }}><ListChecks size={14} /> Tasks</div>
                           <p className={styles.drillRow}><span>Completed</span><strong>{t.completedTasks} / {t.taskCount}</strong></p>
                           <div className={styles.drillTitle} style={{ marginTop: '1rem' }}><StickyNote size={14} /> Private Notes</div>
@@ -168,13 +174,6 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
                         <div>
                           <div className={styles.drillTitle}><UserRound size={14} /> Assigned Mentor</div>
                           <p className={styles.drillRow}><span>Mentor</span><strong>{t.mentorName || 'Unassigned'}</strong></p>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-                            {t.projectId && (
-                              <Button size="sm" variant="secondary" onClick={() => router.push(`/dashboard/mentor/team/${t.teamId}`)}>
-                                <FolderGit2 size={13} /> View Project
-                              </Button>
-                            )}
-                          </div>
                         </div>
                       </div>
                     </td>

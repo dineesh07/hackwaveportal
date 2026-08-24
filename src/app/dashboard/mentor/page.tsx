@@ -47,7 +47,7 @@ export default async function MentorDashboardPage() {
       <Link href={`/dashboard/mentor/team/${a.team.id}`} key={a.team.id} style={{ textDecoration: 'none' }}>
         <Card interactive className={styles.juryCard}>
           <div className={styles.juryCardTop}>
-            <h3>{a.team.teamName}</h3>
+            <h3>{a.team.teamCode ? `${a.team.teamCode} - ` : ''}{a.team.teamName}</h3>
             <ChevronRight size={18} color="var(--ink-40)" />
           </div>
           <p style={{ fontSize: '0.875rem', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--ink)' }}>{project?.projectTitle || 'Untitled Project'}</p>

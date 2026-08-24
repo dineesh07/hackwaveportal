@@ -12,6 +12,7 @@ type TeamTask = {
   title: string;
   description: string;
   status: string;
+  priority: string;
   dueDate: Date | null;
 };
 
@@ -41,6 +42,9 @@ export default function TeamTasks({ tasks }: { tasks: TeamTask[] }) {
         <li key={task.id} className={styles.taskRow}>
           <div>
             <strong style={{ display: 'block' }}>{task.title}</strong>
+            <div style={{ marginTop: '0.25rem', marginBottom: '0.25rem' }}>
+              <Tag tone={task.priority === 'HIGH' ? 'danger' : task.priority === 'MEDIUM' ? 'gold' : 'neutral'}>{task.priority} Priority</Tag>
+            </div>
             <span className={styles.muted}>{task.description}</span>
             {task.dueDate && (
               <div className={styles.muted} style={{ marginTop: '0.25rem', fontSize: '0.8125rem' }}>

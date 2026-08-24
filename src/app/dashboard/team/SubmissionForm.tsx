@@ -9,19 +9,10 @@ import styles from './SubmissionForm.module.css'
 import { PROBLEM_STATEMENTS } from './components/ProblemStatementsTab'
 
 const TRACKS = [
-  { value: 'ARTIFICIAL_INTELLIGENCE', label: 'Artificial Intelligence' },
+  { value: 'ARTIFICIAL_INTELLIGENCE', label: 'Agentic & Generative AI' },
   { value: 'WEB_DEVELOPMENT', label: 'Web Development' },
-  { value: 'MOBILE_DEVELOPMENT', label: 'Mobile Development' },
-  { value: 'HEALTHCARE', label: 'Healthcare' },
-  { value: 'AGRICULTURE', label: 'Agriculture' },
-  { value: 'SUSTAINABILITY', label: 'Sustainability' },
-  { value: 'FINTECH', label: 'FinTech' },
   { value: 'CYBERSECURITY', label: 'Cybersecurity' },
-  { value: 'OPEN_INNOVATION', label: 'Open Innovation' },
-  { value: 'IOT', label: 'IoT' },
-  { value: 'BLOCKCHAIN_WEB3', label: 'Blockchain / Web3' },
-  { value: 'CLOUD_COMPUTING', label: 'Cloud Computing' },
-  { value: 'OTHERS', label: 'Others' },
+  { value: 'COMPUTER_VISION', label: 'Computer Vision & Deep Learning' }
 ];
 
 const PROJECT_STATUSES = ['IDEATION_COMPLETE', 'RESEARCH_IN_PROGRESS', 'PROTOTYPE_STARTED', 'MVP_DEVELOPMENT_STARTED'];
@@ -245,7 +236,8 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
       case 3:
         return formData.proposedSolution.trim().length > 0 && formData.targetUsers.length > 0;
       case 4:
-        return formData.coreFeatures.length > 0 && formData.coreFeatures.some(f => f.title.trim().length > 0);
+        return formData.coreFeatures.length > 0 && formData.coreFeatures.some(f => f.title.trim().length > 0) &&
+               formData.futureEnhancements.length > 0 && formData.futureEnhancements.some(f => f.title.trim().length > 0);
       case 5:
         return formData.techFrontend.length > 0 || formData.techBackend.length > 0 || 
                formData.techDatabase.length > 0 || formData.techAiMl.length > 0 || 
@@ -518,7 +510,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
             <Section icon={<ListChecks size={18} />} title="Section 4: Planned Features">
               <div className={styles.stack}>
                 <div>
-                  <label className={styles.tagsLabel}>Core Features (Phase 1) *</label>
+                  <label className={styles.tagsLabel}>Core Features *</label>
                   <span className={styles.helper} style={{display: "block", marginBottom: "0.5rem"}}>Add at least one core feature.</span>
                   {formData.coreFeatures.map((feat, i: number) => (
                     <div key={i} className={`${styles.row} ${styles.gridSm}`} style={{marginBottom: "0.5rem"}}>
@@ -531,7 +523,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                 </div>
 
                 <div style={{marginTop: "1rem"}}>
-                  <label className={styles.tagsLabel}>Future Enhancements (Phase 2)</label>
+                  <label className={styles.tagsLabel}>Future Enhancements *</label>
                   {formData.futureEnhancements.map((feat, i: number) => (
                     <div key={i} className={`${styles.row} ${styles.gridSm}`} style={{marginBottom: "0.5rem"}}>
                       <Input placeholder="Feature Title" value={feat.title} onChange={e => updateFeature('futureEnhancements', i, 'title', e.target.value)} />
@@ -619,6 +611,14 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
               <label className={styles.tagsLabel}>Demo Video Link (Optional)</label>
               <span className={styles.helper}>YouTube, Loom, Google Drive...</span>
               <Input name="demoVideoUrl" placeholder="https://..." value={formData.demoVideoUrl} onChange={handleChange} />
+            </Section>
+          )}
+
+          {currentStep === 11 && (
+            <Section icon={<Compass size={18} />} title="Section 11: Mentor Guidance">
+              <label className={styles.tagsLabel}>Questions for Mentors (Optional)</label>
+              <span className={styles.helper}>Mention the questions, doubts, or areas where you would like mentor guidance.</span>
+              <Textarea name="questionsForMentors" value={formData.questionsForMentors} onChange={handleChange} rows={5} />
             </Section>
           )}
 
@@ -733,11 +733,6 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                   </div>
 
                 </div>
-              </Section>
-              <Section icon={<Compass size={18} />} title="Section 11: Mentor Guidance">
-                <label className={styles.tagsLabel}>Questions for Mentors (Optional)</label>
-                <span className={styles.helper}>Mention the questions, doubts, or areas where you would like mentor guidance.</span>
-                <Textarea name="questionsForMentors" value={formData.questionsForMentors} onChange={handleChange} rows={5} />
               </Section>
 
               <div className={styles.section} style={{ background: 'var(--surface)' }}>

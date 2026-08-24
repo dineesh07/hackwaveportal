@@ -17,25 +17,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ teamId:
     });
     if (!assignment) return NextResponse.json({ error: 'Not assigned to this team' }, { status: 403 });
 
-    const existing = await prisma.mentorPrivateNote.findFirst({
-      where: { projectId, mentorId: session.user.id, phase: 1 }
+    await prisma.mentorPrivateNote.create({
+      data: {
+        projectId,
+        mentorId: session.user.id,
+        phase: 1,
+        note
+      }
     });
-
-    if (existing) {
-      await prisma.mentorPrivateNote.update({
-        where: { id: existing.id },
-        data: { note }
-      });
-    } else {
-      await prisma.mentorPrivateNote.create({
-        data: {
-          projectId,
-          mentorId: session.user.id,
-          phase: 1,
-          note
-        }
-      });
-    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
