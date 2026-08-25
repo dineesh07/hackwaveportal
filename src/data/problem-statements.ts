@@ -3,7 +3,9 @@ export interface ProblemStatement {
   title: string;
   domain: string;
   description: string;
+  isFirstYear?: boolean;
 }
+
 
 export const PROBLEM_STATEMENTS: ProblemStatement[] = [
   // 1. AGENTIC & GENERATIVE AI
@@ -848,10 +850,116 @@ Student Learning:
 • Evidence integrity
 • Model limitations
 • Responsible AI`
+  },
+  // 5. 1ST YEARS (SPECIALIZED CHALLENGES)
+  {
+    id: 'FY001',
+
+    title: 'Food Rescue & Donation Platform',
+    domain: '1ST YEARS',
+    isFirstYear: true,
+    description: `Field: Food Rescue & Donation Platform
+Domain: Web Development
+
+Challenge Statement:
+Develop a web platform that connects restaurants, hostels, hotels, event organizers, and individuals having excess food with nearby NGOs, shelters, and volunteers, reducing food wastage and ensuring surplus food reaches people in need.
+
+Functional Requirements:
+• Donor, NGO, and volunteer registration & login
+• Post food donations with quantity, type, pickup location, and expiry time
+• View and claim nearby donations; track status (Available, Accepted, Picked Up, Completed)
+• Search and filter by location, food type, and availability
+• Admin verifies donors and removes expired listings
+
+Non-Functional Requirements:
+• Simple, accessible, mobile-friendly UI
+• Fast posting and claiming with secure authentication
+• Clear expiry warnings and reliable data management
+
+Preferred Tech Stack:
+• Frontend: HTML, CSS, JavaScript, Bootstrap / Tailwind CSS
+• Backend: Node.js with Express
+• Database: MongoDB or MySQL
+• Optional: Google Maps API / Leaflet.js for pickup locations
+
+Why it matters:
+Reduces food wastage while supporting local shelters and communities — a strong fit for sustainability and social-impact themes.`
+  },
+  {
+    id: 'FY002',
+    title: 'Digital Queue & Token Management System',
+    domain: '1ST YEARS',
+    isFirstYear: true,
+    description: `Field: Healthcare & Public Services
+Domain: Web Development
+
+Challenge Statement:
+Develop a digital queue system that allows users to book tokens for hospitals, clinics, banks, government offices, and college administrative departments.
+
+Functional Requirements:
+• User registration and login
+• Display departments and available services
+• Generate digital token numbers
+• Show current token and estimated waiting time
+• Cancel or reschedule tokens; staff can call the next token
+• Admin manages departments and working hours
+• Real-time queue status; optional SMS/email alerts and priority queue for seniors
+
+Non-Functional Requirements:
+• Simple, fast, and responsive interface
+• Accurate, real-time token updates
+• Secure user information and reliable performance under high load
+
+Preferred Tech Stack:
+• Frontend: HTML, CSS, JavaScript, Bootstrap / Tailwind CSS
+• Backend: Node.js with Express
+• Database: MongoDB or MySQL
+• Real-time: Socket.io
+
+Why it matters:
+Cuts overcrowding and long waiting times in hospitals and public offices, improving service for everyday civic needs.`
+  },
+  {
+    id: 'FY003',
+    title: 'Stray Animal Reporting & Adoption Portal',
+    domain: '1ST YEARS',
+    isFirstYear: true,
+    description: `Field: Stray Animal Reporting & Adoption Portal
+Domain: Web Development
+
+Challenge Statement:
+A platform to report injured or stray animals for rescue, and to list animals available for adoption — addressing a common civic issue.
+
+Functional Requirements:
+• Report a stray or injured animal with photo, location, and condition
+• List animals available for adoption with details
+• Contact / request form for adoption or rescue follow-up
+• Track report status (Reported, Rescued, Adopted)
+• Admin can verify reports and manage listings
+
+Non-Functional Requirements:
+• Simple, mobile-friendly interface
+• Fast photo upload and location tagging
+• Secure login and reliable data storage
+
+Preferred Tech Stack:
+• Frontend: HTML, CSS, JavaScript, Bootstrap / Tailwind CSS
+• Backend: Node.js with Express
+• Database: MongoDB or MySQL
+• Optional: Google Maps API / Leaflet.js for report locations
+
+Why it matters:
+Speeds up rescue response for injured animals and connects adoptable animals with willing homes — a practical civic and animal-welfare solution.`
   }
 ];
 
 export const DOMAIN_COLORS: Record<string, { badgeBg: string, badgeText: string, icon: string, border: string }> = {
+  '1ST YEARS': {
+    badgeBg: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%)',
+    badgeText: '#b45309',
+    icon: '#f59e0b',
+    border: 'rgba(245, 158, 11, 0.4)'
+  },
   'AGENTIC & GENERATIVE AI': { 
     badgeBg: 'linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)', 
     badgeText: '#0284c7', 
@@ -877,3 +985,9 @@ export const DOMAIN_COLORS: Record<string, { badgeBg: string, badgeText: string,
     border: 'var(--line)'
   }
 };
+
+export function isFirstYearRollNo(rollNo?: string | null): boolean {
+  if (!rollNo) return false;
+  return rollNo.trim().toLowerCase().startsWith('26isr');
+}
+

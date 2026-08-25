@@ -528,3 +528,97 @@
   max-width: 600px;
   margin: 0 auto;
 }
+
+.tracksCtaWrapper {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.tracksCtaButton {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(249, 115, 22, 0.08) 50%, rgba(17, 17, 17, 0.8) 100%);
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+  border-radius: 20px;
+  padding: 1.5rem 2.5rem;
+  text-decoration: none;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px -10px rgba(239, 68, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  max-width: 580px;
+  width: 100%;
+  text-align: center;
+}
+
+.tracksCtaButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.tracksCtaButton:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(239, 68, 68, 0.8);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22) 0%, rgba(249, 115, 22, 0.15) 50%, rgba(26, 26, 26, 0.9) 100%);
+  box-shadow: 0 16px 40px -10px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tracksCtaButton:hover::before {
+  left: 100%;
+}
+
+.tracksCtaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+}
+
+.tracksCtaTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+  font-weight: 800;
+  font-family: var(--font-jakarta), sans-serif;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.tracksCtaArrow {
+  color: var(--flame-red);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tracksCtaButton:hover .tracksCtaArrow {
+  transform: translateX(6px);
+  color: #f97316;
+}
+
+.tracksCtaSub {
+  font-size: 0.875rem;
+  color: var(--ink-60);
+  font-weight: 500;
+}

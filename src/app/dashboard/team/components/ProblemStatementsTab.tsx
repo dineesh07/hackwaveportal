@@ -25,7 +25,22 @@ import { updateProblemStatementLimit, batchUpdateProblemStatementLimits } from '
 export { PROBLEM_STATEMENTS, DOMAIN_COLORS }
 export type { ProblemStatement }
 
+function getCardSnippet(description: string): string {
+  const lines = description.split('\n');
+  const contentLines = lines.filter(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return false;
+    if (/^(field|domain|application field|domain \/ tech tags|challenge statement|real-world scenario|real problem):/i.test(trimmed)) {
+      return false;
+    }
+    return true;
+  });
+  const text = contentLines.join(' ');
+  return text.length > 175 ? text.slice(0, 175) + '...' : text;
+}
+
 interface ProblemStatementsTabProps {
+
   role?: string;
   initialIsLeader?: boolean;
   initialLeaderName?: string;
@@ -35,6 +50,7 @@ interface ProblemStatementsTabProps {
   initialLimits?: Record<string, number>;
   initialCounts?: Record<string, number>;
   initialTeamsByPs?: Record<string, Array<{ teamId: string; teamName: string; teamCode: string | null }>>;
+  initialIsFirstYear?: boolean;
 }
 
 export default function ProblemStatementsTab({
@@ -47,6 +63,7 @@ export default function ProblemStatementsTab({
   initialLimits,
   initialCounts,
   initialTeamsByPs,
+  initialIsFirstYear,
 }: ProblemStatementsTabProps = {}) {
   const [selectedPS, setSelectedPS] = useState<ProblemStatement | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -68,6 +85,7 @@ export default function ProblemStatementsTab({
     isSubmissionCompleted: boolean;
     isLeader: boolean;
     leaderName: string;
+    isFirstYear?: boolean;
     role: string;
   }>({
     counts: initialCounts || {},
@@ -78,6 +96,7 @@ export default function ProblemStatementsTab({
     isSubmissionCompleted: initialIsSubmissionCompleted ?? false,
     isLeader: initialIsLeader ?? false,
     leaderName: initialLeaderName ?? '',
+    isFirstYear: initialIsFirstYear ?? false,
     role: propRole || ''
   })
   const [loading, setLoading] = useState(!initialLimits)
@@ -111,14 +130,31 @@ export default function ProblemStatementsTab({
     loadStats()
   }, [])
 
+  const activeRole = stats.role || propRole || ''
+  const isCoordinator = activeRole === 'COORDINATOR' || activeRole === 'ADMIN'
+  const isTeam = activeRole === 'TEAM'
+  const isFirstYear = stats.isFirstYear ?? initialIsFirstYear ?? false
+
+  // Teams with 26ISR see FY001-FY003. Other teams see 26 standard statements. Coordinator/Admin/Mentor/Jury see all 29.
+  const visiblePSList = useMemo(() => {
+    if (isTeam) {
+      if (isFirstYear) {
+        return PROBLEM_STATEMENTS.filter(ps => ps.isFirstYear)
+      } else {
+        return PROBLEM_STATEMENTS.filter(ps => !ps.isFirstYear)
+      }
+    }
+    return PROBLEM_STATEMENTS
+  }, [isTeam, isFirstYear])
+
   const domains = useMemo(() => {
-    const list = Array.from(new Set(PROBLEM_STATEMENTS.map(ps => ps.domain)))
+    const list = Array.from(new Set(visiblePSList.map(ps => ps.domain)))
     return ['ALL', ...list]
-  }, [])
+  }, [visiblePSList])
 
   const filteredPS = useMemo(() => {
     const q = searchQuery.toLowerCase().trim()
-    return PROBLEM_STATEMENTS.filter(ps => {
+    return visiblePSList.filter(ps => {
       const matchesDomain = selectedDomain === 'ALL' || ps.domain === selectedDomain
       const matchesSearch = !q || (
         ps.id.toLowerCase().includes(q) ||
@@ -128,7 +164,7 @@ export default function ProblemStatementsTab({
       )
       return matchesDomain && matchesSearch
     })
-  }, [searchQuery, selectedDomain])
+  }, [searchQuery, selectedDomain, visiblePSList])
 
   const groupedPS = useMemo(() => {
     return filteredPS.reduce((acc, ps) => {
@@ -143,11 +179,8 @@ export default function ProblemStatementsTab({
     setSelectedDomain('ALL')
   }
 
-  const activeRole = stats.role || propRole || ''
-  const isCoordinator = activeRole === 'COORDINATOR' || activeRole === 'ADMIN'
-  const isTeam = activeRole === 'TEAM'
-
   // Find currently locked problem statement object
+
   const lockedPSObject = useMemo(() => {
     if (!stats.myLockedPsId) return null
     return PROBLEM_STATEMENTS.find(ps => ps.id === stats.myLockedPsId) || null
@@ -424,7 +457,46 @@ export default function ProblemStatementsTab({
         }
       `}</style>
 
-      {/* TEAM STATUS BANNER */}
+      {/* 1ST YEAR WELCOME BANNER */}
+      {isTeam && isFirstYear && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.14) 0%, rgba(217, 119, 6, 0.06) 100%)',
+          border: '1.5px solid rgba(245, 158, 11, 0.45)',
+          borderRadius: '12px',
+          padding: '1.25rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          marginBottom: '1rem'
+        }}>
+          <div style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            fontSize: '1.35rem',
+            flexShrink: 0,
+            boxShadow: '0 2px 10px rgba(245, 158, 11, 0.3)'
+          }}>
+            🎓
+          </div>
+          <div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#92400e', margin: 0, marginBottom: '0.2rem' }}>
+              First-Year Innovation Track
+            </h3>
+            <p style={{ fontSize: '0.875rem', color: '#78350f', margin: 0, lineHeight: 1.5 }}>
+              Welcome 1st Year Innovators! Your team has been allocated the 3 specialized problem statements designed for 1st-year participants (<strong>FY001 – FY003</strong>). Please review and lock your preferred challenge below.
+            </p>
+          </div>
+        </div>
+      )}
+
+
+      {/* TEAM PROBLEM STATEMENT STATUS / LOCK BANNER */}
       {isTeam && (
         stats.myLockedPsId ? (
           <div style={{
@@ -634,7 +706,10 @@ export default function ProblemStatementsTab({
             Problem Statements Repository
           </h2>
           <p style={{ fontSize: '0.9rem', color: 'var(--ink-60)', margin: 0 }}>
-            Search by statement ID (e.g. <strong>AG001</strong>, <strong>WD001</strong>, <strong>CS001</strong>), title or keywords, or filter by domain.
+            {isFirstYear 
+              ? <>Search by statement ID (e.g. <strong>FY001</strong>, <strong>FY002</strong>, <strong>FY003</strong>), title or keywords.</>
+              : <>Search by statement ID (e.g. <strong>AG001</strong>, <strong>WD001</strong>, <strong>CS001</strong>), title or keywords, or filter by domain.</>
+            }
           </p>
         </div>
 
@@ -645,7 +720,7 @@ export default function ProblemStatementsTab({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by ID (e.g. AG001, CS002), title, or keywords..."
+            placeholder={isFirstYear ? "Search by ID (e.g. FY001, FY002), title, or keywords..." : "Search by ID (e.g. AG001, CS002), title, or keywords..."}
             style={{
               width: '100%',
               padding: '0.85rem 2.75rem 0.85rem 2.75rem',
@@ -689,8 +764,8 @@ export default function ProblemStatementsTab({
           </span>
           {domains.map(d => {
             const count = d === 'ALL' 
-              ? PROBLEM_STATEMENTS.length 
-              : PROBLEM_STATEMENTS.filter(ps => ps.domain === d).length;
+              ? visiblePSList.length 
+              : visiblePSList.filter(ps => ps.domain === d).length;
             const label = d === 'ALL' ? 'All Domains' : d;
             const isActive = selectedDomain === d;
             return (
@@ -718,7 +793,7 @@ export default function ProblemStatementsTab({
         {/* Active Filter Summary */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', color: 'var(--ink-60)', borderTop: '1px solid var(--line)', paddingTop: '0.75rem' }}>
           <span>
-            Showing <strong>{filteredPS.length}</strong> of {PROBLEM_STATEMENTS.length} problem statements
+            Showing <strong>{filteredPS.length}</strong> of {visiblePSList.length} problem statements
             {selectedDomain !== 'ALL' && ` in ${selectedDomain}`}
             {searchQuery && ` matching "${searchQuery}"`}
           </span>
@@ -742,6 +817,7 @@ export default function ProblemStatementsTab({
           )}
         </div>
       </Card>
+
       
       {/* Problem Statement Grid by Domain */}
       {filteredPS.length > 0 ? (
@@ -778,22 +854,52 @@ export default function ProblemStatementsTab({
                         display: 'flex',
                         flexDirection: 'column',
                         padding: '1.5rem',
-                        position: 'relative'
+                        position: 'relative',
+                        background: ps.isFirstYear 
+                          ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 191, 36, 0.03) 50%, var(--surface) 100%)' 
+                          : undefined,
+                        border: ps.isFirstYear 
+                          ? '2px solid rgba(245, 158, 11, 0.5)' 
+                          : isLockedByMe 
+                          ? '2px solid var(--success)' 
+                          : undefined,
+                        boxShadow: ps.isFirstYear 
+                          ? '0 4px 20px rgba(245, 158, 11, 0.12)' 
+                          : undefined
                       }}
                     >
                       {/* Top Badges Row */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                        <span style={{ 
-                          background: theme.badgeBg, 
-                          color: theme.badgeText, 
-                          padding: '0.35rem 0.85rem', 
-                          borderRadius: '999px', 
-                          fontSize: '0.8rem', 
-                          fontWeight: 800,
-                          letterSpacing: '0.04em'
-                        }}>
-                          {ps.id}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                          <span style={{ 
+                            background: theme.badgeBg, 
+                            color: theme.badgeText, 
+                            padding: '0.35rem 0.85rem', 
+                            borderRadius: '999px', 
+                            fontSize: '0.8rem', 
+                            fontWeight: 800,
+                            letterSpacing: '0.04em'
+                          }}>
+                            {ps.id}
+                          </span>
+                          {ps.isFirstYear && (
+                            <span style={{
+                              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                              color: '#fff',
+                              padding: '0.2rem 0.6rem',
+                              borderRadius: '999px',
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              letterSpacing: '0.03em',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
+                              boxShadow: '0 2px 6px rgba(245, 158, 11, 0.25)'
+                            }}>
+                              🎓 1st Years
+                            </span>
+                          )}
+                        </div>
 
                         {/* Capacity / Locked Badge */}
                         {isLockedByMe ? (
@@ -836,6 +942,7 @@ export default function ProblemStatementsTab({
                         )}
                       </div>
 
+
                       <h3 style={{ 
                         fontSize: '1.1rem', 
                         fontWeight: 700, 
@@ -856,8 +963,9 @@ export default function ProblemStatementsTab({
                         overflow: 'hidden',
                         marginBottom: '1rem'
                       }}>
-                        {ps.description.slice(0, 180)}...
+                        {getCardSnippet(ps.description)}
                       </p>
+
 
                       {/* COORDINATOR CONTROLS ON CARD */}
                       {isCoordinator && (
@@ -1155,9 +1263,24 @@ export default function ProblemStatementsTab({
                   }}>
                     {selectedPS.id}
                   </span>
+                  {selectedPS.isFirstYear && (
+                    <span style={{
+                      background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                      color: '#fff',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '999px',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      boxShadow: '0 2px 6px rgba(245, 158, 11, 0.25)'
+                    }}>
+                      🎓 1st Years
+                    </span>
+                  )}
                   <span style={{ color: 'var(--ink-50)', fontSize: '0.95rem', fontWeight: 600 }}>
                     {selectedPS.domain}
                   </span>
+
+
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

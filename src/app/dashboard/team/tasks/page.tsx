@@ -43,8 +43,9 @@ export default async function TeamTasksPage() {
             <div key={fb.id} className={styles.noteItem}>
               <div className={styles.noteHeader}>
                 <strong style={{ color: 'var(--flame-red)' }}>Overall Feedback</strong>
-                <span className={styles.muted}>{new Date(fb.createdAt).toLocaleDateString()}</span>
+                <span suppressHydrationWarning className={styles.muted}>{new Date(fb.createdAt).toLocaleDateString()}</span>
               </div>
+
               <p style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', marginBottom: '0.75rem' }}>{fb.overallFeedback}</p>
               {fb.suggestions && (
                 <>

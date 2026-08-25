@@ -1,11 +1,12 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Countdown } from "@/components/ui/Countdown";
 import TiltedCard from "@/components/ui/TiltedCard";
 import BorderGlow from "@/components/ui/BorderGlow";
-import { Bot, Globe, GraduationCap, ShieldCheck, Cpu } from "lucide-react";
+import { Bot, Globe, GraduationCap, ShieldCheck, Cpu, ArrowRight, Sparkles, FileText } from "lucide-react";
 import { TimelineScroller } from "@/components/ui/TimelineScroller";
 import MentorsAndJudges from "@/components/ui/MentorsAndJudges";
 import { FaqAccordion } from "@/components/ui/FaqAccordion";
@@ -153,6 +154,23 @@ export default function Home() {
                     </div>
                   </BorderGlow>
                 ))}
+              </div>
+
+              {/* PROBLEM STATEMENTS CTA */}
+              <div className={styles.tracksCtaWrapper}>
+                <Link href="/problem-statements" className={styles.tracksCtaButton}>
+                  <span className={styles.tracksCtaBadge}>
+                    <Sparkles size={14} />
+                    <span>29 Challenges Available</span>
+                  </span>
+                  <span className={styles.tracksCtaTitle}>
+                    <span>See Problem Statements</span>
+                    <ArrowRight size={20} className={styles.tracksCtaArrow} />
+                  </span>
+                  <span className={styles.tracksCtaSub}>
+                    Explore Common & 1st-Year Statements across all tracks &rarr;
+                  </span>
+                </Link>
               </div>
             </div>
           </section>

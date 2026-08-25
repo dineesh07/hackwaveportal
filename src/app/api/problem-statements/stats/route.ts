@@ -63,6 +63,8 @@ export async function GET() {
     let isSubmissionCompleted = false;
     let isLeader = false;
     let leaderName = '';
+    let isFirstYear = false;
+
 
     // Check logged-in team details and leader status
     if (userId && role === 'TEAM') {
@@ -92,6 +94,7 @@ export async function GET() {
         const userRollLower = cleanRollNo.toLowerCase();
         const leaderRollLower = (myTeam.leaderRollNo || '').trim().toLowerCase();
         isLeader = myTeam.userId === userId || Boolean(userRollLower && leaderRollLower && userRollLower === leaderRollLower);
+        isFirstYear = Boolean(leaderRollLower.startsWith('26isr'));
         const prj = myTeam.projects[0];
         if (prj?.problemStatementId) {
           myLockedPsId = prj.problemStatementId;
@@ -124,8 +127,10 @@ export async function GET() {
       isSubmissionCompleted,
       isLeader,
       leaderName,
+      isFirstYear,
       role
     });
+
   } catch (error) {
     console.error('Error fetching PS stats:', error);
     return NextResponse.json({ error: 'Failed to fetch problem statements stats' }, { status: 500 });

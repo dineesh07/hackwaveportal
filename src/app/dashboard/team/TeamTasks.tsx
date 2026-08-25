@@ -47,10 +47,11 @@ export default function TeamTasks({ tasks }: { tasks: TeamTask[] }) {
             </div>
             <span className={styles.muted}>{task.description}</span>
             {task.dueDate && (
-              <div className={styles.muted} style={{ marginTop: '0.25rem', fontSize: '0.8125rem' }}>
+              <div suppressHydrationWarning className={styles.muted} style={{ marginTop: '0.25rem', fontSize: '0.8125rem' }}>
                 Due {new Date(task.dueDate).toLocaleDateString()}
               </div>
             )}
+
           </div>
           {task.status === 'COMPLETED' ? (
             <Tag tone="success"><CheckCircle2 size={13} /> Completed</Tag>

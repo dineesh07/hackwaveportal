@@ -37,41 +37,21 @@ export async function POST(req: Request) {
     ];
 
 
-    // 1. Check for internal duplicates within the submitted team
+    // 1. Check for internal duplicate roll numbers within the submitted team
     const seenRolls = new Map<string, string>();
-    const seenPhones = new Map<string, string>();
-    const seenEmails = new Map<string, string>();
 
     for (const p of allParticipants) {
       if (p.rollNo) {
         const rollKey = p.rollNo.toLowerCase();
         if (seenRolls.has(rollKey)) {
           return NextResponse.json({
-            error: `Registration failed: Roll Number "${p.rollNo}" is duplicated between "${seenRolls.get(rollKey)}" and "${p.name}". Each team member must be unique.`
+            error: `Registration failed: Roll Number "${p.rollNo}" is duplicated between "${seenRolls.get(rollKey)}" and "${p.name}". Each team member must have a unique roll number.`
           }, { status: 400 });
         }
         seenRolls.set(rollKey, p.name);
       }
-
-      if (p.phone) {
-        if (seenPhones.has(p.phone)) {
-          return NextResponse.json({
-            error: `Registration failed: Phone Number "${p.phone}" is duplicated between "${seenPhones.get(p.phone)}" and "${p.name}".`
-          }, { status: 400 });
-        }
-        seenPhones.set(p.phone, p.name);
-      }
-
-      if (p.email) {
-        const emailKey = p.email.toLowerCase();
-        if (seenEmails.has(emailKey)) {
-          return NextResponse.json({
-            error: `Registration failed: Email "${p.email}" is duplicated between "${seenEmails.get(emailKey)}" and "${p.name}".`
-          }, { status: 400 });
-        }
-        seenEmails.set(emailKey, p.name);
-      }
     }
+
 
     // 2. Check if Team Name is already registered
     const existingTeamName = await prisma.team.findFirst({
@@ -84,11 +64,11 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // 3. Check if any participant (leader or member) is already registered in another team
+    // 3. Check if any participant (leader or member) is already registered in another team (checking strictly by Roll Number)
     for (const p of allParticipants) {
       const participantRole = p.isLeader ? `Team Leader (${p.name})` : `Team Member "${p.name}"`;
 
-      // A. Check Roll Number across existing Leaders and TeamMembers
+      // Check Roll Number across existing Leaders, TeamMembers, and Users
       if (p.rollNo) {
         const leaderConflict = await prisma.team.findFirst({
           where: { leaderRollNo: { equals: p.rollNo, mode: 'insensitive' } },
@@ -120,53 +100,8 @@ export async function POST(req: Request) {
           }, { status: 400 });
         }
       }
-
-      // B. Check Phone Number across existing Leaders and TeamMembers
-      if (p.phone) {
-        const phoneLeaderConflict = await prisma.team.findFirst({
-          where: { leaderPhone: p.phone },
-          select: { teamName: true }
-        });
-        if (phoneLeaderConflict) {
-          return NextResponse.json({
-            error: `Registration failed: ${participantRole} with Phone "${p.phone}" is already registered in team "${phoneLeaderConflict.teamName}".`
-          }, { status: 400 });
-        }
-
-        const phoneMemberConflict = await prisma.teamMember.findFirst({
-          where: { phone: p.phone },
-          include: { team: { select: { teamName: true } } }
-        });
-        if (phoneMemberConflict) {
-          return NextResponse.json({
-            error: `Registration failed: ${participantRole} with Phone "${p.phone}" is already registered in team "${phoneMemberConflict.team.teamName}".`
-          }, { status: 400 });
-        }
-      }
-
-      // C. Check Email across existing Leaders and TeamMembers (if provided)
-      if (p.email) {
-        const emailLeaderConflict = await prisma.team.findFirst({
-          where: { leaderEmail: { equals: p.email, mode: 'insensitive' } },
-          select: { teamName: true }
-        });
-        if (emailLeaderConflict) {
-          return NextResponse.json({
-            error: `Registration failed: ${participantRole} with Email "${p.email}" is already registered in team "${emailLeaderConflict.teamName}".`
-          }, { status: 400 });
-        }
-
-        const emailMemberConflict = await prisma.teamMember.findFirst({
-          where: { email: { equals: p.email, mode: 'insensitive' } },
-          include: { team: { select: { teamName: true } } }
-        });
-        if (emailMemberConflict) {
-          return NextResponse.json({
-            error: `Registration failed: ${participantRole} with Email "${p.email}" is already registered in team "${emailMemberConflict.team.teamName}".`
-          }, { status: 400 });
-        }
-      }
     }
+
 
     // Generate a unique teamCode (e.g. TEAM-001)
     let nextNum = 1;

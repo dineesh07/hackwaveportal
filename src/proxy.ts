@@ -7,7 +7,7 @@ export default NextAuth(authConfig).auth((req) => {
   const user = req.auth?.user;
   const { pathname } = req.nextUrl;
 
-  const publicRoutes = ["/", "/register", "/login", "/about", "/timeline", "/tracks", "/mentors", "/faq"];
+  const publicRoutes = ["/", "/register", "/login", "/about", "/timeline", "/tracks", "/mentors", "/faq", "/problem-statements"];
   
   if (pathname.startsWith("/api/auth") || pathname === "/api/register") {
     return NextResponse.next();

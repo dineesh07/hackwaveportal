@@ -91,6 +91,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid problem statement ID.' }, { status: 400 });
     }
 
+    // First-Year eligibility validation
+    const isTeamFirstYear = (team.leaderRollNo || '').trim().toLowerCase().startsWith('26isr');
+    if (validPS.isFirstYear && !isTeamFirstYear) {
+      return NextResponse.json({ 
+        error: 'This problem statement is exclusively reserved for 1st Year teams.' 
+      }, { status: 400 });
+    }
+    if (!validPS.isFirstYear && isTeamFirstYear) {
+      return NextResponse.json({ 
+        error: '1st Year teams must select from the specialized 1st Year problem statements (FY001 - FY003).' 
+      }, { status: 400 });
+    }
+
+
     function getTrackFromDomain(domain?: string) {
       if (!domain) return 'OTHERS' as const;
       const upper = domain.toUpperCase();
@@ -100,7 +114,7 @@ export async function POST(req: Request) {
       if (upper.includes('VISION') || upper.includes('DEEP LEARNING')) {
         return 'COMPUTER_VISION' as const;
       }
-      if (upper.includes('WEB')) {
+      if (upper.includes('WEB') || upper.includes('1ST YEARS')) {
         return 'WEB_DEVELOPMENT' as const;
       }
       if (upper.includes('CYBER')) {
@@ -108,6 +122,7 @@ export async function POST(req: Request) {
       }
       return 'OTHERS' as const;
     }
+
 
     // Check capacity limit (0 or >= 999 means Unlimited / No Limit)
     const config = await prisma.problemStatementConfig.findUnique({

@@ -42,6 +42,7 @@ export default async function TeamProblemStatementsPage() {
       const userRollLower = cleanRollNo.toLowerCase()
       const leaderRollLower = (myTeam.leaderRollNo || '').trim().toLowerCase()
       isLeader = myTeam.userId === userId || Boolean(userRollLower && leaderRollLower && userRollLower === leaderRollLower)
+      const isFirstYear = Boolean(leaderRollLower.startsWith('26isr'))
       const prj = myTeam.projects[0]
       if (prj?.problemStatementId) {
         myLockedPsId = prj.problemStatementId
@@ -63,6 +64,30 @@ export default async function TeamProblemStatementsPage() {
     console.error('Error fetching initial PS limits:', err)
   }
 
+  let isFirstYear = false
+  if (userId) {
+    let cleanRollNo = (rollNo || '').trim()
+    if (!cleanRollNo) {
+      const u = await prisma.user.findUnique({ where: { id: userId }, select: { rollNo: true } })
+      if (u?.rollNo) cleanRollNo = u.rollNo.trim()
+    }
+    const myTeam = await prisma.team.findFirst({
+      where: {
+        OR: [
+          { userId: userId },
+          ...(cleanRollNo ? [
+            { leaderRollNo: { equals: cleanRollNo, mode: 'insensitive' as const } },
+            { members: { some: { rollNo: { equals: cleanRollNo, mode: 'insensitive' as const } } } }
+          ] : [])
+        ]
+      },
+      select: { leaderRollNo: true }
+    })
+    if (myTeam?.leaderRollNo?.trim().toLowerCase().startsWith('26isr')) {
+      isFirstYear = true
+    }
+  }
+
   return (
     <ProblemStatementsTab 
       role="TEAM"
@@ -72,6 +97,8 @@ export default async function TeamProblemStatementsPage() {
       initialTeamId={myTeamId}
       initialIsSubmissionCompleted={isSubmissionCompleted}
       initialLimits={initialLimits}
+      initialIsFirstYear={isFirstYear}
     />
   )
 }
+

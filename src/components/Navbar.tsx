@@ -8,6 +8,7 @@ export function Navbar() {
     { label: 'Home', ariaLabel: 'Go to home page', link: '/#home' },
     { label: 'About', ariaLabel: 'Learn about us', link: '/#about' },
     { label: 'Tracks', ariaLabel: 'View our tracks', link: '/#tracks' },
+    { label: 'PS', ariaLabel: 'View problem statements', link: '/problem-statements' },
     { label: 'Timeline', ariaLabel: 'View the timeline', link: '/#timeline' },
     { label: 'Mentors', ariaLabel: 'View mentors', link: '/#mentors' },
     { label: 'Judges', ariaLabel: 'View judges', link: '/#judges' },

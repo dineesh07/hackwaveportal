@@ -5,6 +5,16 @@ import { Card } from '@/components/ui/Card'
 import { Users, User, Shield, GraduationCap, Building } from 'lucide-react'
 import styles from '../../dashboard.module.css'
 
+function formatDate(dateInput?: string | Date | null) {
+  if (!dateInput) return '—';
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '—';
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 export default function MyTeamTab({ team }: any) {
   const leaderRollClean = (team?.leaderRollNo || '').trim().toLowerCase();
   const leaderNameClean = (team?.leaderName || '').trim().toLowerCase();
@@ -37,8 +47,11 @@ export default function MyTeamTab({ team }: any) {
           </div>
           <div>
             <span className={styles.muted}>Registered At</span>
-            <p style={{ fontWeight: 600, fontSize: '1.125rem', marginTop: '0.25rem' }}>{new Date(team.registeredAt).toLocaleDateString()}</p>
+            <p suppressHydrationWarning style={{ fontWeight: 600, fontSize: '1.125rem', marginTop: '0.25rem' }}>
+              {formatDate(team.registeredAt)}
+            </p>
           </div>
+
           <div>
             <span className={styles.muted}>Status</span>
             <p style={{ fontWeight: 600, fontSize: '1.125rem', marginTop: '0.25rem', textTransform: 'capitalize' }}>
