@@ -101,6 +101,76 @@
   margin-top: 1.5rem;
 }
 
+/* WhatsApp Invitation Card */
+.whatsappCard {
+  background: linear-gradient(135deg, rgba(37, 211, 102, 0.12) 0%, rgba(18, 140, 126, 0.06) 100%);
+  border: 1.5px solid rgba(37, 211, 102, 0.4);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.1);
+}
+
+.whatsappHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.whatsappIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+}
+
+.whatsappTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 0.25rem 0;
+}
+
+.whatsappText {
+  font-size: 0.875rem;
+  color: var(--ink-70);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.whatsappButton {
+  background: #25d366;
+  color: #ffffff !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+  align-self: flex-start;
+}
+
+.whatsappButton:hover {
+  background: #20ba59;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+}
+
 .actions {
   display: flex;
   justify-content: center;
