@@ -271,24 +271,25 @@ model JuryEvaluation {
   phase       Int      @default(1)
 
   // Review 1 (50 Marks)
-  r1ProblemUnderstanding Int @default(0)
-  r1ProposedSolution     Int @default(0)
-  r1TechUnderstanding    Int @default(0)
-  r1PrototypeDev         Int @default(0)
-  r1UiUx                 Int @default(0)
-  r1TeamUnderstanding    Int @default(0)
+  r1ProblemUnderstanding Float @default(0)
+  r1ProposedSolution     Float @default(0)
+  r1TechUnderstanding    Float @default(0)
+  r1PrototypeDev         Float @default(0)
+  r1UiUx                 Float @default(0)
+  r1TeamUnderstanding    Float @default(0)
   r1Remark               String @db.Text @default("")
 
   // Review 2 (50 Marks)
-  r2FeedbackImplementation Int @default(0)
-  r2Improvements           Int @default(0)
-  r2PrototypeFunctionality Int @default(0)
-  r2TechImplementation     Int @default(0)
-  r2TestingValidation      Int @default(0)
-  r2TeamPresentation       Int @default(0)
+  r2FeedbackImplementation Float @default(0)
+  r2Improvements           Float @default(0)
+  r2PrototypeFunctionality Float @default(0)
+  r2TechImplementation     Float @default(0)
+  r2TestingValidation      Float @default(0)
+  r2TeamPresentation       Float @default(0)
   r2Remark                 String @db.Text @default("")
 
-  totalScore                 Int @default(0)
+  totalScore                 Float @default(0)
+
 
   status       EvaluationStatus @default(DRAFT)
   submittedAt  DateTime?
@@ -370,4 +371,10 @@ model PlatformSettings {
   evaluationWindowStart   DateTime?
   evaluationWindowEnd     DateTime?
   announcementBanner    String?
+}
+
+model ProblemStatementConfig {
+  psId      String   @id // e.g. "AG001"
+  maxLimit  Int      @default(5)
+  updatedAt DateTime @updatedAt
 }

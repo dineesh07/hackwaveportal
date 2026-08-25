@@ -22,7 +22,7 @@ export default async function ResultsCenter({ projectId }: { projectId: string }
   const isShortlisted = await prisma.shortlistDecision.findUnique({ where: { projectId: project.id } });
 
   const scoresPublished = project.leaderboardEntry?.scoresPublishedAt != null;
-  const isFinalResultsPublished = false;
+  const isFinalResultsPublished = scoresPublished;
 
   return (
     <Card style={{ marginTop: '2rem' }}>
@@ -37,16 +37,6 @@ export default async function ResultsCenter({ projectId }: { projectId: string }
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '1.5rem' }}>
-          <div style={{ textAlign: 'center', padding: '2rem', border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--surface)' }}>
-            <h3 style={{ color: 'var(--ink)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <Star size={18} color="var(--flame-gold)" />
-              Phase 1 Score
-            </h3>
-            <div className="tabular-nums" style={{ fontSize: '3rem', fontWeight: 800, color: 'var(--flame-red)' }}>
-              {project.leaderboardEntry?.averageScore.toFixed(2)} <span style={{ fontSize: '1.5rem', color: 'var(--ink-60)' }}>/ 100</span>
-            </div>
-            <p style={{ color: 'var(--ink-60)', fontSize: '0.875rem', marginTop: '0.5rem' }}>Published on {project.leaderboardEntry?.scoresPublishedAt?.toLocaleDateString()}</p>
-          </div>
 
           {isShortlisted && (
             <div style={{

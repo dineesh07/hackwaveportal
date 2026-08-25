@@ -68,9 +68,24 @@ export default function RegisterPage() {
     if (!formData.leaderPhone.trim()) newErrors.leaderPhone = "Leader Phone is required";
     
     // Member validation
+    const seenRolls = new Set<string>();
+    if (formData.leaderRollNo.trim()) {
+      seenRolls.add(formData.leaderRollNo.trim().toUpperCase());
+    }
+
     members.forEach((m, i) => {
       if (!m.name.trim()) newErrors[`member_${i}_name`] = "Required";
-      if (!m.rollNo.trim()) newErrors[`member_${i}_rollNo`] = "Required";
+      if (!m.rollNo.trim()) {
+        newErrors[`member_${i}_rollNo`] = "Required";
+      } else {
+        const rollUpper = m.rollNo.trim().toUpperCase();
+        if (seenRolls.has(rollUpper)) {
+          newErrors[`member_${i}_rollNo`] = "Duplicate Roll No";
+          newErrors.general = `Roll number "${m.rollNo.trim()}" is duplicated in this team.`;
+        } else {
+          seenRolls.add(rollUpper);
+        }
+      }
     });
 
     const totalMembers = 1 + members.length;
@@ -80,6 +95,7 @@ export default function RegisterPage() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

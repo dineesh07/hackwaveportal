@@ -32,25 +32,62 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Evaluation already submitted and locked' }, { status: 400 });
     }
 
+    const clamp = (val: any, max: number) => {
+      const num = parseFloat(String(val));
+      if (isNaN(num) || num < 0) return 0;
+      return Math.min(max, Number(num.toFixed(2)));
+    };
+
+    const c_r1ProblemUnderstanding = clamp(r1ProblemUnderstanding, 10);
+    const c_r1ProposedSolution = clamp(r1ProposedSolution, 10);
+    const c_r1TechUnderstanding = clamp(r1TechUnderstanding, 8);
+    const c_r1PrototypeDev = clamp(r1PrototypeDev, 12);
+    const c_r1UiUx = clamp(r1UiUx, 5);
+    const c_r1TeamUnderstanding = clamp(r1TeamUnderstanding, 5);
+
+    const c_r2FeedbackImplementation = clamp(r2FeedbackImplementation, 10);
+    const c_r2Improvements = clamp(r2Improvements, 10);
+    const c_r2PrototypeFunctionality = clamp(r2PrototypeFunctionality, 12);
+    const c_r2TechImplementation = clamp(r2TechImplementation, 8);
+    const c_r2TestingValidation = clamp(r2TestingValidation, 5);
+    const c_r2TeamPresentation = clamp(r2TeamPresentation, 5);
+
+    const computedTotal = Number((
+      c_r1ProblemUnderstanding +
+      c_r1ProposedSolution +
+      c_r1TechUnderstanding +
+      c_r1PrototypeDev +
+      c_r1UiUx +
+      c_r1TeamUnderstanding +
+      c_r2FeedbackImplementation +
+      c_r2Improvements +
+      c_r2PrototypeFunctionality +
+      c_r2TechImplementation +
+      c_r2TestingValidation +
+      c_r2TeamPresentation
+    ).toFixed(2));
+
+
     const data = {
-      r1ProblemUnderstanding: Number(r1ProblemUnderstanding),
-      r1ProposedSolution: Number(r1ProposedSolution),
-      r1TechUnderstanding: Number(r1TechUnderstanding),
-      r1PrototypeDev: Number(r1PrototypeDev),
-      r1UiUx: Number(r1UiUx),
-      r1TeamUnderstanding: Number(r1TeamUnderstanding),
+      r1ProblemUnderstanding: c_r1ProblemUnderstanding,
+      r1ProposedSolution: c_r1ProposedSolution,
+      r1TechUnderstanding: c_r1TechUnderstanding,
+      r1PrototypeDev: c_r1PrototypeDev,
+      r1UiUx: c_r1UiUx,
+      r1TeamUnderstanding: c_r1TeamUnderstanding,
       r1Remark: r1Remark || "",
-      r2FeedbackImplementation: Number(r2FeedbackImplementation),
-      r2Improvements: Number(r2Improvements),
-      r2PrototypeFunctionality: Number(r2PrototypeFunctionality),
-      r2TechImplementation: Number(r2TechImplementation),
-      r2TestingValidation: Number(r2TestingValidation),
-      r2TeamPresentation: Number(r2TeamPresentation),
+      r2FeedbackImplementation: c_r2FeedbackImplementation,
+      r2Improvements: c_r2Improvements,
+      r2PrototypeFunctionality: c_r2PrototypeFunctionality,
+      r2TechImplementation: c_r2TechImplementation,
+      r2TestingValidation: c_r2TestingValidation,
+      r2TeamPresentation: c_r2TeamPresentation,
       r2Remark: r2Remark || "",
-      totalScore: Number(totalScore),
+      totalScore: computedTotal,
       status: evalStatus,
       submittedAt: evalStatus === 'SUBMITTED' ? new Date() : null,
     };
+
 
     if (existing) {
       await prisma.juryEvaluation.update({

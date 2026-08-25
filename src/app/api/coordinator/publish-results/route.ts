@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { leaderboard, action, shortlistedIds, evaluationId, reason } = await req.json();
+    const { leaderboard, action, shortlistedIds, evaluationId, reason, winnerRanks } = await req.json();
 
     if (action === 'PHASE_1') {
       // Persist LeaderboardEntry for each project and publish scores
@@ -38,6 +38,76 @@ export async function POST(req: Request) {
         action: 'PUBLISH_PHASE1_SCORES',
         targetType: 'Leaderboard',
         metadata: { count: leaderboard.length },
+        ipAddress: getClientIp(req),
+      });
+    } else if (action === 'PHASE_RESULTS' || action === 'ANNOUNCE_WINNERS') {
+      const now = new Date();
+      const winnersMap = new Map<string, number>(); // projectId -> rank
+      let maxWinnerRank = 0;
+      if (Array.isArray(winnerRanks)) {
+        winnerRanks.forEach((w: { projectId: string; rank: number }) => {
+          if (w.projectId && w.rank) {
+            winnersMap.set(w.projectId, w.rank);
+            if (w.rank > maxWinnerRank) maxWinnerRank = w.rank;
+          }
+        });
+      }
+
+      // If leaderboard list is provided, update all entries
+      if (Array.isArray(leaderboard) && leaderboard.length > 0) {
+        let currentUnassignedRank = maxWinnerRank > 0 ? maxWinnerRank + 1 : 1;
+
+        for (const entry of leaderboard) {
+          let assignedRank = winnersMap.get(entry.projectId);
+          if (!assignedRank) {
+            assignedRank = currentUnassignedRank++;
+          }
+
+          await prisma.leaderboardEntry.upsert({
+            where: { projectId: entry.projectId },
+            create: {
+              projectId: entry.projectId,
+              phase: 1,
+              averageScore: Number(entry.avgScore) || 0,
+              rank: assignedRank,
+              scoresPublishedAt: now,
+            },
+            update: {
+              phase: 1,
+              averageScore: Number(entry.avgScore) || 0,
+              rank: assignedRank,
+              scoresPublishedAt: now,
+            },
+          });
+        }
+      } else {
+        // Just update winner ranks
+        for (const [projectId, rank] of winnersMap.entries()) {
+          await prisma.leaderboardEntry.upsert({
+            where: { projectId },
+            create: {
+              projectId,
+              phase: 1,
+              averageScore: 0,
+              rank,
+              scoresPublishedAt: now,
+            },
+            update: {
+              rank,
+              scoresPublishedAt: now,
+            },
+          });
+        }
+      }
+
+      await writeAuditLog({
+        actorId: session.user.id,
+        action: 'ANNOUNCE_PHASE_RESULTS',
+        targetType: 'Leaderboard',
+        metadata: {
+          winnerCount: winnersMap.size,
+          winners: Array.from(winnersMap.entries()).map(([pId, r]) => ({ projectId: pId, rank: r }))
+        },
         ipAddress: getClientIp(req),
       });
     } else if (action === 'SHORTLIST') {

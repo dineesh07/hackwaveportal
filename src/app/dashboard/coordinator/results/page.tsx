@@ -55,10 +55,15 @@ export default async function CoordinatorResultsPage() {
           reopenReason: e.reopenReason,
         })),
     };
-  }).sort((a, b) => b.avgScore - a.avgScore);
+  }).sort((a, b) => {
+    if (a.isPublished && b.isPublished && a.rank && b.rank) {
+      return a.rank - b.rank;
+    }
+    return b.avgScore - a.avgScore;
+  });
 
   leaderboard.forEach((l, index) => {
-    if (!l.isPublished) l.rank = index + 1;
+    if (!l.rank) l.rank = index + 1;
   });
 
   return (

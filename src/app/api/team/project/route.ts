@@ -84,13 +84,33 @@ export async function PUT(req: Request) {
       });
     }
 
+    const effectivePsId = existingProject?.problemStatementId || problemStatementId || '';
+    let autoTrack = track || 'OTHERS';
+    if (effectivePsId) {
+      const { PROBLEM_STATEMENTS } = await import('@/data/problem-statements');
+      const matched = PROBLEM_STATEMENTS.find(ps => ps.id === effectivePsId);
+      if (matched) {
+        const domain = matched.domain.toUpperCase();
+        if (domain.includes('AGENTIC') || domain.includes('GENERATIVE') || domain.includes('ARTIFICIAL')) {
+          autoTrack = 'ARTIFICIAL_INTELLIGENCE';
+        } else if (domain.includes('VISION') || domain.includes('DEEP LEARNING')) {
+          autoTrack = 'COMPUTER_VISION';
+        } else if (domain.includes('WEB')) {
+          autoTrack = 'WEB_DEVELOPMENT';
+        } else if (domain.includes('CYBER')) {
+          autoTrack = 'CYBERSECURITY';
+        }
+      }
+    }
+
     const projectData = {
       projectTitle: projectTitle || '',
       oneLiner: oneLiner || '',
-      track: track || 'OTHERS',
+      track: autoTrack,
       projectStatus: projectStatus || 'IDEATION_COMPLETE',
-      problemStatement: problemStatement || '',
-      problemStatementId: problemStatementId || '',
+      problemStatement: existingProject?.problemStatement || problemStatement || '',
+      problemStatementId: effectivePsId,
+
       proposedSolution: proposedSolution || '',
       targetUsers: targetUsers || [],
       techFrontend: techFrontend || [],

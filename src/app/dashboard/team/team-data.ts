@@ -2,11 +2,23 @@ import { cache } from 'react'
 import { prisma } from '@/lib/prisma'
 
 export const getTeamData = cache(async (userId: string, rollNo?: string | null) => {
+  // If rollNo wasn't passed or is empty, lookup user record
+  let effectiveRollNo = rollNo;
+  if (!effectiveRollNo && userId) {
+    const u = await prisma.user.findUnique({ where: { id: userId }, select: { rollNo: true } });
+    if (u?.rollNo) effectiveRollNo = u.rollNo;
+  }
+
+  const cleanRollNo = effectiveRollNo?.trim() || '';
+
   const team = await prisma.team.findFirst({
     where: { 
       OR: [
         { userId: userId },
-        ...(rollNo ? [{ members: { some: { rollNo: rollNo } } }] : [])
+        ...(cleanRollNo ? [
+          { leaderRollNo: { equals: cleanRollNo, mode: 'insensitive' as const } },
+          { members: { some: { rollNo: { equals: cleanRollNo, mode: 'insensitive' as const } } } }
+        ] : [])
       ]
     },
     include: {
@@ -24,7 +36,8 @@ export const getTeamData = cache(async (userId: string, rollNo?: string | null) 
           mentorFeedback: true,
           awards: {
             include: { award: true }
-          }
+          },
+          leaderboardEntry: true
         }
       }
     }

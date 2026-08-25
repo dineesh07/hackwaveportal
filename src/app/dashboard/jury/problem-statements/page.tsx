@@ -8,7 +8,7 @@ export default function JuryProblemStatementsPage() {
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--ink)' }}>Problem Statements</h1>
         <p style={{ color: 'var(--ink-60)', marginTop: '0.25rem' }}>Browse all available problem statements for this hackathon.</p>
       </header>
-      <ProblemStatementsTab />
+      <ProblemStatementsTab role="JURY" />
     </div>
   )
 }

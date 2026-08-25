@@ -12,11 +12,17 @@ export default async function CoordinatorTeamsPage() {
     return <div>Unauthorized.</div>
   }
 
+  // Get valid users to prune any orphaned teams
+  const allUsers = await prisma.user.findMany({ select: { id: true, rollNo: true } });
+  const userIds = new Set(allUsers.map(u => u.id));
+  const userRollNos = new Set(allUsers.map(u => u.rollNo));
+
   const teams = await prisma.team.findMany({
     where: { status: 'ACTIVE' },
     orderBy: { createdAt: 'asc' },
     select: {
       id: true,
+      userId: true,
       teamCode: true,
       teamName: true,
       institution: true,
@@ -51,7 +57,14 @@ export default async function CoordinatorTeamsPage() {
     },
   });
 
-  const rows = teams.map(t => {
+  // Filter out orphaned teams where the user was deleted
+  const validTeams = teams.filter(t => {
+    if (t.userId && !userIds.has(t.userId)) return false;
+    if (t.leaderRollNo && !userRollNos.has(t.leaderRollNo)) return false;
+    return true;
+  });
+
+  const rows = validTeams.map(t => {
     const project = t.projects[0] || null;
     return {
       teamId: t.id,

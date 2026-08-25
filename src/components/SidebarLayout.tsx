@@ -48,6 +48,7 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
   } else if (role === 'MENTOR') {
     navItems = [
       { label: 'Dashboard', href: '/dashboard/mentor', icon: <LayoutDashboard size={20} /> },
+      { label: 'Problem Statements', href: '/dashboard/mentor/problem-statements', icon: <Lightbulb size={20} /> },
       { label: 'Settings', href: '/dashboard/mentor/settings', icon: <Settings size={20} /> }
     ];
   } else if (role === 'JURY') {
@@ -62,6 +63,7 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
       { label: 'Dashboard', href: '/dashboard/coordinator', icon: <LayoutDashboard size={20} /> },
       { label: 'Registrations', href: '/dashboard/coordinator/registrations', icon: <ClipboardList size={20} /> },
       { label: 'Team Management', href: '/dashboard/coordinator/teams', icon: <Users size={20} /> },
+      { label: 'Problem Statements', href: '/dashboard/coordinator/problem-statements', icon: <Lightbulb size={20} /> },
       { label: 'Mentor Mapping', href: '/dashboard/coordinator/mentors', icon: <UserCheck size={20} /> },
       { label: 'Jury Mapping', href: '/dashboard/coordinator/jury', icon: <Scale size={20} /> },
       { label: 'Monitoring', href: '/dashboard/coordinator/monitoring', icon: <Activity size={20} /> },

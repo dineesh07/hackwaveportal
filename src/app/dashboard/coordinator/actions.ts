@@ -22,37 +22,78 @@ export async function approveTeam(teamId: string) {
 
       // Transaction: Create/Link User for ALL members, Update Team
       await prisma.$transaction(async (tx) => {
-        // First, get all members of the team
-        const members = await tx.teamMember.findMany({ where: { teamId: team.id } });
+        // 1. Always create/update the Team Leader account
         let leaderUserId: string | null = null;
-  
-        // Iterate through all members and create/update their User accounts
+        if (team.leaderRollNo) {
+          const leaderConditions: any[] = [
+            { rollNo: { equals: team.leaderRollNo.trim(), mode: 'insensitive' } }
+          ];
+          if (team.leaderEmail && team.leaderEmail.trim() !== '') {
+            leaderConditions.push({ email: team.leaderEmail.trim() });
+          }
+
+          let leaderUser = await tx.user.findFirst({
+            where: { OR: leaderConditions }
+          });
+
+          if (leaderUser) {
+            leaderUser = await tx.user.update({
+              where: { id: leaderUser.id },
+              data: {
+                name: team.leaderName,
+                phone: team.leaderPhone,
+                role: 'TEAM',
+                status: 'ACTIVE'
+              }
+            });
+          } else {
+            const finalEmail = team.leaderEmail && team.leaderEmail.trim() !== '' ? team.leaderEmail.trim() : null;
+            leaderUser = await tx.user.create({
+              data: {
+                name: team.leaderName,
+                rollNo: team.leaderRollNo.trim(),
+                email: finalEmail,
+                phone: team.leaderPhone,
+                passwordHash,
+                mustChangePassword: true,
+                role: 'TEAM',
+                status: 'ACTIVE'
+              }
+            });
+          }
+          leaderUserId = leaderUser.id;
+        }
+
+        // 2. Process all non-leader members
+        const members = await tx.teamMember.findMany({ where: { teamId: team.id } });
+        const leaderRollClean = (team.leaderRollNo || '').trim().toLowerCase();
+
         for (const member of members) {
-          if (!member.rollNo) continue; // Skip if no roll number is provided
-  
-          const userConditions: any[] = [{ rollNo: member.rollNo }];
+          if (!member.rollNo) continue;
+          const memberRollClean = member.rollNo.trim().toLowerCase();
+          if (leaderRollClean && memberRollClean === leaderRollClean) {
+            // Delete duplicate TeamMember entry if leader was mistakenly in TeamMember table
+            await tx.teamMember.delete({ where: { id: member.id } }).catch(() => {});
+            continue;
+          }
+
+          const userConditions: any[] = [{ rollNo: { equals: member.rollNo.trim(), mode: 'insensitive' } }];
           if (member.email && member.email.trim() !== '') {
             userConditions.push({ email: member.email.trim() });
           }
-  
+
           let user = await tx.user.findFirst({
             where: { OR: userConditions }
           });
-  
+
           if (user) {
-            // If this is the leader, check if they are already leading another team
-            if (member.rollNo === team.leaderRollNo) {
-              const existingTeam = await tx.team.findFirst({ where: { userId: user.id } });
-              if (existingTeam && existingTeam.id !== teamId) {
-                throw new Error(`The leader is already the leader of another team (${existingTeam.teamName}).`);
-              }
-            }
-  
             user = await tx.user.update({
               where: { id: user.id },
               data: {
                 name: member.name,
-                phone: member.phone
+                phone: member.phone,
+                role: 'TEAM',
+                status: 'ACTIVE'
               }
             });
           } else {
@@ -60,7 +101,7 @@ export async function approveTeam(teamId: string) {
             user = await tx.user.create({
               data: {
                 name: member.name,
-                rollNo: member.rollNo,
+                rollNo: member.rollNo.trim(),
                 email: finalEmail,
                 phone: member.phone,
                 passwordHash,
@@ -70,13 +111,8 @@ export async function approveTeam(teamId: string) {
               }
             });
           }
-  
-          // Keep track of the leader's user ID to link to the Team
-          if (member.rollNo === team.leaderRollNo) {
-            leaderUserId = user.id;
-          }
         }
-  
+
         await tx.team.update({
           where: { id: teamId },
           data: {
@@ -167,3 +203,73 @@ export async function bulkApproveTeams(teamIds: string[]) {
     return { error: error.message || 'Internal server error' };
   }
 }
+
+export async function updateProblemStatementLimit(psId: string, maxLimit: number) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id || (session.user.role !== 'COORDINATOR' && session.user.role !== 'ADMIN')) {
+      return { error: 'Unauthorized. Coordinator access required.' }
+    }
+
+    if (!psId || typeof psId !== 'string') {
+      return { error: 'Valid Problem Statement ID is required.' }
+    }
+
+    const limitNum = parseInt(String(maxLimit), 10)
+    if (isNaN(limitNum) || limitNum < 0) {
+      return { error: 'Limit must be 0 (for No Limit) or a positive integer.' }
+    }
+
+    const updated = await prisma.problemStatementConfig.upsert({
+      where: { psId: psId.trim() },
+      create: { psId: psId.trim(), maxLimit: limitNum },
+      update: { maxLimit: limitNum }
+    })
+
+    revalidatePath('/dashboard/coordinator/problem-statements')
+    revalidatePath('/dashboard/coordinator')
+    revalidatePath('/dashboard/team/problem-statements')
+    revalidatePath('/dashboard/team')
+
+    return { success: true, psId: updated.psId, maxLimit: updated.maxLimit }
+  } catch (error: any) {
+    console.error('Update Problem Statement Limit Error:', error)
+    return { error: error?.message || 'Failed to update problem statement limit' }
+  }
+}
+
+export async function batchUpdateProblemStatementLimits(defaultLimit: number) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id || (session.user.role !== 'COORDINATOR' && session.user.role !== 'ADMIN')) {
+      return { error: 'Unauthorized. Coordinator access required.' }
+    }
+
+    const limitNum = parseInt(String(defaultLimit), 10)
+    if (isNaN(limitNum) || limitNum < 0) {
+      return { error: 'Default limit must be 0 (for No Limit) or a positive integer.' }
+    }
+
+    const { PROBLEM_STATEMENTS } = await import('@/data/problem-statements')
+
+    for (const ps of PROBLEM_STATEMENTS) {
+      await prisma.problemStatementConfig.upsert({
+        where: { psId: ps.id },
+        create: { psId: ps.id, maxLimit: limitNum },
+        update: { maxLimit: limitNum }
+      })
+    }
+
+    revalidatePath('/dashboard/coordinator/problem-statements')
+    revalidatePath('/dashboard/coordinator')
+    revalidatePath('/dashboard/team/problem-statements')
+    revalidatePath('/dashboard/team')
+
+    return { success: true, maxLimit: limitNum }
+  } catch (error: any) {
+    console.error('Batch Update Limits Error:', error)
+    return { error: error?.message || 'Failed to batch update problem statement limits' }
+  }
+}
+
+

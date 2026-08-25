@@ -21,6 +21,51 @@ export default async function TeamSubmissionPage() {
 
   const { project, status } = teamData
 
+  // 1. Check if problem statement is locked
+  if (!project?.problemStatementId) {
+    return (
+      <Card style={{ padding: '3.5rem 2rem', textAlign: 'center', maxWidth: '640px', margin: '2rem auto', borderRadius: '16px', border: '1.5px solid rgba(255, 201, 74, 0.5)', background: 'linear-gradient(135deg, rgba(255, 201, 74, 0.08) 0%, var(--surface) 100%)' }}>
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #ffc94a, #ff6b35)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff',
+          margin: '0 auto 1.5rem',
+          boxShadow: '0 8px 24px rgba(255, 107, 53, 0.25)'
+        }}>
+          <Lock size={30} />
+        </div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ink)', marginBottom: '0.75rem' }}>
+          Problem Statement Required
+        </h2>
+        <p style={{ color: 'var(--ink-70)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '1.75rem' }}>
+          You must lock a problem statement for your team before opening the Phase 1 project submission form. Problem statements can only be locked by the <strong>Team Leader</strong>.
+        </p>
+        <a
+          href="/dashboard/team/problem-statements"
+          style={{
+            background: 'var(--flame-red)',
+            color: '#fff',
+            padding: '0.75rem 1.75rem',
+            borderRadius: '8px',
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            textDecoration: 'none'
+          }}
+        >
+          Go to Problem Statements Repository →
+        </a>
+      </Card>
+    )
+  }
+
   if (status === 'DRAFT' || status === 'NEEDS_REVISION') {
     return (
       <>

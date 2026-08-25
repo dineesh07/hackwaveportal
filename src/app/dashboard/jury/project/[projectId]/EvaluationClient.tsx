@@ -8,6 +8,8 @@ import { Tag } from '@/components/ui/Tag'
 import { Field, Input, Textarea } from '@/components/ui/FormControls'
 import { ExternalLink, CheckCircle2, FileText, ImageIcon, MousePointerClick, FolderGit2, Video } from 'lucide-react'
 import styles from '../../../dashboard.module.css'
+import { PROBLEM_STATEMENTS } from '@/data/problem-statements'
+
 
 const REVIEW1_FIELDS = [
   { key: 'r1ProblemUnderstanding', label: 'Problem Understanding', max: 10, helper: 'How clearly the team understands the problem, users, pain points, and requirements' },
@@ -42,6 +44,7 @@ type EvalProject = {
   track: string;
   targetUsers: string[];
   problemStatement: string;
+  problemStatementId?: string | null;
   proposedSolution: string;
   coreFeatures: { id: string; title: string; description: string }[];
   techFrontend: string[];
@@ -75,46 +78,111 @@ type EvalData = {
   status?: string;
 };
 
+const FIELD_MAX_MAP = [...REVIEW1_FIELDS, ...REVIEW2_FIELDS].reduce((acc, f) => {
+  acc[f.key] = f.max;
+  return acc;
+}, {} as Record<string, number>);
+
 export default function EvaluationClient({ project, initialEvaluation }: { project: EvalProject, initialEvaluation: EvalData | null }) {
   const router = useRouter();
   
-  const [evalData, setEvalData] = useState({
-    r1ProblemUnderstanding: initialEvaluation?.r1ProblemUnderstanding || 0,
-    r1ProposedSolution: initialEvaluation?.r1ProposedSolution || 0,
-    r1TechUnderstanding: initialEvaluation?.r1TechUnderstanding || 0,
-    r1PrototypeDev: initialEvaluation?.r1PrototypeDev || 0,
-    r1UiUx: initialEvaluation?.r1UiUx || 0,
-    r1TeamUnderstanding: initialEvaluation?.r1TeamUnderstanding || 0,
+  const [evalData, setEvalData] = useState<{ [key: string]: number | string }>({
+    r1ProblemUnderstanding: initialEvaluation?.r1ProblemUnderstanding ?? 0,
+    r1ProposedSolution: initialEvaluation?.r1ProposedSolution ?? 0,
+    r1TechUnderstanding: initialEvaluation?.r1TechUnderstanding ?? 0,
+    r1PrototypeDev: initialEvaluation?.r1PrototypeDev ?? 0,
+    r1UiUx: initialEvaluation?.r1UiUx ?? 0,
+    r1TeamUnderstanding: initialEvaluation?.r1TeamUnderstanding ?? 0,
     r1Remark: initialEvaluation?.r1Remark || '',
     
-    r2FeedbackImplementation: initialEvaluation?.r2FeedbackImplementation || 0,
-    r2Improvements: initialEvaluation?.r2Improvements || 0,
-    r2PrototypeFunctionality: initialEvaluation?.r2PrototypeFunctionality || 0,
-    r2TechImplementation: initialEvaluation?.r2TechImplementation || 0,
-    r2TestingValidation: initialEvaluation?.r2TestingValidation || 0,
-    r2TeamPresentation: initialEvaluation?.r2TeamPresentation || 0,
+    r2FeedbackImplementation: initialEvaluation?.r2FeedbackImplementation ?? 0,
+    r2Improvements: initialEvaluation?.r2Improvements ?? 0,
+    r2PrototypeFunctionality: initialEvaluation?.r2PrototypeFunctionality ?? 0,
+    r2TechImplementation: initialEvaluation?.r2TechImplementation ?? 0,
+    r2TestingValidation: initialEvaluation?.r2TestingValidation ?? 0,
+    r2TeamPresentation: initialEvaluation?.r2TeamPresentation ?? 0,
     r2Remark: initialEvaluation?.r2Remark || '',
   });
 
-  const totalR1 = useMemo(() => REVIEW1_FIELDS.reduce((sum, f) => sum + Number(evalData[f.key as keyof typeof evalData] || 0), 0), [evalData]);
-  const totalR2 = useMemo(() => REVIEW2_FIELDS.reduce((sum, f) => sum + Number(evalData[f.key as keyof typeof evalData] || 0), 0), [evalData]);
-  const totalScore = totalR1 + totalR2;
+  const totalR1 = useMemo(() => {
+    const sum = REVIEW1_FIELDS.reduce((acc, f) => {
+      const val = parseFloat(String(evalData[f.key] || 0));
+      return acc + (isNaN(val) ? 0 : val);
+    }, 0);
+    return Number(sum.toFixed(2));
+  }, [evalData]);
+
+  const totalR2 = useMemo(() => {
+    const sum = REVIEW2_FIELDS.reduce((acc, f) => {
+      const val = parseFloat(String(evalData[f.key] || 0));
+      return acc + (isNaN(val) ? 0 : val);
+    }, 0);
+    return Number(sum.toFixed(2));
+  }, [evalData]);
+
+  const totalScore = useMemo(() => Number((totalR1 + totalR2).toFixed(2)), [totalR1, totalR2]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showMoreDetails, setShowMoreDetails] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setEvalData({ ...evalData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name in FIELD_MAX_MAP) {
+      const max = FIELD_MAX_MAP[name];
+      if (value === '' || value === '.') {
+        setEvalData(prev => ({ ...prev, [name]: value }));
+        return;
+      }
+      const num = parseFloat(value);
+      if (isNaN(num)) {
+        setEvalData(prev => ({ ...prev, [name]: '' }));
+      } else if (num > max) {
+        setEvalData(prev => ({ ...prev, [name]: max }));
+      } else if (num < 0) {
+        setEvalData(prev => ({ ...prev, [name]: 0 }));
+      } else {
+        setEvalData(prev => ({ ...prev, [name]: value }));
+      }
+    } else {
+      setEvalData(prev => ({ ...prev, [name]: value }));
+    }
   }
 
   const submitEval = async (status: 'DRAFT' | 'SUBMITTED') => {
     setIsSubmitting(true);
     try {
-      await fetch(`/api/jury/evaluate`, {
+      // Validate and clamp all scores supporting decimals
+      const cleanedData: Record<string, any> = { ...evalData };
+      let r1Sum = 0;
+      let r2Sum = 0;
+
+      REVIEW1_FIELDS.forEach(f => {
+        const raw = parseFloat(String(cleanedData[f.key])) || 0;
+        const clamped = Math.max(0, Math.min(f.max, Number(raw.toFixed(2))));
+        cleanedData[f.key] = clamped;
+        r1Sum += clamped;
+      });
+
+      REVIEW2_FIELDS.forEach(f => {
+        const raw = parseFloat(String(cleanedData[f.key])) || 0;
+        const clamped = Math.max(0, Math.min(f.max, Number(raw.toFixed(2))));
+        cleanedData[f.key] = clamped;
+        r2Sum += clamped;
+      });
+
+      const finalTotal = Number((r1Sum + r2Sum).toFixed(2));
+
+      const res = await fetch(`/api/jury/evaluate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...evalData, totalScore, status, projectId: project.id })
+        body: JSON.stringify({ ...cleanedData, totalScore: finalTotal, status, projectId: project.id })
       });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Failed to save evaluation.");
+        setIsSubmitting(false);
+        return;
+      }
       router.refresh();
       alert(status === 'SUBMITTED' ? "Evaluation submitted successfully." : "Draft saved.");
     } catch {
@@ -122,6 +190,8 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
     }
     setIsSubmitting(false);
   }
+
+
 
   const isLocked = initialEvaluation?.status === 'SUBMITTED';
 
@@ -132,15 +202,69 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
         <h2 style={{ color: 'var(--ink)' }}>{project.projectTitle}</h2>
         <p style={{ fontStyle: 'italic', color: 'var(--ink-60)', marginTop: '0.25rem', marginBottom: '1.5rem' }}>{project.oneLiner}</p>
 
-        <div style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1.5rem' }}>
-          <h3 style={{ fontWeight: 700, marginBottom: '0.75rem', color: 'var(--brand)' }}>Problem Statement</h3>
-          <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{project.problemStatement}</p>
-        </div>
+        {(() => {
+          const lockedPS = PROBLEM_STATEMENTS.find(ps => ps.id === project.problemStatementId || ps.title === project.problemStatement);
+          return (
+            <div style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <h3 style={{ fontWeight: 700, color: 'var(--brand)', margin: 0 }}>Problem Statement</h3>
+                {lockedPS && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{
+                      background: 'var(--flame-red)',
+                      color: '#fff',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '999px',
+                      fontSize: '0.8rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.04em'
+                    }}>
+                      {lockedPS.id}
+                    </span>
+                    <span style={{
+                      background: 'var(--surface-sunken)',
+                      color: 'var(--ink-70)',
+                      border: '1px solid var(--line)',
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '999px',
+                      fontSize: '0.75rem',
+                      fontWeight: 700
+                    }}>
+                      {lockedPS.domain}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--ink)', margin: 0 }}>
+                {lockedPS ? lockedPS.title : project.problemStatement}
+              </h4>
+
+              {lockedPS ? (
+                <div style={{
+                  background: 'var(--surface-sunken)',
+                  padding: '1.25rem',
+                  borderRadius: '8px',
+                  border: '1px solid var(--line)',
+                  color: 'var(--ink-80)',
+                  fontSize: '0.925rem',
+                  lineHeight: 1.7,
+                  whiteSpace: 'pre-wrap'
+                }}>
+                  {lockedPS.description}
+                </div>
+              ) : (
+                <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, margin: 0 }}>{project.problemStatement}</p>
+              )}
+            </div>
+          );
+        })()}
 
         <div style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1.5rem' }}>
           <h3 style={{ fontWeight: 700, marginBottom: '0.75rem', color: 'var(--brand)' }}>Proposed Solution</h3>
           <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{project.proposedSolution}</p>
         </div>
+
 
         {/* Collapsible section for extra details */}
         <div>
@@ -214,7 +338,17 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
                   <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginTop: '0.25rem' }}>{field.helper}</p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Input type="number" name={field.key} value={evalData[field.key as keyof typeof evalData] as number} onChange={handleChange} min="0" max={field.max} disabled={isLocked} style={{ width: '80px', textAlign: 'center', fontWeight: 'bold' }} />
+                  <Input 
+                    type="number" 
+                    step="any" 
+                    name={field.key} 
+                    value={evalData[field.key] !== undefined ? evalData[field.key] : 0} 
+                    onChange={handleChange} 
+                    min="0" 
+                    max={field.max} 
+                    disabled={isLocked} 
+                    style={{ width: '80px', textAlign: 'center', fontWeight: 'bold' }} 
+                  />
                   <span style={{ color: 'var(--ink-60)', fontWeight: 600 }}>/ {field.max}</span>
                 </div>
               </div>
@@ -238,12 +372,23 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
                   <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginTop: '0.25rem' }}>{field.helper}</p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Input type="number" name={field.key} value={evalData[field.key as keyof typeof evalData] as number} onChange={handleChange} min="0" max={field.max} disabled={isLocked} style={{ width: '80px', textAlign: 'center', fontWeight: 'bold' }} />
+                  <Input 
+                    type="number" 
+                    step="any" 
+                    name={field.key} 
+                    value={evalData[field.key] !== undefined ? evalData[field.key] : 0} 
+                    onChange={handleChange} 
+                    min="0" 
+                    max={field.max} 
+                    disabled={isLocked} 
+                    style={{ width: '80px', textAlign: 'center', fontWeight: 'bold' }} 
+                  />
                   <span style={{ color: 'var(--ink-60)', fontWeight: 600 }}>/ {field.max}</span>
                 </div>
               </div>
             </div>
           ))}
+
           <Field label="Review 2 Remarks (Private to Jury)">
             <Textarea rows={4} name="r2Remark" value={evalData.r2Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Review 2..." />
           </Field>

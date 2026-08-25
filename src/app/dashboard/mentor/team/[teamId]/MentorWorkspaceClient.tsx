@@ -8,6 +8,7 @@ import { Tag } from '@/components/ui/Tag'
 import { Field, Input, Textarea, Select } from '@/components/ui/FormControls'
 import { FileCheck, Users, MessageSquare, ListChecks, Lock, Plus, HelpCircle, ExternalLink } from 'lucide-react'
 import styles from '../../../dashboard.module.css'
+import { PROBLEM_STATEMENTS } from '@/data/problem-statements'
 
 type WorkspaceTask = {
   id: string
@@ -24,7 +25,9 @@ type WorkspaceProject = {
   status: string
   projectStatus: string
   problemStatement: string
+  problemStatementId?: string | null
   proposedSolution: string
+
   architectureFileUrl: string | null
   mockupFileUrl: string | null
   prototypeLinkUrl: string | null
@@ -166,10 +169,66 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                 <Tag tone="neutral">{project.projectStatus.replace(/_/g, ' ')}</Tag>
               </div>
 
-              <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
-                <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Problem Statement</h4>
-                <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>{project.problemStatement}</p>
-              </div>
+              {(() => {
+                const lockedPS = PROBLEM_STATEMENTS.find(ps => ps.id === project.problemStatementId || ps.title === project.problemStatement);
+                return (
+                  <div style={{ background: 'var(--surface)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <h4 style={{ fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Problem Statement</h4>
+                      {lockedPS && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span style={{
+                            background: 'var(--flame-red)',
+                            color: '#fff',
+                            padding: '0.2rem 0.65rem',
+                            borderRadius: '999px',
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            letterSpacing: '0.04em'
+                          }}>
+                            {lockedPS.id}
+                          </span>
+                          <span style={{
+                            background: 'var(--surface-sunken)',
+                            color: 'var(--ink-70)',
+                            border: '1px solid var(--line)',
+                            padding: '0.2rem 0.65rem',
+                            borderRadius: '999px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700
+                          }}>
+                            {lockedPS.domain}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)', margin: 0 }}>
+                      {lockedPS ? lockedPS.title : project.problemStatement}
+                    </h3>
+
+                    {lockedPS ? (
+                      <div style={{
+                        background: 'var(--surface-sunken)',
+                        padding: '1.25rem',
+                        borderRadius: '8px',
+                        border: '1px solid var(--line)',
+                        color: 'var(--ink-80)',
+                        fontSize: '0.9rem',
+                        lineHeight: 1.7,
+                        whiteSpace: 'pre-wrap'
+                      }}>
+                        {lockedPS.description}
+                      </div>
+                    ) : (
+                      <p style={{ whiteSpace: 'pre-wrap', color: 'var(--ink-70)', margin: 0 }}>
+                        {project.problemStatement}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
+
 
               <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
                 <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Proposed Solution</h4>

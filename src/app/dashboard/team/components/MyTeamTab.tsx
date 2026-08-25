@@ -6,7 +6,15 @@ import { Users, User, Shield, GraduationCap, Building } from 'lucide-react'
 import styles from '../../dashboard.module.css'
 
 export default function MyTeamTab({ team }: any) {
-  const members = (team?.members || []).filter((m: any) => m.rollNo !== team.leaderRollNo);
+  const leaderRollClean = (team?.leaderRollNo || '').trim().toLowerCase();
+  const leaderNameClean = (team?.leaderName || '').trim().toLowerCase();
+  const members = (team?.members || []).filter((m: any) => {
+    const mRoll = (m.rollNo || '').trim().toLowerCase();
+    const mName = (m.name || '').trim().toLowerCase();
+    if (leaderRollClean && mRoll === leaderRollClean) return false;
+    if (leaderNameClean && mName === leaderNameClean) return false;
+    return true;
+  });
   const mentors = team?.mentorAssignments || [];
 
   return (

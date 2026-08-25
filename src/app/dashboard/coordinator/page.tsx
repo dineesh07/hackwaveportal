@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { Button } from '@/components/ui/Button'
@@ -7,7 +8,7 @@ import { Card } from '@/components/ui/Card'
 import { Tag } from '@/components/ui/Tag'
 import { StatusRibbon } from '@/components/ui/StatusRibbon'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { CheckCircle2, Users, UserCheck, FileCheck, CheckCheck, Clock, ClipboardList, ListChecks, AlertTriangle, UserPlus } from 'lucide-react'
+import { CheckCircle2, Users, UserCheck, FileCheck, CheckCheck, Clock, ClipboardList, ListChecks, AlertTriangle, UserPlus, Lightbulb, ArrowRight } from 'lucide-react'
 import styles from '../dashboard.module.css'
 import RegistrationActions from './RegistrationActions'
 
@@ -20,6 +21,9 @@ export default async function CoordinatorDashboardPage() {
 
   const totalTeams = await prisma.team.count({ where: { status: 'ACTIVE' } });
   const totalMentors = await prisma.user.count({ where: { role: 'MENTOR', status: 'ACTIVE' } });
+  const lockedPsCount = await prisma.project.count({
+    where: { phase: 1, problemStatementId: { not: null, notIn: [''] } }
+  });
 
   const projects = await prisma.project.findMany({ where: { phase: 1 }, include: { tasks: true, team: true } });
 
@@ -73,15 +77,45 @@ export default async function CoordinatorDashboardPage() {
           <StatusRibbon label="Phase 1 · Live" tone="hot" />
         </header>
 
-        <section className={styles.metricsGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '2.5rem' }}>
+        <section className={styles.metricsGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '1.5rem' }}>
           <StatCard label="Total Teams" value={totalTeams} icon={<Users size={18} />} />
           <StatCard label="Total Mentors" value={totalMentors} icon={<UserCheck size={18} />} />
+          <StatCard label="PS Locked Teams" value={lockedPsCount} icon={<Lightbulb size={18} />} tone="gold" />
           <StatCard label="Submitted Projects" value={submittedCount} icon={<FileCheck size={18} />} tone="gold" />
           <StatCard label="Reviewed Projects" value={reviewedCount} icon={<CheckCheck size={18} />} tone="success" />
           <StatCard label="Pending Reviews" value={pendingReviews} icon={<Clock size={18} />} tone="danger" />
-          <StatCard label="Tasks Pending" value={pendingTasks} icon={<ClipboardList size={18} />} />
           <StatCard label="Tasks Completed" value={completedTasks} icon={<ListChecks size={18} />} tone="success" />
         </section>
+
+        {/* Quick Problem Statements Management Link Card */}
+        <Card style={{ padding: '1rem 1.5rem', marginBottom: '2rem', background: 'linear-gradient(135deg, rgba(232, 40, 63, 0.05) 0%, var(--surface) 100%)', border: '1px solid rgba(232, 40, 63, 0.2)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <Lightbulb size={24} color="var(--flame-red)" />
+              <div>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--ink)' }}>Problem Statement Quotas & Team Allocations</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--ink-60)', margin: 0 }}>View which teams chose each problem statement and adjust capacity limits.</p>
+              </div>
+            </div>
+            <Link
+              href="/dashboard/coordinator/problem-statements"
+              style={{
+                background: 'var(--flame-red)',
+                color: '#fff',
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                textDecoration: 'none'
+              }}
+            >
+              Manage Problem Statements <ArrowRight size={15} />
+            </Link>
+          </div>
+        </Card>
 
         <div className={styles.splitLayout}>
           <section>

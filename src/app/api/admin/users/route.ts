@@ -84,16 +84,40 @@ export async function POST(req: Request) {
         ipAddress: getClientIp(req),
       });
     } else if (body.action === 'DELETE') {
-      await prisma.user.delete({
-        where: { id: body.userId },
-      });
-      await writeAuditLog({
-        actorId: session.user.id,
-        action: 'USER_DELETE',
-        targetType: 'User',
-        targetId: body.userId,
-        ipAddress: getClientIp(req),
-      });
+      const userToDelete = await prisma.user.findUnique({ where: { id: body.userId } });
+      if (userToDelete) {
+        // 1. If user is a team account or leader of any team, cascade delete the team
+        const teams = await prisma.team.findMany({
+          where: {
+            OR: [
+              { userId: userToDelete.id },
+              ...(userToDelete.rollNo ? [{ leaderRollNo: userToDelete.rollNo }] : [])
+            ]
+          }
+        });
+        const { deleteTeamCascade } = await import('@/lib/team-delete');
+        for (const t of teams) {
+          await deleteTeamCascade(t.id);
+        }
+
+        // 2. If user is a mentor or jury, clean up assignments
+        await prisma.mentorAssignment.deleteMany({ where: { mentorId: userToDelete.id } }).catch(() => {});
+        await prisma.juryAssignment.deleteMany({ where: { juryId: userToDelete.id } }).catch(() => {});
+        await prisma.juryEvaluation.deleteMany({ where: { juryId: userToDelete.id } }).catch(() => {});
+
+        // 3. Delete user
+        await prisma.user.delete({
+          where: { id: body.userId },
+        });
+
+        await writeAuditLog({
+          actorId: session.user.id,
+          action: 'USER_DELETE',
+          targetType: 'User',
+          targetId: body.userId,
+          ipAddress: getClientIp(req),
+        });
+      }
     }
 
     return NextResponse.json({ success: true });

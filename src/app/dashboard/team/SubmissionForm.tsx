@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input, Textarea, Select } from '@/components/ui/FormControls'
-import { Check, Circle, Plus, X, FileText, Lightbulb, Sparkles, Cpu, Network, Compass, Link2, Video, ListChecks, ChevronLeft, ChevronRight, AlertCircle, Target, Eye } from 'lucide-react'
+import { Check, Circle, Plus, X, FileText, Lightbulb, Sparkles, Cpu, Network, Compass, Link2, Video, ListChecks, ChevronLeft, ChevronRight, AlertCircle, Target, Eye, Search, Filter, Layers, CheckCircle2, Lock } from 'lucide-react'
 import styles from './SubmissionForm.module.css'
-import { PROBLEM_STATEMENTS } from './components/ProblemStatementsTab'
+import { PROBLEM_STATEMENTS } from '@/data/problem-statements'
 
 const TRACKS = [
   { value: 'ARTIFICIAL_INTELLIGENCE', label: 'Agentic & Generative AI' },
@@ -161,6 +161,24 @@ const WIZARD_STEPS = [
   { num: 12, title: 'Preview', icon: <Eye size={16} /> },
 ];
 
+function getTrackFromDomain(domain?: string): string {
+  if (!domain) return 'OTHERS';
+  const upper = domain.toUpperCase();
+  if (upper.includes('AGENTIC') || upper.includes('GENERATIVE') || upper.includes('ARTIFICIAL')) {
+    return 'ARTIFICIAL_INTELLIGENCE';
+  }
+  if (upper.includes('VISION') || upper.includes('DEEP LEARNING')) {
+    return 'COMPUTER_VISION';
+  }
+  if (upper.includes('WEB')) {
+    return 'WEB_DEVELOPMENT';
+  }
+  if (upper.includes('CYBER')) {
+    return 'CYBERSECURITY';
+  }
+  return 'OTHERS';
+}
+
 export default function SubmissionForm({ initialData }: { initialData: ProjectInitialData | null }) {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1);
@@ -168,10 +186,15 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  const initialPsMatch = initialData?.problemStatementId 
+    ? PROBLEM_STATEMENTS.find(ps => ps.id === initialData.problemStatementId) 
+    : null;
+  const initialAutoTrack = initialPsMatch ? getTrackFromDomain(initialPsMatch.domain) : (initialData?.track || 'ARTIFICIAL_INTELLIGENCE');
+
   const [formData, setFormData] = useState({
     projectTitle: initialData?.projectTitle || '',
     oneLiner: initialData?.oneLiner || '',
-    track: initialData?.track || 'WEB_DEVELOPMENT',
+    track: initialAutoTrack,
     projectStatus: initialData?.projectStatus || 'IDEATION_COMPLETE',
     problemStatement: initialData?.problemStatement || '',
     problemStatementId: initialData?.problemStatementId || '',
@@ -200,6 +223,48 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
     demoVideoUrl: initialData?.demoVideoUrl || '',
     questionsForMentors: initialData?.questionsForMentors || ''
   })
+
+  const [psStats, setPsStats] = useState<{
+    counts: Record<string, number>;
+    limits: Record<string, number>;
+    myLockedPsId: string | null;
+  }>({
+    counts: {},
+    limits: {},
+    myLockedPsId: null
+  })
+
+  const loadPsStats = async () => {
+    try {
+      const res = await fetch('/api/problem-statements/stats', { cache: 'no-store' })
+      const data = await res.json()
+      if (res.ok) {
+        setPsStats(data)
+        const lockedId = data.myLockedPsId || formData.problemStatementId || initialData?.problemStatementId
+        if (lockedId) {
+          const matched = PROBLEM_STATEMENTS.find(ps => ps.id === lockedId)
+          if (matched) {
+            const autoTrack = getTrackFromDomain(matched.domain)
+            setFormData(prev => ({
+              ...prev,
+              problemStatementId: matched.id,
+              problemStatement: matched.title,
+              track: autoTrack
+            }))
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load PS stats:', err)
+    }
+  }
+
+  useEffect(() => {
+    loadPsStats()
+  }, [])
+
+
+
 
   const updateFeature = (type: 'coreFeatures'|'futureEnhancements', index: number, field: string, value: string) => {
     const newList = [...formData[type]];
@@ -401,11 +466,36 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                   <span className={styles.helper}>{formData.oneLiner.length}/150</span>
                 </div>
                 <div>
-                  <label className={styles.tagsLabel}>Track *</label>
-                  <Select name="track" value={formData.track} onChange={handleChange}>
+                  <label className={styles.tagsLabel} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <Lock size={14} color="var(--flame-red)" /> Track (Locked) *
+                    </span>
+                    {(() => {
+                      const currentPsId = formData.problemStatementId || psStats.myLockedPsId || initialData?.problemStatementId;
+                      const lockedPS = PROBLEM_STATEMENTS.find(ps => ps.id === currentPsId);
+                      if (lockedPS) {
+                        return (
+                          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--success)', background: 'rgba(31, 146, 84, 0.12)', padding: '0.15rem 0.55rem', borderRadius: '999px' }}>
+                            ✓ Auto-synced from {lockedPS.id}
+                          </span>
+                        );
+                      }
+                      return (
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--ink-50)' }}>
+                          Auto-assigned from PS
+                        </span>
+                      );
+                    })()}
+                  </label>
+                  <Select name="track" value={formData.track} onChange={handleChange} disabled style={{ background: 'var(--surface-sunken)', opacity: 0.85, cursor: 'not-allowed', color: 'var(--ink)' }}>
                     {TRACKS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                   </Select>
+                  <span className={styles.helper}>
+                    Track is automatically locked and determined by your team&apos;s chosen Problem Statement.
+                  </span>
                 </div>
+
+
                 <div>
                   <label className={styles.tagsLabel}>Project Status *</label>
                   <div className={styles.radioRow}>
@@ -422,76 +512,140 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
           )}
 
           {currentStep === 2 && (
-            <Section icon={<Lightbulb size={18} />} title="Section 2: Problem">
-              <label className={styles.tagsLabel}>Select Problem Statement *</label>
-              <span className={styles.helper}>Choose a problem statement from the list below. The selected statement will be highlighted at the top.</span>
+            <Section icon={<Lightbulb size={18} />} title="Section 2: Problem Statement">
+              <label className={styles.tagsLabel}>Locked Problem Statement for Your Team *</label>
+              <span className={styles.helper}>This is the problem statement reserved and locked for your team.</span>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
-                {PROBLEM_STATEMENTS.map((ps) => {
-                  const isSelected = formData.problemStatement === ps.title;
+              {(() => {
+                const currentPsId = formData.problemStatementId || psStats.myLockedPsId || initialData?.problemStatementId;
+                const lockedPS = PROBLEM_STATEMENTS.find(ps => ps.id === currentPsId || ps.title === formData.problemStatement);
+
+                if (lockedPS) {
                   return (
-                    <div 
-                      key={ps.id} 
-                      onClick={() => setFormData({ ...formData, problemStatement: ps.title, problemStatementId: ps.id })}
-                      style={{ 
-                        padding: '1.25rem', 
-                        border: `2px solid ${isSelected ? 'var(--flame-red)' : 'var(--line)'}`, 
-                        borderRadius: '8px', 
-                        background: isSelected ? 'rgba(239, 68, 68, 0.05)' : 'var(--surface)',
-                        cursor: 'pointer',
-                        order: isSelected ? -1 : 0,
-                        transition: 'all 0.2s ease',
-                        boxShadow: isSelected ? '0 4px 12px rgba(239, 68, 68, 0.15)' : 'none'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <div style={{ 
-                            width: '20px', height: '20px', borderRadius: '50%', 
-                            border: `2px solid ${isSelected ? 'var(--flame-red)' : 'var(--ink-40)'}`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                          }}>
-                            {isSelected && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: 'var(--flame-red)' }} />}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
+                      <div style={{
+                        background: 'linear-gradient(135deg, rgba(31, 146, 84, 0.06) 0%, var(--surface) 100%)',
+                        border: '1.5px solid rgba(31, 146, 84, 0.35)',
+                        borderRadius: '12px',
+                        padding: '1.5rem',
+                        boxShadow: '0 4px 16px rgba(31, 146, 84, 0.05)'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                            <span style={{
+                              background: 'var(--flame-red)',
+                              color: '#fff',
+                              padding: '0.35rem 0.85rem',
+                              borderRadius: '999px',
+                              fontSize: '0.85rem',
+                              fontWeight: 800,
+                              letterSpacing: '0.04em'
+                            }}>
+                              {lockedPS.id}
+                            </span>
+                            <span style={{
+                              background: 'var(--surface-sunken)',
+                              color: 'var(--ink-70)',
+                              border: '1px solid var(--line)',
+                              padding: '0.35rem 0.85rem',
+                              borderRadius: '999px',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem'
+                            }}>
+                              <Target size={14} /> {lockedPS.domain}
+                            </span>
                           </div>
-                          <span style={{ 
-                            background: 'rgba(56, 189, 248, 0.1)', 
-                            color: '#0369a1', 
-                            padding: '0.25rem 0.5rem', 
-                            borderRadius: '999px', 
-                            fontSize: '0.7rem', 
-                            fontWeight: 700 
+                          <span style={{
+                            background: 'rgba(31, 146, 84, 0.15)',
+                            color: 'var(--success)',
+                            padding: '0.35rem 0.85rem',
+                            borderRadius: '999px',
+                            fontSize: '0.8rem',
+                            fontWeight: 800,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem'
                           }}>
-                            {ps.id}
+                            <CheckCircle2 size={15} /> Locked & Verified for Your Team
                           </span>
                         </div>
-                        {isSelected && <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--flame-red)' }}>SELECTED</span>}
+
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink)', lineHeight: 1.4, marginBottom: '0.75rem' }}>
+                          {lockedPS.title}
+                        </h3>
+
+                        <div style={{
+                          background: 'var(--surface-sunken)',
+                          padding: '1.25rem',
+                          borderRadius: '8px',
+                          border: '1px solid var(--line)',
+                          color: 'var(--ink-80)',
+                          fontSize: '0.925rem',
+                          lineHeight: 1.7,
+                          whiteSpace: 'pre-wrap'
+                        }}>
+                          {lockedPS.description}
+                        </div>
                       </div>
-                      
-                      <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--ink)', marginBottom: '0.5rem' }}>
-                        {ps.title}
-                      </h4>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--ink-60)', fontSize: '0.8125rem', marginBottom: '0.5rem' }}>
-                        <Target size={14} /> {ps.domain}
+
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: 'var(--surface-sunken)',
+                        padding: '1rem 1.25rem',
+                        borderRadius: '8px',
+                        border: '1px solid var(--line)',
+                        flexWrap: 'wrap',
+                        gap: '0.75rem'
+                      }}>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--ink-60)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <Lock size={14} color="var(--success)" /> This problem statement is permanently locked for your team and associated with this submission.
+                        </p>
+                        <a
+                          href="/dashboard/team/problem-statements"
+                          style={{
+                            color: 'var(--flame-red)',
+                            fontWeight: 700,
+                            fontSize: '0.85rem',
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem'
+                          }}
+                        >
+                          View in Repository →
+                        </a>
                       </div>
-                      <p style={{ color: 'var(--ink-60)', fontSize: '0.875rem', lineHeight: 1.5 }}>
-                        {ps.description}
-                      </p>
                     </div>
                   );
-                })}
-              </div>
 
-              <div style={{ marginTop: '2rem' }}>
-                <label className={styles.tagsLabel}>Custom Problem Statement (Optional)</label>
-                <span className={styles.helper}>If you selected "Others" track, or have a unique problem statement, explain it here.</span>
-                <Textarea 
-                  name="problemStatement" 
-                  value={PROBLEM_STATEMENTS.some(ps => ps.title === formData.problemStatement) ? '' : formData.problemStatement} 
-                  onChange={(e) => setFormData({ ...formData, problemStatement: e.target.value })} 
-                  rows={4} 
-                  placeholder="Describe your custom problem statement..."
-                />
-              </div>
+                }
+
+                return (
+                  <div style={{ padding: '2.5rem', textAlign: 'center', background: 'var(--surface-sunken)', borderRadius: '12px', border: '1px solid var(--line)', marginTop: '1rem' }}>
+                    <p style={{ color: 'var(--ink-70)', marginBottom: '1.25rem', fontSize: '0.95rem' }}>No problem statement has been locked for your team yet.</p>
+                    <a
+                      href="/dashboard/team/problem-statements"
+                      style={{
+                        background: 'var(--flame-red)',
+                        color: '#fff',
+                        padding: '0.65rem 1.5rem',
+                        borderRadius: '8px',
+                        fontWeight: 700,
+                        fontSize: '0.9rem',
+                        textDecoration: 'none',
+                        display: 'inline-block'
+                      }}
+                    >
+                      Go to Problem Statements Repository
+                    </a>
+                  </div>
+                );
+              })()}
             </Section>
           )}
 
@@ -653,9 +807,68 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                   </div>
 
                   <div>
-                    <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Problem Statement</h4>
-                    <p style={{ whiteSpace: 'pre-wrap' }}>{formData.problemStatement || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}</p>
+                    {(() => {
+                      const currentPsId = formData.problemStatementId || psStats.myLockedPsId || initialData?.problemStatementId;
+                      const lockedPS = PROBLEM_STATEMENTS.find(ps => ps.id === currentPsId || ps.title === formData.problemStatement);
+                      return (
+                        <div style={{ background: 'var(--surface-sunken)', padding: '1.25rem', borderRadius: '8px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            <h4 style={{ fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Problem Statement</h4>
+                            {lockedPS && (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                <span style={{
+                                  background: 'var(--flame-red)',
+                                  color: '#fff',
+                                  padding: '0.2rem 0.65rem',
+                                  borderRadius: '999px',
+                                  fontSize: '0.8rem',
+                                  fontWeight: 800,
+                                  letterSpacing: '0.04em'
+                                }}>
+                                  {lockedPS.id}
+                                </span>
+                                <span style={{
+                                  background: 'var(--surface)',
+                                  color: 'var(--ink-70)',
+                                  border: '1px solid var(--line)',
+                                  padding: '0.2rem 0.65rem',
+                                  borderRadius: '999px',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 700
+                                }}>
+                                  {lockedPS.domain}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--ink)', margin: 0 }}>
+                            {lockedPS ? lockedPS.title : (formData.problemStatement || 'Not provided')}
+                          </h4>
+
+                          {lockedPS ? (
+                            <div style={{
+                              background: 'var(--surface)',
+                              padding: '1rem',
+                              borderRadius: '6px',
+                              border: '1px solid var(--line)',
+                              color: 'var(--ink-80)',
+                              fontSize: '0.875rem',
+                              lineHeight: 1.65,
+                              whiteSpace: 'pre-wrap'
+                            }}>
+                              {lockedPS.description}
+                            </div>
+                          ) : (
+                            <p style={{ whiteSpace: 'pre-wrap', color: 'var(--ink-70)', margin: 0 }}>
+                              {formData.problemStatement || <span style={{ color: 'var(--ink-40)' }}>Not provided</span>}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
+
 
                   <div>
                     <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Proposed Solution</h4>
