@@ -330,7 +330,18 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
     isStepValid(1) && isStepValid(2) && isStepValid(3) && isStepValid(4) && 
     isStepValid(5) && isStepValid(6) && isStepValid(7) && isStepValid(8) && isStepValid(9);
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const isSubmittedRef = useRef(false);
+  const formDataRef = useRef(formData);
+  const isSavingRef = useRef(isSaving);
+
+  useEffect(() => { formDataRef.current = formData; });
+  useEffect(() => { isSavingRef.current = isSaving; });
+  useEffect(() => { isSubmittedRef.current = isSubmitted; }, [isSubmitted]);
+
   const saveProject = async (status: 'DRAFT' | 'SUBMITTED', silent = false) => {
+    if (isSubmittedRef.current) return;
+
     if (!silent) {
       setIsSaving(true)
       setError('')
@@ -357,23 +368,22 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
       }
 
       if (status === 'SUBMITTED') {
-        router.refresh()
+        setIsSubmitted(true);
+        isSubmittedRef.current = true;
+        window.location.href = '/dashboard/team/submission';
+        return;
       } else {
         if (!silent) setSuccess('Draft saved successfully at ' + new Date().toLocaleTimeString())
       }
     } catch (err) {
       if (!silent) setError(err instanceof Error ? err.message : String(err))
     } finally {
-      if (!silent) setIsSaving(false)
+      if (!silent && !isSubmittedRef.current) setIsSaving(false)
     }
   }
 
-  const formDataRef = useRef(formData);
-  const isSavingRef = useRef(isSaving);
-  useEffect(() => { formDataRef.current = formData; });
-  useEffect(() => { isSavingRef.current = isSaving; });
-
   const autosave = useCallback(async () => {
+    if (isSubmittedRef.current) return;
     const data = formDataRef.current;
     const hasContent = data.projectTitle.length > 0 || data.problemStatement.length > 0 ||
       data.proposedSolution.length > 0 || data.architectureFileUrl.length > 0;
@@ -392,9 +402,10 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
 
   // Autosave draft every 30s
   useEffect(() => {
+    if (isSubmitted) return;
     const timer = setInterval(autosave, 30000);
     return () => clearInterval(timer);
-  }, [autosave]);
+  }, [autosave, isSubmitted]);
 
   // Handle Next
   const handleNext = async () => {

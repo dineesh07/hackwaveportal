@@ -7,6 +7,9 @@ import { Card } from '@/components/ui/Card'
 import { Clock, ClipboardList, Mic } from 'lucide-react'
 import styles from '../dashboard.module.css'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 function statusLabel(status: string) {
   return status.replace('_', ' ').toLowerCase();
 }

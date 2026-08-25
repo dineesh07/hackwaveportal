@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import type { SubmissionStatus } from '@/generated/prisma/client';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const session = await auth();
@@ -10,11 +13,21 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userRecord = session.user.id ? await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { rollNo: true }
+    }) : null;
+    const effectiveRollNo = userRecord?.rollNo || session.user.rollNo || '';
+    const cleanRollNo = effectiveRollNo.trim();
+
     const team = await prisma.team.findFirst({
       where: {
         OR: [
           { userId: session.user.id },
-          { members: { some: { rollNo: session.user.rollNo } } }
+          ...(cleanRollNo ? [
+            { leaderRollNo: { equals: cleanRollNo, mode: 'insensitive' as const } },
+            { members: { some: { rollNo: { equals: cleanRollNo, mode: 'insensitive' as const } } } }
+          ] : [])
         ]
       },
       include: {
@@ -46,11 +59,21 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userRecord = session.user.id ? await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { rollNo: true }
+    }) : null;
+    const effectiveRollNo = userRecord?.rollNo || session.user.rollNo || '';
+    const cleanRollNo = effectiveRollNo.trim();
+
     const team = await prisma.team.findFirst({
       where: {
         OR: [
           { userId: session.user.id },
-          { members: { some: { rollNo: session.user.rollNo } } }
+          ...(cleanRollNo ? [
+            { leaderRollNo: { equals: cleanRollNo, mode: 'insensitive' as const } },
+            { members: { some: { rollNo: { equals: cleanRollNo, mode: 'insensitive' as const } } } }
+          ] : [])
         ]
       }
     });
@@ -66,13 +89,28 @@ export async function PUT(req: Request) {
       coreFeatures = [], futureEnhancements = [], references = []
     } = body;
 
-    const submissionStatus: SubmissionStatus = status === 'SUBMITTED' ? 'SUBMITTED' : 'DRAFT';
-
-    // To handle relations gracefully, we delete all previous features and references for Phase 1 
-    // and recreate them, as this is simpler for Draft saves than tracking individual updates.
     const existingProject = await prisma.project.findUnique({
       where: { teamId_phase: { teamId: team.id, phase: 1 } }
     });
+
+    // Guard: If project is already submitted or under review, do not allow draft overwrites
+    if (existingProject && ['SUBMITTED', 'UNDER_REVIEW', 'REVIEWED'].includes(existingProject.status)) {
+      if (status !== 'SUBMITTED') {
+        return NextResponse.json({
+          error: 'Your project has already been submitted and cannot be modified.',
+          project: existingProject
+        }, { status: 400 });
+      }
+    }
+
+    let submissionStatus: SubmissionStatus = 'DRAFT';
+    if (status === 'SUBMITTED') {
+      submissionStatus = 'SUBMITTED';
+    } else if (existingProject?.status === 'NEEDS_REVISION') {
+      submissionStatus = 'NEEDS_REVISION';
+    } else {
+      submissionStatus = 'DRAFT';
+    }
 
     if (existingProject) {
       // Clean up relations first
@@ -103,6 +141,10 @@ export async function PUT(req: Request) {
       }
     }
 
+    const submittedAtValue = submissionStatus === 'SUBMITTED'
+      ? (existingProject?.submittedAt || new Date())
+      : (submissionStatus === 'NEEDS_REVISION' ? existingProject?.submittedAt : null);
+
     const projectData = {
       projectTitle: projectTitle || '',
       oneLiner: oneLiner || '',
@@ -129,7 +171,7 @@ export async function PUT(req: Request) {
       demoVideoUrl,
       questionsForMentors,
       status: submissionStatus,
-      submittedAt: submissionStatus === 'SUBMITTED' ? new Date() : null,
+      submittedAt: submittedAtValue,
       coreFeatures: {
         create: coreFeatures.map((f: { title: string; description: string }) => ({ title: f.title, description: f.description }))
       },
