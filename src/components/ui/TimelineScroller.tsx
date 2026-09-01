@@ -26,21 +26,21 @@ const timelineData: TimelineItem[] = [
   {
     step: "02",
     title: "Registration Ends",
-    date: "01 SEP",
+    date: "07 SEP",
     description: "Team registrations officially close. Ensure your submission is complete before the deadline.",
     badge: "DEADLINE"
   },
   {
     step: "03",
     title: "Atleast one Mentor review to be completed",
-    date: "12 SEP",
+    date: "14 SEP",
     description: "Present your prototype to mentors, receive constructive feedback, and refine your solution before Phase 1.",
     badge: "MENTOR REVIEW"
   },
   {
     step: "04",
     title: "HACKWAVE IGNITE",
-    date: "21 SEP",
+    date: "26 SEP",
     description: "Showcase your working prototype before the jury. Top-performing teams move on to the next phase.",
     badge: "MAIN EVENT"
   },

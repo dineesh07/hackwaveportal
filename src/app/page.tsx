@@ -58,7 +58,7 @@ export default function Home() {
 
                     <div className={styles.heroControlsRight}>
                       <div className={styles.countdownWrapper}>
-                        <div className={styles.countdownHeader}>HACKWAVE IGNITE • 21 September 2026</div>
+                        <div className={styles.countdownHeader}>HACKWAVE IGNITE • 26 September 2026</div>
                         <Countdown />
 
                         <a href="/register" className={styles.btnFullPrimary}>

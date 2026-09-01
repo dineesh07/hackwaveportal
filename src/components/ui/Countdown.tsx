@@ -14,8 +14,8 @@ export function Countdown() {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Target date: September 19, 2026
-    const targetDate = new Date("September 19, 2026 00:00:00").getTime();
+    // Target date: September 26, 2026
+    const targetDate = new Date("September 26, 2026 00:00:00").getTime();
 
     const hydrationTick = setTimeout(() => setIsClient(true), 0);
 

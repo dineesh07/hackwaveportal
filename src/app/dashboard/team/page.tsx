@@ -28,9 +28,9 @@ export default async function TeamDashboardPage() {
 
   const now = new Date()
   const dateRegistrationOpens = new Date('2026-08-25T00:00:00')
-  const dateRegistrationEnds = platformSettings?.submissionDeadline ? new Date(platformSettings.submissionDeadline) : new Date('2026-09-01T23:59:59')
-  const dateMentorReviewEnds = platformSettings?.phase1ReviewWindowEnd ? new Date(platformSettings.phase1ReviewWindowEnd) : new Date('2026-09-12T23:59:59')
-  const dateIgniteEnds = platformSettings?.evaluationWindowEnd ? new Date(platformSettings.evaluationWindowEnd) : new Date('2026-09-21T23:59:59')
+  const dateRegistrationEnds = platformSettings?.submissionDeadline ? new Date(platformSettings.submissionDeadline) : new Date('2026-09-07T23:59:59')
+  const dateMentorReviewEnds = platformSettings?.phase1ReviewWindowEnd ? new Date(platformSettings.phase1ReviewWindowEnd) : new Date('2026-09-14T23:59:59')
+  const dateIgniteEnds = platformSettings?.evaluationWindowEnd ? new Date(platformSettings.evaluationWindowEnd) : new Date('2026-09-26T23:59:59')
 
   // Strict date-synced progression based on the event schedule
   const step1Status: 'completed' | 'current' | 'upcoming' = now >= dateRegistrationOpens ? 'completed' : 'upcoming'
@@ -56,20 +56,20 @@ export default async function TeamDashboardPage() {
     { 
       step: '02',
       label: 'Registration Ends', 
-      date: '01 SEP',
+      date: '07 SEP',
       status: step2Status
     },
     { 
       step: '03',
       label: 'Atleast one Mentor review to be completed', 
-      date: '12 SEP',
+      date: '14 SEP',
       status: step3Status
     },
     { 
       step: '04',
       label: 'HACKWAVE IGNITE', 
       sublabel: 'Phase 1 & Results',
-      date: '21 SEP',
+      date: '26 SEP',
       status: step4Status
     },
     { 
