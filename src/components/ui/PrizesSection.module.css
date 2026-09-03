@@ -1,0 +1,540 @@
+.prizesSection {
+  position: relative;
+  padding: 6rem 0 5rem;
+  background: transparent;
+  color: #ffffff;
+}
+
+.ambientGlowTop {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90vw;
+  max-width: 850px;
+  height: 380px;
+  background: radial-gradient(ellipse at center, rgba(239, 68, 68, 0.14) 0%, rgba(249, 115, 22, 0.05) 45%, transparent 70%);
+  mask-image: radial-gradient(ellipse at center, black 25%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(50px);
+}
+
+.headerWrapper {
+  text-align: center;
+  margin-bottom: 4rem;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sectionBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(249, 115, 22, 0.15));
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 0.4rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.sectionTitle {
+  font-family: var(--font-syncopate), sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.85rem, 5vw, 2.75rem);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.outlineText {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.85);
+}
+
+.sectionSubtitle {
+  font-size: clamp(0.95rem, 2vw, 1.125rem);
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 640px;
+  line-height: 1.6;
+  margin: 0 auto;
+}
+
+/* --- PODIUM GRID --- */
+.podiumGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: stretch;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 4.5rem;
+}
+
+@media (min-width: 900px) {
+  .podiumGrid {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .podiumGrid {
+    gap: 2.25rem;
+  }
+}
+
+/* Individual Prize Card */
+.prizeCard {
+  position: relative;
+  border-radius: 24px;
+  background: var(--card-bg-gradient, rgba(18, 18, 18, 0.85));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border-color, rgba(255, 255, 255, 0.1));
+  padding: 2.5rem 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 20px var(--card-glow-color, transparent);
+}
+
+/* Diagonal light shine / glare sweep on hover */
+.prizeCard::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 100%;
+  height: 200%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0) 70%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  transition: left 0.75s ease-in-out;
+  z-index: 10;
+}
+
+.prizeCard:hover {
+  transform: scale(1.03);
+  border-color: var(--card-border-color);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px var(--card-glow-color);
+}
+
+.prizeCard:hover::before {
+  left: 150%;
+}
+
+/* 1st Prize Podium Elevation & Gold/Red Tone */
+.rank1 {
+  --card-border-color: rgba(239, 68, 68, 0.75);
+  --card-glow-color: rgba(239, 68, 68, 0.35);
+  --card-bg-gradient: linear-gradient(180deg, rgba(35, 18, 18, 0.9) 0%, rgba(18, 18, 18, 0.95) 100%);
+}
+
+.rank1:hover {
+  --card-border-color: rgba(239, 68, 68, 1);
+  --card-glow-color: rgba(239, 68, 68, 0.55);
+}
+
+@media (min-width: 900px) {
+  .rank1 {
+    order: 2;
+    padding-top: 3.25rem;
+    padding-bottom: 2.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .rank2 {
+    order: 1;
+  }
+  .rank3 {
+    order: 3;
+  }
+}
+
+/* 2nd Prize Silver/Blue Tone */
+.rank2 {
+  --card-border-color: rgba(56, 189, 248, 0.55);
+  --card-glow-color: rgba(56, 189, 248, 0.25);
+  --card-bg-gradient: linear-gradient(180deg, rgba(20, 26, 35, 0.9) 0%, rgba(18, 18, 18, 0.95) 100%);
+}
+
+.rank2:hover {
+  --card-border-color: rgba(56, 189, 248, 0.9);
+  --card-glow-color: rgba(56, 189, 248, 0.45);
+}
+
+/* 3rd Prize Bronze/Orange Tone */
+.rank3 {
+  --card-border-color: rgba(249, 115, 22, 0.55);
+  --card-glow-color: rgba(249, 115, 22, 0.25);
+  --card-bg-gradient: linear-gradient(180deg, rgba(33, 23, 16, 0.9) 0%, rgba(18, 18, 18, 0.95) 100%);
+}
+
+.rank3:hover {
+  --card-border-color: rgba(249, 115, 22, 0.9);
+  --card-glow-color: rgba(249, 115, 22, 0.45);
+}
+
+/* Ambient Radial Glow behind each image */
+.imageGlowContainer {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.rank1 .imageGlowContainer {
+  height: 250px;
+}
+
+.cardGlowEffect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  filter: blur(45px);
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.prizeCard:hover .cardGlowEffect {
+  opacity: 0.85;
+}
+
+.glowGold {
+  background: radial-gradient(circle, #ef4444 0%, #f97316 60%, transparent 80%);
+}
+
+.glowSilver {
+  background: radial-gradient(circle, #38bdf8 0%, #94a3b8 60%, transparent 80%);
+}
+
+.glowBronze {
+  background: radial-gradient(circle, #f97316 0%, #d97706 60%, transparent 80%);
+}
+
+/* Prize Image */
+.prizeImageWrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prizeImage {
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+
+.prizeCard:hover .prizeImage {
+  transform: scale(1.08) translateY(-4px);
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.8));
+}
+
+/* Badge for Prize Rank */
+.rankBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.badgeGold {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(249, 115, 22, 0.3));
+  border: 1px solid rgba(239, 68, 68, 0.8);
+  color: #ffedd5;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.badgeSilver {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.25), rgba(56, 189, 248, 0.2));
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  color: #e0f2fe;
+}
+
+.badgeBronze {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.25), rgba(249, 115, 22, 0.2));
+  border: 1px solid rgba(249, 115, 22, 0.6);
+  color: #ffedd5;
+}
+
+/* Cash Prize Display Box */
+.cashPrizeBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.4rem;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+  width: 100%;
+  max-width: 260px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.cashLabel {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+  opacity: 0.85;
+}
+
+.cashAmount {
+  font-family: var(--font-syncopate), sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.cashGold {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(249, 115, 22, 0.2) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.25), inset 0 0 12px rgba(239, 68, 68, 0.15);
+  color: #fff;
+}
+
+.cashGold .cashAmount {
+  background: linear-gradient(135deg, #ffffff 0%, #ff8a8a 50%, #fca5a5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));
+}
+
+.cashGold .cashLabel {
+  color: #fca5a5;
+}
+
+.cashSilver {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(148, 163, 184, 0.15) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.2), inset 0 0 10px rgba(56, 189, 248, 0.1);
+  color: #fff;
+}
+
+.cashSilver .cashAmount {
+  background: linear-gradient(135deg, #ffffff 0%, #7dd3fc 60%, #bae6fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(56, 189, 248, 0.4));
+}
+
+.cashSilver .cashLabel {
+  color: #7dd3fc;
+}
+
+.cashBronze {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.18) 0%, rgba(217, 119, 6, 0.15) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.55);
+  box-shadow: 0 0 18px rgba(249, 115, 22, 0.2), inset 0 0 10px rgba(249, 115, 22, 0.1);
+  color: #fff;
+}
+
+.cashBronze .cashAmount {
+  background: linear-gradient(135deg, #ffffff 0%, #fdba74 60%, #ffedd5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(249, 115, 22, 0.4));
+}
+
+.cashBronze .cashLabel {
+  color: #fdba74;
+}
+
+.prizeTitle {
+  font-size: 1.45rem;
+  font-weight: 800;
+  font-family: var(--font-jakarta), sans-serif;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.rank1 .prizeTitle {
+  font-size: 1.7rem;
+  background: linear-gradient(135deg, #ffffff 0%, #fca5a5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.prizeDesc {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  max-width: 280px;
+}
+
+/* Feature Perks list */
+.perksList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1.25rem;
+  text-align: left;
+}
+
+.perkItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.825rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.perkIcon {
+  color: var(--flame-red);
+  flex-shrink: 0;
+}
+
+.rank2 .perkIcon {
+  color: #38bdf8;
+}
+
+.rank3 .perkIcon {
+  color: #f97316;
+}
+
+/* --- PERKS BANNER (FOR ALL PARTICIPANTS) --- */
+.perksBanner {
+  background: linear-gradient(135deg, rgba(25, 25, 25, 0.8) 0%, rgba(15, 15, 15, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2.25rem 2rem;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5);
+}
+
+.perksHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.perksTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.perksSub {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.perksGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .perksGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .perksGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.perkCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.perkCard:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-3px);
+}
+
+.perkBadgeIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--flame-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.perkInfoTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+
+.perkInfoDesc {
+  font-size: 0.775rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}

@@ -30,11 +30,12 @@ export function Footer() {
               <Link href="/#about" className={styles.navLink} style={{ '--stagger': 2 } as React.CSSProperties}>About</Link>
               <Link href="/#tracks" className={styles.navLink} style={{ '--stagger': 3 } as React.CSSProperties}>Tracks</Link>
               <Link href="/problem-statements" className={styles.navLink} style={{ '--stagger': 4 } as React.CSSProperties}>Problem Statements</Link>
-              <Link href="/#timeline" className={styles.navLink} style={{ '--stagger': 5 } as React.CSSProperties}>Timeline</Link>
-              <Link href="/#mentors" className={styles.navLink} style={{ '--stagger': 6 } as React.CSSProperties}>Mentors</Link>
-              <Link href="/#faq" className={styles.navLink} style={{ '--stagger': 7 } as React.CSSProperties}>FAQ</Link>
-              <Link href="/register" className={styles.navLink} style={{ '--stagger': 8 } as React.CSSProperties}>Register</Link>
-              <Link href="/login" className={styles.navLink} style={{ '--stagger': 9 } as React.CSSProperties}>Login</Link>
+              <Link href="/#prizes" className={styles.navLink} style={{ '--stagger': 5 } as React.CSSProperties}>Prizes</Link>
+              <Link href="/#timeline" className={styles.navLink} style={{ '--stagger': 6 } as React.CSSProperties}>Timeline</Link>
+              <Link href="/#mentors" className={styles.navLink} style={{ '--stagger': 7 } as React.CSSProperties}>Mentors</Link>
+              <Link href="/#faq" className={styles.navLink} style={{ '--stagger': 8 } as React.CSSProperties}>FAQ</Link>
+              <Link href="/register" className={styles.navLink} style={{ '--stagger': 9 } as React.CSSProperties}>Register</Link>
+              <Link href="/login" className={styles.navLink} style={{ '--stagger': 10 } as React.CSSProperties}>Login</Link>
             </nav>
           </div>
         </div>

@@ -9,6 +9,7 @@ export function Navbar() {
     { label: 'About', ariaLabel: 'Learn about us', link: '/#about' },
     { label: 'Tracks', ariaLabel: 'View our tracks', link: '/#tracks' },
     { label: 'PS', ariaLabel: 'View problem statements', link: '/problem-statements' },
+    { label: 'Prizes', ariaLabel: 'View prizes and awards', link: '/#prizes' },
     { label: 'Timeline', ariaLabel: 'View the timeline', link: '/#timeline' },
     { label: 'Mentors', ariaLabel: 'View mentors', link: '/#mentors' },
     { label: 'Judges', ariaLabel: 'View judges', link: '/#judges' },

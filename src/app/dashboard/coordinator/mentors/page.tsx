@@ -18,7 +18,10 @@ export default async function CoordinatorMentorsPage() {
   });
 
   const teamsRaw = await prisma.team.findMany({
-    where: { status: 'ACTIVE' },
+    where: {
+      status: 'ACTIVE',
+      registrationStatus: { not: 'REJECTED' }
+    },
     select: {
       id: true,
       teamName: true,

@@ -157,9 +157,17 @@ export async function rejectTeam(teamId: string, reason: string) {
       await tx.team.update({
         where: { id: teamId },
         data: {
-          registrationStatus: 'REJECTED'
+          registrationStatus: 'REJECTED',
+          status: 'INACTIVE',
         }
       })
+
+      if (team.userId) {
+        await tx.user.update({
+          where: { id: team.userId },
+          data: { status: 'INACTIVE' }
+        }).catch(() => {})
+      }
 
       await tx.auditLog.create({
         data: {
@@ -173,6 +181,8 @@ export async function rejectTeam(teamId: string, reason: string) {
     })
 
     revalidatePath('/dashboard/coordinator')
+    revalidatePath('/dashboard/coordinator/registrations')
+    revalidatePath('/dashboard/coordinator/teams')
     return { success: true }
   } catch (error) {
     console.error('Reject Team Error:', error)

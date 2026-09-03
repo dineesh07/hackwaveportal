@@ -55,7 +55,10 @@ export async function POST(req: Request) {
 
     // 2. Check if Team Name is already registered
     const existingTeamName = await prisma.team.findFirst({
-      where: { teamName: { equals: tName, mode: 'insensitive' } },
+      where: {
+        teamName: { equals: tName, mode: 'insensitive' },
+        registrationStatus: { not: 'REJECTED' }
+      },
       select: { teamName: true }
     });
     if (existingTeamName) {
@@ -71,7 +74,10 @@ export async function POST(req: Request) {
       // Check Roll Number across existing Leaders, TeamMembers, and Users
       if (p.rollNo) {
         const leaderConflict = await prisma.team.findFirst({
-          where: { leaderRollNo: { equals: p.rollNo, mode: 'insensitive' } },
+          where: {
+            leaderRollNo: { equals: p.rollNo, mode: 'insensitive' },
+            registrationStatus: { not: 'REJECTED' }
+          },
           select: { teamName: true, leaderName: true }
         });
         if (leaderConflict) {
@@ -81,7 +87,10 @@ export async function POST(req: Request) {
         }
 
         const memberConflict = await prisma.teamMember.findFirst({
-          where: { rollNo: { equals: p.rollNo, mode: 'insensitive' } },
+          where: {
+            rollNo: { equals: p.rollNo, mode: 'insensitive' },
+            team: { registrationStatus: { not: 'REJECTED' } }
+          },
           include: { team: { select: { teamName: true } } }
         });
         if (memberConflict) {

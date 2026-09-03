@@ -33,7 +33,11 @@ export async function GET() {
     const projects = await prisma.project.findMany({
       where: {
         phase: 1,
-        problemStatementId: { not: null, notIn: [''] }
+        problemStatementId: { not: null, notIn: [''] },
+        team: {
+          status: 'ACTIVE',
+          registrationStatus: { not: 'REJECTED' }
+        }
       },
       include: {
         team: {

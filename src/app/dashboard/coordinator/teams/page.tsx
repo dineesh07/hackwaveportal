@@ -18,7 +18,10 @@ export default async function CoordinatorTeamsPage() {
   const userRollNos = new Set(allUsers.map(u => u.rollNo));
 
   const teams = await prisma.team.findMany({
-    where: { status: 'ACTIVE' },
+    where: {
+      status: 'ACTIVE',
+      registrationStatus: { not: 'REJECTED' }
+    },
     orderBy: { createdAt: 'asc' },
     select: {
       id: true,

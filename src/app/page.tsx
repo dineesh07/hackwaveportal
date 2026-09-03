@@ -8,6 +8,7 @@ import TiltedCard from "@/components/ui/TiltedCard";
 import BorderGlow from "@/components/ui/BorderGlow";
 import { Bot, Globe, GraduationCap, ShieldCheck, Cpu, ArrowRight, Sparkles, FileText } from "lucide-react";
 import { TimelineScroller } from "@/components/ui/TimelineScroller";
+import PrizesSection from "@/components/ui/PrizesSection";
 import MentorsAndJudges from "@/components/ui/MentorsAndJudges";
 import { FaqAccordion } from "@/components/ui/FaqAccordion";
 import OrganizerCards from "@/components/ui/OrganizerCards";
@@ -122,7 +123,7 @@ export default function Home() {
           </section>
 
           {/* TRACKS SECTION */}
-          <section id="tracks" className={`${styles.section} bg-[var(--surface)]`}>
+          <section id="tracks" className={styles.section}>
             <div className="container">
               <h2 className={`${styles.sectionTitle}`}>
                 <span style={{ color: 'var(--flame-red)' }}>Tracks</span> to <span className={styles.outlineText}>Innovate</span>
@@ -174,6 +175,9 @@ export default function Home() {
               </div>
             </div>
           </section>
+
+          {/* PRIZES SECTION */}
+          <PrizesSection />
 
           {/* TIMELINE SECTION */}
           <div id="timeline">

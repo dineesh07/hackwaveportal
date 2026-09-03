@@ -19,13 +19,34 @@ export default async function CoordinatorDashboardPage() {
     return <div>Unauthorized.</div>
   }
 
-  const totalTeams = await prisma.team.count({ where: { status: 'ACTIVE' } });
+  const totalTeams = await prisma.team.count({
+    where: {
+      status: 'ACTIVE',
+      registrationStatus: { not: 'REJECTED' }
+    }
+  });
   const totalMentors = await prisma.user.count({ where: { role: 'MENTOR', status: 'ACTIVE' } });
   const lockedPsCount = await prisma.project.count({
-    where: { phase: 1, problemStatementId: { not: null, notIn: [''] } }
+    where: {
+      phase: 1,
+      problemStatementId: { not: null, notIn: [''] },
+      team: {
+        status: 'ACTIVE',
+        registrationStatus: { not: 'REJECTED' }
+      }
+    }
   });
 
-  const projects = await prisma.project.findMany({ where: { phase: 1 }, include: { tasks: true, team: true } });
+  const projects = await prisma.project.findMany({
+    where: {
+      phase: 1,
+      team: {
+        status: 'ACTIVE',
+        registrationStatus: { not: 'REJECTED' }
+      }
+    },
+    include: { tasks: true, team: true }
+  });
 
   let submittedCount = 0;
   let reviewedCount = 0;

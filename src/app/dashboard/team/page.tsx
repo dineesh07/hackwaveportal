@@ -119,7 +119,12 @@ export default async function TeamDashboardPage() {
   }
 
   // Fetch total teams
-  const totalTeams = await prisma.team.count();
+  const totalTeams = await prisma.team.count({
+    where: {
+      status: 'ACTIVE',
+      registrationStatus: { not: 'REJECTED' }
+    }
+  });
 
   const hasAnnouncements = Boolean(
     platformSettings?.announcementBanner ||

@@ -31,7 +31,12 @@ export default async function AdminDashboardPage() {
   }
 
   const totalUsers = await prisma.user.count()
-  const totalTeams = await prisma.team.count()
+  const totalTeams = await prisma.team.count({
+    where: {
+      status: 'ACTIVE',
+      registrationStatus: { not: 'REJECTED' }
+    }
+  })
   const activeUsers = await prisma.user.count({ where: { status: 'ACTIVE' } })
 
   const usersByRole = await prisma.user.groupBy({
