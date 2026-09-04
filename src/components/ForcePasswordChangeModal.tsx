@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Lock, AlertCircle } from 'lucide-react';
-import { signIn } from 'next-auth/react';
+import { Lock, AlertCircle, LogOut } from 'lucide-react';
+import { signIn, signOut } from 'next-auth/react';
 
 type ForcePasswordChangeModalProps = {
   userName: string;
@@ -78,14 +78,14 @@ export function ForcePasswordChangeModal({ userName, rollNo }: ForcePasswordChan
     }}>
       <div style={{
         backgroundColor: '#ffffff',
-        padding: '3rem',
+        padding: '2.5rem 3rem',
         borderRadius: '16px',
         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         width: '100%',
         maxWidth: '480px',
         border: '1px solid var(--line)'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
           <div style={{ 
             background: 'rgba(249, 115, 22, 0.1)', 
             padding: '1rem', 
@@ -99,7 +99,7 @@ export function ForcePasswordChangeModal({ userName, rollNo }: ForcePasswordChan
         <h2 style={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--ink)' }}>
           Action Required
         </h2>
-        <p style={{ textAlign: 'center', color: '#666', marginBottom: '2rem', lineHeight: 1.6 }}>
+        <p style={{ textAlign: 'center', color: '#666', marginBottom: '1.75rem', lineHeight: 1.6, fontSize: '0.95rem' }}>
           Hello <strong>{userName}</strong>, for security reasons you must change your default password before accessing your dashboard.
         </p>
 
@@ -158,9 +158,43 @@ export function ForcePasswordChangeModal({ userName, rollNo }: ForcePasswordChan
             />
           </div>
 
-          <Button type="submit" disabled={loading} style={{ width: '100%', marginTop: '1rem', padding: '1rem' }}>
+          <Button type="submit" disabled={loading} style={{ width: '100%', marginTop: '0.5rem', padding: '0.875rem' }}>
             {loading ? 'Updating...' : 'Update Password & Continue'}
           </Button>
+
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '8px',
+              backgroundColor: 'transparent',
+              color: 'var(--ink-60, #666)',
+              border: '1px solid var(--line, #e2e8f0)',
+              cursor: 'pointer',
+              fontWeight: 500,
+              fontSize: '0.875rem',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
+              e.currentTarget.style.color = 'var(--danger, #dc2626)';
+              e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = 'var(--ink-60, #666)';
+              e.currentTarget.style.borderColor = 'var(--line, #e2e8f0)';
+            }}
+          >
+            <LogOut size={16} />
+            <span>Logout</span>
+          </button>
         </form>
       </div>
     </div>

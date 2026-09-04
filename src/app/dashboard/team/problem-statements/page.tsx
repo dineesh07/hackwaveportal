@@ -23,6 +23,7 @@ export default async function TeamProblemStatementsPage() {
 
     const myTeam = await prisma.team.findFirst({
       where: {
+        registrationStatus: { not: 'REJECTED' },
         OR: [
           { userId: userId },
           ...(cleanRollNo ? [
@@ -31,6 +32,7 @@ export default async function TeamProblemStatementsPage() {
           ] : [])
         ]
       },
+      orderBy: { createdAt: 'desc' },
       include: {
         projects: { where: { phase: 1 } }
       }
@@ -73,6 +75,7 @@ export default async function TeamProblemStatementsPage() {
     }
     const myTeam = await prisma.team.findFirst({
       where: {
+        registrationStatus: { not: 'REJECTED' },
         OR: [
           { userId: userId },
           ...(cleanRollNo ? [
@@ -81,6 +84,7 @@ export default async function TeamProblemStatementsPage() {
           ] : [])
         ]
       },
+      orderBy: { createdAt: 'desc' },
       select: { leaderRollNo: true }
     })
     if (myTeam?.leaderRollNo?.trim().toLowerCase().startsWith('26isr')) {

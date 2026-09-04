@@ -101,12 +101,32 @@ export async function POST(req: Request) {
 
         const userConflict = await prisma.user.findFirst({
           where: { rollNo: { equals: p.rollNo, mode: 'insensitive' } },
-          select: { name: true, role: true }
+          select: { id: true, name: true, role: true }
         });
         if (userConflict) {
-          return NextResponse.json({
-            error: `Registration failed: ${participantRole} with Roll Number "${p.rollNo}" is already registered with an existing account in the system.`
-          }, { status: 400 });
+          if (userConflict.role === 'TEAM') {
+            const activeTeam = await prisma.team.findFirst({
+              where: {
+                registrationStatus: { not: 'REJECTED' },
+                OR: [
+                  { leaderRollNo: { equals: p.rollNo, mode: 'insensitive' } },
+                  { members: { some: { rollNo: { equals: p.rollNo, mode: 'insensitive' } } } }
+                ]
+              }
+            });
+            if (activeTeam) {
+              return NextResponse.json({
+                error: `Registration failed: ${participantRole} with Roll Number "${p.rollNo}" is already registered in team "${activeTeam.teamName}".`
+              }, { status: 400 });
+            } else {
+              // Dangling TEAM user from a rejected team - delete so they can register cleanly
+              await prisma.user.delete({ where: { id: userConflict.id } }).catch(() => {});
+            }
+          } else {
+            return NextResponse.json({
+              error: `Registration failed: ${participantRole} with Roll Number "${p.rollNo}" is already registered with an existing ${userConflict.role.toLowerCase()} account in the system.`
+            }, { status: 400 });
+          }
         }
       }
     }

@@ -150,23 +150,66 @@ export async function rejectTeam(teamId: string, reason: string) {
     const session = await auth()
     if (!session?.user?.id) return { error: 'Unauthorized' }
 
-    const team = await prisma.team.findUnique({ where: { id: teamId } })
+    const team = await prisma.team.findUnique({ 
+      where: { id: teamId },
+      include: { members: true }
+    })
     if (!team) return { error: 'Team not found' }
 
     await prisma.$transaction(async (tx) => {
+      // 1. Mark team rejected & inactive, and dissociate userId
       await tx.team.update({
         where: { id: teamId },
         data: {
           registrationStatus: 'REJECTED',
           status: 'INACTIVE',
+          userId: null,
         }
       })
 
+      // 2. Remove users created for this team if they do not belong to another active team
+      const rollNos = [
+        team.leaderRollNo,
+        ...team.members.map(m => m.rollNo).filter(Boolean) as string[]
+      ].map(r => (r || '').trim()).filter(Boolean);
+
+      for (const roll of rollNos) {
+        const otherActiveTeam = await tx.team.findFirst({
+          where: {
+            id: { not: teamId },
+            registrationStatus: { not: 'REJECTED' },
+            OR: [
+              { leaderRollNo: { equals: roll, mode: 'insensitive' } },
+              { members: { some: { rollNo: { equals: roll, mode: 'insensitive' } } } }
+            ]
+          }
+        });
+
+        if (!otherActiveTeam) {
+          const userToDelete = await tx.user.findFirst({
+            where: {
+              rollNo: { equals: roll, mode: 'insensitive' },
+              role: 'TEAM'
+            }
+          });
+          if (userToDelete) {
+            await tx.user.delete({ where: { id: userToDelete.id } }).catch(() => {});
+          }
+        }
+      }
+
+      // 3. If there was a direct userId linked that wasn't covered above
       if (team.userId) {
-        await tx.user.update({
-          where: { id: team.userId },
-          data: { status: 'INACTIVE' }
-        }).catch(() => {})
+        const otherActiveLeader = await tx.team.findFirst({
+          where: {
+            id: { not: teamId },
+            registrationStatus: { not: 'REJECTED' },
+            userId: team.userId
+          }
+        });
+        if (!otherActiveLeader) {
+          await tx.user.delete({ where: { id: team.userId, role: 'TEAM' } }).catch(() => {});
+        }
       }
 
       await tx.auditLog.create({

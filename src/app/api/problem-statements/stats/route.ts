@@ -80,6 +80,7 @@ export async function GET() {
 
       const myTeam = await prisma.team.findFirst({
         where: {
+          registrationStatus: { not: 'REJECTED' },
           OR: [
             { userId: userId },
             ...(cleanRollNo ? [
@@ -88,6 +89,7 @@ export async function GET() {
             ] : [])
           ]
         },
+        orderBy: { createdAt: 'desc' },
         include: {
           projects: { where: { phase: 1 } }
         }

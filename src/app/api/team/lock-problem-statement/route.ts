@@ -23,6 +23,7 @@ export async function POST(req: Request) {
     // Find the team
     const team = await prisma.team.findFirst({
       where: {
+        registrationStatus: { not: 'REJECTED' },
         OR: [
           { userId: session.user.id },
           ...(cleanRollNo ? [
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
           ] : [])
         ]
       },
+      orderBy: { createdAt: 'desc' },
       include: {
         projects: {
           where: { phase: 1 }

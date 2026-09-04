@@ -13,6 +13,7 @@ export const getTeamData = cache(async (userId: string, rollNo?: string | null) 
 
   const team = await prisma.team.findFirst({
     where: { 
+      registrationStatus: { not: 'REJECTED' },
       OR: [
         { userId: userId },
         ...(cleanRollNo ? [
@@ -21,6 +22,7 @@ export const getTeamData = cache(async (userId: string, rollNo?: string | null) 
         ] : [])
       ]
     },
+    orderBy: { createdAt: 'desc' },
     include: {
       members: true,
       mentorAssignments: {

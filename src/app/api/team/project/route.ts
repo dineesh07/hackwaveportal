@@ -22,6 +22,7 @@ export async function GET() {
 
     const team = await prisma.team.findFirst({
       where: {
+        registrationStatus: { not: 'REJECTED' },
         OR: [
           { userId: session.user.id },
           ...(cleanRollNo ? [
@@ -30,6 +31,7 @@ export async function GET() {
           ] : [])
         ]
       },
+      orderBy: { createdAt: 'desc' },
       include: {
         projects: {
           where: { phase: 1 },
@@ -68,6 +70,7 @@ export async function PUT(req: Request) {
 
     const team = await prisma.team.findFirst({
       where: {
+        registrationStatus: { not: 'REJECTED' },
         OR: [
           { userId: session.user.id },
           ...(cleanRollNo ? [
@@ -75,7 +78,8 @@ export async function PUT(req: Request) {
             { members: { some: { rollNo: { equals: cleanRollNo, mode: 'insensitive' as const } } } }
           ] : [])
         ]
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     });
     if (!team) return NextResponse.json({ error: 'Team not found' }, { status: 404 });
 

@@ -32,13 +32,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userRecord = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { rollNo: true }
+    });
+    const effectiveRollNo = userRecord?.rollNo || session.user.rollNo || '';
+    const cleanRollNo = effectiveRollNo.trim();
+
     const team = await prisma.team.findFirst({
       where: {
+        registrationStatus: { not: 'REJECTED' },
         OR: [
           { userId: session.user.id },
-          { members: { some: { rollNo: session.user.rollNo } } }
+          ...(cleanRollNo ? [
+            { leaderRollNo: { equals: cleanRollNo, mode: 'insensitive' as const } },
+            { members: { some: { rollNo: { equals: cleanRollNo, mode: 'insensitive' as const } } } }
+          ] : [])
         ]
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     });
     if (!team) return NextResponse.json({ error: 'Team not found' }, { status: 404 });
 
