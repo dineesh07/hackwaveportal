@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Tag } from '@/components/ui/Tag'
 import { Input, Select } from '@/components/ui/FormControls'
-import { Search, ChevronDown, ChevronUp, Users, FolderGit2, MessageSquareText, ListChecks, UserRound, StickyNote } from 'lucide-react'
+import { Search, ChevronDown, ChevronUp, Users, FolderGit2, MessageSquareText, ListChecks, UserRound, StickyNote, FileSpreadsheet } from 'lucide-react'
 import styles from '../../dashboard.module.css'
 
 type TeamRow = {
@@ -54,6 +54,34 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
 
   const toggle = (teamId: string) => setExpanded(expanded === teamId ? null : teamId);
 
+  const [isExporting, setIsExporting] = useState(false);
+
+  const exportExcel = async () => {
+    try {
+      setIsExporting(true);
+      const res = await fetch('/api/coordinator/teams/export');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to export Excel file');
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Teams_List.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      console.error('Export error:', err);
+      alert(err.message || 'An error occurred while generating the Excel export.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const exportCSV = () => {
     const headers = ['Team Code', 'Team Name', 'Leader Name', 'Leader Roll No', 'Status', 'Mentor', 'Project Title', 'Track'];
     const rows = filtered.map(t => [
@@ -99,6 +127,15 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
             <option value="NONE">No Submission</option>
           </Select>
         </div>
+        <Button
+          variant="primary"
+          onClick={exportExcel}
+          disabled={isExporting}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: '#107c41', borderColor: '#107c41', color: '#ffffff' }}
+        >
+          <FileSpreadsheet size={16} />
+          {isExporting ? 'Generating Excel...' : 'Export to Excel'}
+        </Button>
         <Button variant="secondary" onClick={exportCSV}>Export CSV</Button>
         <span className={styles.muted}>{filtered.length} of {teams.length} teams</span>
       </div>
