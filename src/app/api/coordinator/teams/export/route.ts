@@ -21,7 +21,7 @@ export async function GET() {
         status: 'ACTIVE',
         registrationStatus: { not: 'REJECTED' },
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { teamCode: 'asc' },
       include: {
         members: true,
         mentorAssignments: {

@@ -22,7 +22,7 @@ export default async function CoordinatorTeamsPage() {
       status: 'ACTIVE',
       registrationStatus: { not: 'REJECTED' }
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { teamCode: 'asc' },
     select: {
       id: true,
       userId: true,

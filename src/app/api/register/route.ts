@@ -132,24 +132,25 @@ export async function POST(req: Request) {
     }
 
 
-    // Generate a unique teamCode (e.g. TEAM-001)
+    // Generate a unique teamCode (e.g. CTPG01)
     let nextNum = 1;
     const latestTeam = await prisma.team.findFirst({
-      orderBy: { createdAt: 'desc' },
+      where: { teamCode: { startsWith: 'CTPG' } },
+      orderBy: { teamCode: 'desc' },
       select: { teamCode: true }
     });
-    if (latestTeam?.teamCode && latestTeam.teamCode.startsWith('TEAM-')) {
-      const parsed = parseInt(latestTeam.teamCode.replace('TEAM-', ''), 10);
+    if (latestTeam?.teamCode && latestTeam.teamCode.startsWith('CTPG')) {
+      const parsed = parseInt(latestTeam.teamCode.replace('CTPG', ''), 10);
       if (!isNaN(parsed)) nextNum = parsed + 1;
     }
     
-    let teamCode = `TEAM-${String(nextNum).padStart(3, '0')}`;
+    let teamCode = `CTPG${String(nextNum).padStart(2, '0')}`;
     let isUnique = false;
     while (!isUnique) {
       const exists = await prisma.team.findUnique({ where: { teamCode } });
       if (exists) {
         nextNum++;
-        teamCode = `TEAM-${String(nextNum).padStart(3, '0')}`;
+        teamCode = `CTPG${String(nextNum).padStart(2, '0')}`;
       } else {
         isUnique = true;
       }

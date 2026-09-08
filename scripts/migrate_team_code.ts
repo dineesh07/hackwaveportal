@@ -14,7 +14,7 @@ async function main() {
 
   let counter = 1;
   for (const team of teams) {
-    const code = `TEAM-${String(counter).padStart(3, '0')}`;
+    const code = `CTPG${String(counter).padStart(2, '0')}`;
     await prisma.team.update({
       where: { id: team.id },
       data: { teamCode: code },
