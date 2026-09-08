@@ -498,12 +498,9 @@ export default function ProblemStatementsClient() {
               </div>
 
               <div className={styles.modalActionsRight}>
-                <Link href="/register" className={styles.registerCta}>
-                  <span>Register Team</span>
+                <Link href="/login" className={styles.registerCta}>
+                  <span>Login to Select</span>
                   <ArrowRight size={15} />
-                </Link>
-                <Link href="/login" className={styles.loginCta}>
-                  <span>Login to Lock</span>
                 </Link>
               </div>
             </div>

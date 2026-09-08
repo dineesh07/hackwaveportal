@@ -19,8 +19,8 @@ export function Footer() {
         <div className={styles.topSection}>
           <div className={styles.topLeft}>
             <h2 className={styles.readyText}>Ready to create the next wave?</h2>
-            <Link href="/register" className={styles.registerCta}>
-              Register Now &rarr;
+            <Link href="/login" className={styles.registerCta}>
+              Login to Portal &rarr;
             </Link>
           </div>
 
@@ -34,8 +34,7 @@ export function Footer() {
               <Link href="/#timeline" className={styles.navLink} style={{ '--stagger': 6 } as React.CSSProperties}>Timeline</Link>
               <Link href="/#mentors" className={styles.navLink} style={{ '--stagger': 7 } as React.CSSProperties}>Mentors</Link>
               <Link href="/#faq" className={styles.navLink} style={{ '--stagger': 8 } as React.CSSProperties}>FAQ</Link>
-              <Link href="/register" className={styles.navLink} style={{ '--stagger': 9 } as React.CSSProperties}>Register</Link>
-              <Link href="/login" className={styles.navLink} style={{ '--stagger': 10 } as React.CSSProperties}>Login</Link>
+              <Link href="/login" className={styles.navLink} style={{ '--stagger': 9 } as React.CSSProperties}>Login</Link>
             </nav>
           </div>
         </div>

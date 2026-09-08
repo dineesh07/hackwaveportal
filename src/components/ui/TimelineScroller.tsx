@@ -249,8 +249,8 @@ export function TimelineScroller() {
             <h3 className={styles.endTitle}>
               &quot;Every great innovation begins with a single idea. HACKWAVE is where those ideas become reality.&quot;
             </h3>
-            <a href="/register" className={styles.endBtn}>
-              Continue the Journey
+            <a href="/login" className={styles.endBtn}>
+              Continue to Portal
               <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
                 →
               </motion.span>

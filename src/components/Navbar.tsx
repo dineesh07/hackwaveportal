@@ -14,7 +14,6 @@ export function Navbar() {
     { label: 'Mentors', ariaLabel: 'View mentors', link: '/#mentors' },
     { label: 'Judges', ariaLabel: 'View judges', link: '/#judges' },
     { label: 'FAQ', ariaLabel: 'View FAQ', link: '/#faq' },
-    { label: 'Register', ariaLabel: 'Register team', link: '/register' },
     { label: 'Login', ariaLabel: 'Login to portal', link: '/login' },
   ];
 
