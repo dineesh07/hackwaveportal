@@ -162,7 +162,7 @@ const WIZARD_STEPS = [
 ];
 
 function getTrackFromDomain(domain?: string): string {
-  if (!domain) return 'OTHERS';
+  if (!domain) return 'WEB_DEVELOPMENT';
   const upper = domain.toUpperCase();
   if (upper.includes('AGENTIC') || upper.includes('GENERATIVE') || upper.includes('ARTIFICIAL')) {
     return 'ARTIFICIAL_INTELLIGENCE';
@@ -170,13 +170,13 @@ function getTrackFromDomain(domain?: string): string {
   if (upper.includes('VISION') || upper.includes('DEEP LEARNING')) {
     return 'COMPUTER_VISION';
   }
-  if (upper.includes('WEB')) {
+  if (upper.includes('WEB') || upper.includes('1ST YEARS')) {
     return 'WEB_DEVELOPMENT';
   }
   if (upper.includes('CYBER')) {
     return 'CYBERSECURITY';
   }
-  return 'OTHERS';
+  return 'WEB_DEVELOPMENT';
 }
 
 export default function SubmissionForm({ initialData }: { initialData: ProjectInitialData | null }) {

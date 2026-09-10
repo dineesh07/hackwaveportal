@@ -127,7 +127,7 @@ export async function PUT(req: Request) {
     }
 
     const effectivePsId = existingProject?.problemStatementId || problemStatementId || '';
-    let autoTrack = track || 'OTHERS';
+    let autoTrack = (track && track !== 'OTHERS') ? track : 'WEB_DEVELOPMENT';
     if (effectivePsId) {
       const { PROBLEM_STATEMENTS } = await import('@/data/problem-statements');
       const matched = PROBLEM_STATEMENTS.find(ps => ps.id === effectivePsId);
@@ -137,10 +137,12 @@ export async function PUT(req: Request) {
           autoTrack = 'ARTIFICIAL_INTELLIGENCE';
         } else if (domain.includes('VISION') || domain.includes('DEEP LEARNING')) {
           autoTrack = 'COMPUTER_VISION';
-        } else if (domain.includes('WEB')) {
+        } else if (domain.includes('WEB') || domain.includes('1ST YEARS')) {
           autoTrack = 'WEB_DEVELOPMENT';
         } else if (domain.includes('CYBER')) {
           autoTrack = 'CYBERSECURITY';
+        } else {
+          autoTrack = 'WEB_DEVELOPMENT';
         }
       }
     }

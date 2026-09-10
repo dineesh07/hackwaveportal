@@ -16,7 +16,8 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     
-    if (!rollNo || !password) {
+    const cleanRollNo = rollNo.trim()
+    if (!cleanRollNo || !password) {
       setError('Please fill in both fields')
       return
     }
@@ -24,7 +25,7 @@ export default function LoginPage() {
     setIsSubmitting(true)
     try {
       const res = await signIn('credentials', { 
-        rollNo, 
+        rollNo: cleanRollNo, 
         password, 
         redirect: false 
       })

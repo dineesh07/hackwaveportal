@@ -16,8 +16,11 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.rollNo || !credentials?.password) return null;
 
+        const cleanRollNo = (credentials.rollNo as string).trim();
+        if (!cleanRollNo) return null;
+
         const user = await prisma.user.findFirst({
-          where: { rollNo: { equals: credentials.rollNo as string, mode: 'insensitive' } }
+          where: { rollNo: { equals: cleanRollNo, mode: 'insensitive' } }
         });
 
         if (!user) return null;

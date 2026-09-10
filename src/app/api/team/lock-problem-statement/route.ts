@@ -108,7 +108,7 @@ export async function POST(req: Request) {
 
 
     function getTrackFromDomain(domain?: string) {
-      if (!domain) return 'OTHERS' as const;
+      if (!domain) return 'WEB_DEVELOPMENT' as const;
       const upper = domain.toUpperCase();
       if (upper.includes('AGENTIC') || upper.includes('GENERATIVE') || upper.includes('ARTIFICIAL')) {
         return 'ARTIFICIAL_INTELLIGENCE' as const;
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
       if (upper.includes('CYBER')) {
         return 'CYBERSECURITY' as const;
       }
-      return 'OTHERS' as const;
+      return 'WEB_DEVELOPMENT' as const;
     }
 
 

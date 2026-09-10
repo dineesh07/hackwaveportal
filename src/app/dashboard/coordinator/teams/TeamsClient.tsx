@@ -29,6 +29,12 @@ type TeamRow = {
   noteCount: number;
 };
 
+const formatTrack = (track?: string | null) => {
+  if (!track) return '—';
+  if (track === 'OTHERS') return 'Web Development';
+  return track.replace(/_/g, ' ');
+};
+
 const statusTone = (s: string): "neutral" | "success" | "danger" | "gold" | "blue" | "accent" => {
   if (s === 'SUBMITTED' || s === 'REVIEWED' || s === 'VERIFIED' || s === 'ACCOUNT_CREATED') return 'success';
   if (s === 'DRAFT' || s === 'PENDING_VERIFICATION') return 'gold';
@@ -42,11 +48,15 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
   const [statusFilter, setStatusFilter] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const filtered = teams.filter(t => {
+  const filtered = teams.map(t => ({
+    ...t,
+    track: t.track === 'OTHERS' ? 'WEB_DEVELOPMENT' : t.track
+  })).filter(t => {
     if (statusFilter && t.projectStatus !== statusFilter) return false;
     if (search) {
       const q = search.toLowerCase();
-      const haystack = `${t.teamCode || ''} ${t.teamName} ${t.leaderName} ${t.leaderRollNo} ${t.projectTitle} ${t.track || ''}`.toLowerCase();
+      const formattedTrack = formatTrack(t.track);
+      const haystack = `${t.teamCode || ''} ${t.teamName} ${t.leaderName} ${t.leaderRollNo} ${t.projectTitle} ${t.track || ''} ${formattedTrack}`.toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     return true;
@@ -92,7 +102,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
       t.projectStatus,
       t.mentorName || 'Unassigned',
       t.projectTitle,
-      t.track || 'N/A'
+      formatTrack(t.track)
     ]);
     
     const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
@@ -163,7 +173,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
                     <div className={styles.muted}>{t.leaderName} · {t.leaderRollNo}</div>
                   </td>
                   <td className={styles.td}>{t.projectTitle}</td>
-                  <td className={styles.td}>{t.track ? t.track.replace(/_/g, ' ') : '—'}</td>
+                  <td className={styles.td}>{formatTrack(t.track)}</td>
                   <td className={styles.td}>{t.mentorName || '—'}</td>
                   <td className={styles.td}>
                     <Tag tone={statusTone(t.projectStatus)}>{t.projectStatus === 'NONE' ? 'No Submission' : t.projectStatus}</Tag>
@@ -189,7 +199,7 @@ export default function TeamsClient({ teams }: { teams: TeamRow[] }) {
                         <div>
                           <div className={styles.drillTitle}><FolderGit2 size={14} /> Project</div>
                           <p className={styles.drillRow}><span>Title</span><strong>{t.projectTitle}</strong></p>
-                          <p className={styles.drillRow}><span>Track</span><strong>{t.track?.replace(/_/g, ' ') || '—'}</strong></p>
+                          <p className={styles.drillRow}><span>Track</span><strong>{formatTrack(t.track)}</strong></p>
                           <p className={styles.drillRow}><span>Status</span><Tag tone={statusTone(t.projectStatus)}>{t.projectStatus}</Tag></p>
                           <p className={styles.drillRow}><span>Submitted</span><strong>{t.submittedAt ? new Date(t.submittedAt).toLocaleDateString() : '—'}</strong></p>
                           {t.projectId && (

@@ -80,7 +80,7 @@ export default async function CoordinatorTeamsPage() {
       createdAt: t.createdAt.toISOString(),
       projectId: project?.id || null,
       projectTitle: project?.projectTitle || 'No submission yet',
-      track: project?.track || null,
+      track: project?.track === 'OTHERS' ? 'WEB_DEVELOPMENT' : (project?.track || null),
       projectStatus: project?.status || 'NONE',
       submittedAt: project?.submittedAt?.toISOString() || null,
       mentorName: t.mentorAssignments?.[0]?.mentor?.name || null,
