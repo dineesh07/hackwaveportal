@@ -310,7 +310,15 @@
   display: flex;
   gap: 0.5rem;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
@@ -326,6 +334,8 @@
   border-bottom: 3px solid transparent;
   font-family: inherit;
   font-size: 0.9375rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .tab:hover {
@@ -345,6 +355,8 @@
   border-bottom: 3px solid var(--flame-red);
   font-family: inherit;
   font-size: 0.9375rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .tabIcon {
@@ -355,8 +367,9 @@
 .linkButton {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
-  padding: 0.5rem 1rem;
+  padding: 0.65rem 1rem;
   background: var(--surface);
   border-radius: var(--radius);
   text-decoration: none;
@@ -364,12 +377,50 @@
   border: 1px solid var(--line);
   font-size: 0.875rem;
   font-weight: 600;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  word-break: break-word;
 }
 
 .linkButton:hover {
   border-color: var(--flame-red);
   color: var(--flame-red);
+  background: var(--paper);
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.actionButtonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.taskFormGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.workspaceCard {
+  padding: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xs);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .lockedBanner {
@@ -392,32 +443,49 @@
   align-items: start;
 }
 
-/* Responsive: 360px / small tablets */
+/* Responsive: Tablets & Mobile */
 @media (max-width: 768px) {
   .splitLayout {
     grid-template-columns: 1fr;
   }
 
   .dashboardContainer {
-    padding: 1.25rem 1rem;
+    padding: 0.5rem 0 1.5rem;
   }
 
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .title {
-    font-size: 1.75rem;
+    font-size: 1.625rem;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
   }
 
   .metricsGrid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
   }
 
   .metricValue {
     font-size: 2.25rem;
+  }
+
+  .workspaceCard {
+    padding: 1.25rem 1rem;
   }
 
   .tableContainer {
@@ -441,7 +509,28 @@
     align-items: stretch;
   }
 
-  .tabs {
-    flex-wrap: wrap;
+  .actionButtonGroup {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .taskFormGrid {
+    grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.45rem;
+  }
+
+  .teamGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .workspaceCard {
+    padding: 1rem 0.75rem;
+  }
+}
+

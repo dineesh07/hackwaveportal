@@ -8,6 +8,33 @@ import { StatCard } from '@/components/ui/StatCard'
 import { CheckCircle2, Loader, FileCheck, Award, Megaphone, Users, Target, Trophy, Medal, Sparkles, Bell, Lightbulb, ArrowRight, Lock } from 'lucide-react'
 import styles from '../dashboard.module.css'
 
+function formatAnnouncementText(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  return parts.map((part, i) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            color: 'var(--flame-red)',
+            textDecoration: 'underline',
+            fontWeight: 700,
+            wordBreak: 'break-all',
+            overflowWrap: 'anywhere'
+          }}
+        >
+          {part}
+        </a>
+      );
+    }
+    return <span key={i} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{part}</span>;
+  });
+}
+
 export default async function TeamDashboardPage() {
   const session = await auth()
 
@@ -139,60 +166,62 @@ export default async function TeamDashboardPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       
       {/* Timeline Section */}
-      <Card style={{ padding: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <Card className={styles.workspaceCard}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '0.75rem' }}>
           <h2 className={styles.sectionTitle} style={{ margin: 0 }}>Event Timeline</h2>
           <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ink-60)', background: 'var(--surface-sunken)', padding: '0.25rem 0.75rem', borderRadius: '20px', border: '1px solid var(--line)' }}>
             HACKWAVE 2026 Schedule
           </span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '24px', left: '10%', right: '10%', height: '4px', background: 'var(--line)', zIndex: 0 }} />
-          <div style={{ 
-            position: 'absolute', 
-            top: '24px', 
-            left: '10%', 
-            width: progressLineWidth, 
-            height: '4px', 
-            background: 'var(--success)', 
-            zIndex: 0, 
-            transition: 'width 0.5s ease' 
-          }} />
-          
-          {timelineEvents.map((evt, idx) => (
-            <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '20%' }}>
-              <div style={{
-                width: '48px', height: '48px', borderRadius: '50%', 
-                background: evt.status === 'completed' ? 'var(--success)' : evt.status === 'current' ? 'var(--flame-gold)' : 'var(--surface)',
-                border: `4px solid ${evt.status === 'upcoming' ? 'var(--line)' : '#fff'}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: evt.status === 'completed' || evt.status === 'current' ? '#fff' : 'var(--ink-40)',
-                boxShadow: evt.status === 'current' ? '0 0 0 4px rgba(255, 201, 74, 0.25)' : 'none',
-                marginBottom: '0.75rem'
-              }}>
-                {evt.status === 'completed' ? <CheckCircle2 size={24} /> : (idx + 1)}
-              </div>
-              <span style={{ fontWeight: evt.status === 'current' ? 700 : 600, color: evt.status === 'upcoming' ? 'var(--ink-40)' : 'var(--ink)', fontSize: '0.875rem', textAlign: 'center', lineHeight: '1.25' }}>
-                {evt.label}
-              </span>
-              {evt.sublabel && (
-                <span style={{ fontSize: '0.75rem', color: 'var(--ink-50)', textAlign: 'center', marginTop: '0.2rem' }}>
-                  {evt.sublabel}
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', minWidth: '540px' }}>
+            <div style={{ position: 'absolute', top: '24px', left: '10%', right: '10%', height: '4px', background: 'var(--line)', zIndex: 0 }} />
+            <div style={{ 
+              position: 'absolute', 
+              top: '24px', 
+              left: '10%', 
+              width: progressLineWidth, 
+              height: '4px', 
+              background: 'var(--success)', 
+              zIndex: 0, 
+              transition: 'width 0.5s ease' 
+            }} />
+            
+            {timelineEvents.map((evt, idx) => (
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '20%' }}>
+                <div style={{
+                  width: '48px', height: '48px', borderRadius: '50%', 
+                  background: evt.status === 'completed' ? 'var(--success)' : evt.status === 'current' ? 'var(--flame-gold)' : 'var(--surface)',
+                  border: `4px solid ${evt.status === 'upcoming' ? 'var(--line)' : '#fff'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: evt.status === 'completed' || evt.status === 'current' ? '#fff' : 'var(--ink-40)',
+                  boxShadow: evt.status === 'current' ? '0 0 0 4px rgba(255, 201, 74, 0.25)' : 'none',
+                  marginBottom: '0.75rem'
+                }}>
+                  {evt.status === 'completed' ? <CheckCircle2 size={24} /> : (idx + 1)}
+                </div>
+                <span style={{ fontWeight: evt.status === 'current' ? 700 : 600, color: evt.status === 'upcoming' ? 'var(--ink-40)' : 'var(--ink)', fontSize: '0.875rem', textAlign: 'center', lineHeight: '1.25' }}>
+                  {evt.label}
                 </span>
-              )}
-              <span style={{ 
-                fontSize: '0.75rem', 
-                fontWeight: 700, 
-                color: evt.status === 'completed' ? 'var(--success)' : evt.status === 'current' ? '#b45309' : 'var(--ink-40)', 
-                marginTop: '0.35rem',
-                background: evt.status === 'completed' ? 'rgba(31, 146, 84, 0.08)' : evt.status === 'current' ? 'rgba(255, 201, 74, 0.2)' : 'transparent',
-                padding: '0.15rem 0.5rem',
-                borderRadius: '12px'
-              }}>
-                {evt.date}
-              </span>
-            </div>
-          ))}
+                {evt.sublabel && (
+                  <span style={{ fontSize: '0.75rem', color: 'var(--ink-50)', textAlign: 'center', marginTop: '0.2rem' }}>
+                    {evt.sublabel}
+                  </span>
+                )}
+                <span style={{ 
+                  fontSize: '0.75rem', 
+                  fontWeight: 700, 
+                  color: evt.status === 'completed' ? 'var(--success)' : evt.status === 'current' ? '#b45309' : 'var(--ink-40)', 
+                  marginTop: '0.35rem',
+                  background: evt.status === 'completed' ? 'rgba(31, 146, 84, 0.08)' : evt.status === 'current' ? 'rgba(255, 201, 74, 0.2)' : 'transparent',
+                  padding: '0.15rem 0.5rem',
+                  borderRadius: '12px'
+                }}>
+                  {evt.date}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </Card>
 
@@ -218,9 +247,9 @@ export default async function TeamDashboardPage() {
       </section>
 
       {/* Problem Statement Selection Status Banner */}
-      <Card style={{ padding: '1.25rem 1.5rem', background: project?.problemStatementId ? 'linear-gradient(135deg, rgba(31, 146, 84, 0.08) 0%, rgba(31, 146, 84, 0.02) 100%)' : 'linear-gradient(135deg, rgba(255, 201, 74, 0.15) 0%, rgba(255, 107, 53, 0.08) 100%)', border: `1.5px solid ${project?.problemStatementId ? 'rgba(31, 146, 84, 0.3)' : 'rgba(255, 201, 74, 0.5)'}` }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <Card className={styles.workspaceCard} style={{ background: project?.problemStatementId ? 'linear-gradient(135deg, rgba(31, 146, 84, 0.08) 0%, rgba(31, 146, 84, 0.02) 100%)' : 'linear-gradient(135deg, rgba(255, 201, 74, 0.15) 0%, rgba(255, 107, 53, 0.08) 100%)', border: `1.5px solid ${project?.problemStatementId ? 'rgba(31, 146, 84, 0.3)' : 'rgba(255, 201, 74, 0.5)'}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: 1, minWidth: 'min(100%, 280px)' }}>
             <div style={{
               width: '42px',
               height: '42px',
@@ -230,30 +259,32 @@ export default async function TeamDashboardPage() {
               alignItems: 'center',
               justifyContent: 'center',
               color: '#fff',
-              flexShrink: 0
+              flexShrink: 0,
+              marginTop: '2px'
             }}>
               {project?.problemStatementId ? <Lock size={20} /> : <Lightbulb size={20} />}
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column', gap: '0.4rem', marginBottom: '0.4rem' }}>
                 <span style={{
                   fontSize: '0.75rem',
                   fontWeight: 800,
                   textTransform: 'uppercase',
                   background: project?.problemStatementId ? 'var(--success)' : 'var(--flame-gold)',
                   color: project?.problemStatementId ? '#fff' : '#78350f',
-                  padding: '0.15rem 0.55rem',
-                  borderRadius: '12px'
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '12px',
+                  display: 'inline-block'
                 }}>
                   {project?.problemStatementId ? 'Locked Problem Statement' : 'Problem Statement Required'}
                 </span>
                 {project?.problemStatementId && (
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--ink)' }}>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--ink)', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                     [{project.problemStatementId}] {project.problemStatement}
                   </span>
                 )}
               </div>
-              <p style={{ fontSize: '0.875rem', color: 'var(--ink-70)', margin: 0 }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--ink-70)', margin: 0, lineHeight: 1.5, wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                 {project?.problemStatementId
                   ? 'Your chosen problem statement is locked and reserved for your team. You can continue your submission details.'
                   : 'Please lock your problem statement before completing your Phase 1 submission. Slots are allocated per statement.'}
@@ -261,19 +292,21 @@ export default async function TeamDashboardPage() {
             </div>
           </div>
           <Link
-            href={project?.problemStatementId ? "/dashboard/team/problem-statements" : "/dashboard/team/problem-statements"}
+            href="/dashboard/team/problem-statements"
             style={{
               background: project?.problemStatementId ? 'var(--surface)' : 'var(--flame-red)',
               color: project?.problemStatementId ? 'var(--ink)' : '#fff',
               border: project?.problemStatementId ? '1px solid var(--line)' : 'none',
-              padding: '0.6rem 1.25rem',
+              padding: '0.65rem 1.25rem',
               borderRadius: '8px',
               fontWeight: 700,
               fontSize: '0.85rem',
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '0.4rem',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              whiteSpace: 'nowrap'
             }}
           >
             {project?.problemStatementId ? 'View Problem Statements' : 'Lock Problem Statement'} <ArrowRight size={15} />
@@ -282,7 +315,7 @@ export default async function TeamDashboardPage() {
       </Card>
 
       {/* Announcements Section */}
-      <Card>
+      <Card className={styles.workspaceCard}>
         <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
           <Megaphone size={20} /> Announcements
         </h2>
@@ -292,16 +325,21 @@ export default async function TeamDashboardPage() {
           <div style={{
             display: 'flex',
             gap: '0.75rem',
-            alignItems: 'center',
-            padding: '0.85rem 1.25rem',
+            alignItems: 'flex-start',
+            padding: '1rem 1.25rem',
             background: 'rgba(232, 40, 63, 0.06)',
             borderRadius: '8px',
             border: '1px solid rgba(232, 40, 63, 0.2)',
             marginBottom: '1rem',
-            color: 'var(--ink)'
+            color: 'var(--ink)',
+            width: '100%',
+            boxSizing: 'border-box',
+            overflow: 'hidden'
           }}>
-            <Bell size={18} color="var(--flame-red)" style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{platformSettings.announcementBanner}</span>
+            <Bell size={18} color="var(--flame-red)" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div style={{ fontSize: '0.9rem', fontWeight: 500, flex: 1, minWidth: 0, wordBreak: 'break-word', overflowWrap: 'anywhere', lineHeight: 1.5 }}>
+              {formatAnnouncementText(platformSettings.announcementBanner)}
+            </div>
           </div>
         )}
 

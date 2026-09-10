@@ -56,8 +56,8 @@ export default async function MentorTeamWorkspacePage({ params }: { params: Prom
             <h1 className={styles.title}>Team Workspace</h1>
             <p className={styles.subtitle}>{team.teamCode ? `${team.teamCode} - ` : ''}{team.teamName}</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link href={role === 'MENTOR' ? "/dashboard/mentor" : `/dashboard/${role.toLowerCase()}/teams`} style={{ color: 'var(--flame-red)', textDecoration: 'none', fontWeight: 600 }}>&larr; Back to Dashboard</Link>
+          <div className={styles.headerActions}>
+            <Link href={role === 'MENTOR' ? "/dashboard/mentor" : `/dashboard/${role.toLowerCase()}/teams`} style={{ color: 'var(--flame-red)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>&larr; Back to Dashboard</Link>
             <StatusRibbon label="Phase 1" tone="hot" />
           </div>
         </header>

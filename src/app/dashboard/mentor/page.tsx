@@ -72,7 +72,7 @@ export default async function MentorDashboardPage() {
           <StatusRibbon label="Phase 1" tone="hot" />
         </header>
 
-        <section className={styles.metricsGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '2.5rem' }}>
+        <section className={styles.metricsGrid}>
           <StatCard label="Assigned Teams" value={totalAssigned} icon={<Users size={18} />} />
           <StatCard label="Submitted for Review" value={submittedCount} icon={<Clock size={18} />} tone="gold" />
           <StatCard label="Reviewed" value={reviewedCount} icon={<CheckCircle2 size={18} />} tone="success" />
@@ -83,7 +83,7 @@ export default async function MentorDashboardPage() {
           Assigned Teams
         </h2>
         {teamCards.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+          <div className={styles.teamGrid}>
             {teamCards}
           </div>
         ) : (

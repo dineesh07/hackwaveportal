@@ -179,6 +179,35 @@
   .grid2 {
     grid-template-columns: 1fr;
   }
+
+  .section {
+    padding: 1.25rem 1rem;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--surface-sunken);
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .row > input:first-child,
+  .row > input:nth-child(2) {
+    width: 100%;
+    flex: none;
+  }
 }
 
 .wizardLayout {
@@ -191,6 +220,45 @@
 @media (max-width: 900px) {
   .wizardLayout {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .stepTracker {
+    position: static;
+    padding: 1rem;
+  }
+
+  .stepList {
+    flex-direction: row;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    gap: 0.5rem;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .stepList::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stepItem {
+    flex-shrink: 0;
+    padding: 0.4rem 0.75rem;
+    background: var(--surface-sunken);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.8rem;
+  }
+
+  .stepItem.active {
+    background: rgba(232, 40, 63, 0.1);
+    border-color: var(--flame-red);
+  }
+
+  .stepItem.completed {
+    background: rgba(31, 146, 84, 0.08);
+    border-color: var(--success);
   }
 }
 
@@ -247,6 +315,7 @@
   background: var(--surface);
   color: var(--ink-40);
   font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
 .stepItem.active .stepIcon {
@@ -280,4 +349,5 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
 }

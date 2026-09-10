@@ -44,8 +44,8 @@ export default async function TeamWorkspaceLayout({
       <header className={styles.header} style={{ marginBottom: '1.5rem', paddingBottom: '1rem' }}>
         <div>
           <h1 className={styles.title}>Team Workspace</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem' }}>
-            <p className={styles.subtitle} style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--ink)', margin: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
+            <p className={styles.subtitle} style={{ fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--ink)', margin: 0, wordBreak: 'break-word' }}>
               {team.teamName}
             </p>
               {team.teamCode && (
@@ -56,7 +56,8 @@ export default async function TeamWorkspaceLayout({
                 borderRadius: '6px', 
                 fontSize: '0.8rem', 
                 fontWeight: 700,
-                border: '1px solid var(--line)'
+                border: '1px solid var(--line)',
+                flexShrink: 0
               }}>
                 {team.teamCode}
               </span>

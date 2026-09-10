@@ -834,7 +834,7 @@ export default function ProblemStatementsTab({
                   {items.length} {items.length === 1 ? 'Challenge' : 'Challenges'}
                 </span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
                 {items.map((ps) => {
                   const count = stats.counts[ps.id] || 0
 

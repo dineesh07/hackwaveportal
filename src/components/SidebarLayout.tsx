@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -16,11 +16,14 @@ import {
   UserCheck,
   Target,
   FileText,
-  Lightbulb
+  Lightbulb,
+  Menu,
+  X
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 
 import { ForcePasswordChangeModal } from './ForcePasswordChangeModal';
+import styles from './SidebarLayout.module.css';
 
 type SidebarLayoutProps = {
   children: React.ReactNode;
@@ -32,6 +35,24 @@ type SidebarLayoutProps = {
 
 export function SidebarLayout({ children, role = '', userName, mustChangePassword, rollNo }: SidebarLayoutProps) {
   const pathname = usePathname();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Close mobile drawer when pathname changes
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
+  // Prevent background body scrolling when mobile drawer is open
+  useEffect(() => {
+    if (isMobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileOpen]);
 
   // Define navigation based on role
   let navItems: { label: string; href: string; icon: React.ReactNode }[] = [];
@@ -82,95 +103,105 @@ export function SidebarLayout({ children, role = '', userName, mustChangePasswor
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#ffffff' }}>
+    <div className={styles.wrapper}>
       
       {mustChangePassword && <ForcePasswordChangeModal userName={userName} rollNo={rollNo} />}
 
-      {/* Sidebar */}
-      <aside style={{
-        width: '260px',
-        backgroundColor: 'var(--sidebar-bg)',
-        color: '#ffffff',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        zIndex: 100
-      }}>
+      {/* Mobile Top Header */}
+      <header className={styles.mobileHeader}>
+        <div className={styles.mobileLogoArea}>
+          <button 
+            type="button"
+            className={styles.mobileMenuButton}
+            onClick={() => setIsMobileOpen(true)}
+            aria-label="Open Navigation Menu"
+          >
+            <Menu size={22} />
+          </button>
+          <img src="/logo.png" alt="Hackwave Logo" className={styles.mobileLogo} />
+        </div>
+        <div className={styles.mobileUserBadge}>
+          {role.toLowerCase()}
+        </div>
+      </header>
+
+      {/* Mobile Backdrop Overlay */}
+      <div 
+        className={`${styles.backdrop} ${isMobileOpen ? styles.backdropOpen : ''}`} 
+        onClick={() => setIsMobileOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Sidebar Navigation */}
+      <aside className={`${styles.sidebar} ${isMobileOpen ? styles.sidebarOpen : ''}`}>
         {/* Logo / Brand Area */}
-        <div style={{ height: '80px', flexShrink: 0, display: 'flex', alignItems: 'center', padding: '0 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <img src="/logo.png" alt="Hackwave Logo" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
+        <div className={styles.brandArea}>
+          <img src="/logo.png" alt="Hackwave Logo" className={styles.brandLogo} />
+          <button
+            type="button"
+            className={styles.closeMobileBtn}
+            onClick={() => setIsMobileOpen(false)}
+            aria-label="Close Navigation Menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Scrollable Nav Area */}
-        <nav className="no-scrollbar" style={{ flex: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto' }}>
+        <nav className={`no-scrollbar ${styles.navList}`}>
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isDashboardRoot = [
+              '/dashboard/team',
+              '/dashboard/mentor',
+              '/dashboard/jury',
+              '/dashboard/coordinator',
+              '/dashboard/admin'
+            ].includes(item.href);
+
+            const isActive = isDashboardRoot
+              ? pathname === item.href
+              : pathname === item.href || pathname.startsWith(item.href + '/');
+
             return (
-              <Link key={item.href} href={item.href} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.875rem 1rem',
-                borderRadius: '8px',
-                backgroundColor: isActive ? 'var(--sidebar-active)' : 'transparent',
-                color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)',
-                textDecoration: 'none',
-                fontWeight: isActive ? 600 : 500,
-                transition: 'background-color 0.2s, color 0.2s'
-              }}>
-                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{item.icon}</div>
-                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
-                {isActive && <span style={{ marginLeft: 'auto', flexShrink: 0 }}>&rarr;</span>}
+              <Link 
+                key={item.href} 
+                href={item.href}
+                className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+                onClick={() => setIsMobileOpen(false)}
+              >
+                <div className={styles.navIcon}>{item.icon}</div>
+                <span className={styles.navLabel}>{item.label}</span>
+                {isActive && <span className={styles.navArrow}>&rarr;</span>}
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer Area (always at bottom) */}
-        <div style={{ flexShrink: 0, padding: '1.25rem 1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1rem', padding: '0 0.5rem', color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem' }}>
+        {/* Footer Area */}
+        <div className={styles.sidebarFooter}>
+          <div className={styles.userInfo}>
             <UserCheck size={18} style={{ flexShrink: 0, marginTop: '2px' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <span style={{ color: '#ffffff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userName}</span>
-              <span style={{ fontSize: '0.75rem', textTransform: 'capitalize', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{role.toLowerCase()}</span>
+            <div className={styles.userText}>
+              <span className={styles.userName}>{userName}</span>
+              <span className={styles.userRole}>{role.toLowerCase()}</span>
             </div>
           </div>
           <button 
+            type="button"
             onClick={() => signOut({ callbackUrl: '/login' })}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              width: '100%',
-              padding: '0.75rem 1rem',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.1)',
-              cursor: 'pointer',
-              fontWeight: 500,
-              transition: 'background-color 0.2s'
-            }}
+            className={styles.logoutBtn}
           >
-            <LogOut size={18} style={{ flexShrink: 0 }} />
+            <LogOut size={16} style={{ flexShrink: 0 }} />
             <span>Logout</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, marginLeft: '260px', display: 'flex', flexDirection: 'column' }}>
-        
-
-
-        {/* Page Content */}
-        <main style={{ padding: '2rem', backgroundColor: '#ffffff', flex: 1 }}>
+      <div className={styles.mainArea}>
+        <main className={styles.mainContent}>
           {children}
         </main>
-
       </div>
     </div>
   );

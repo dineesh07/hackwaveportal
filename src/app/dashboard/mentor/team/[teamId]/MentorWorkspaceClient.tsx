@@ -140,7 +140,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
   }
 
   return (
-    <div style={{ marginTop: '2rem' }}>
+    <div style={{ marginTop: '1.25rem' }}>
       <div className={styles.tabs}>
         {tabs.map(t => (
           <button
@@ -155,13 +155,13 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
         ))}
       </div>
 
-      <Card style={{ padding: '2rem' }}>
+      <Card className={styles.workspaceCard}>
 
         {activeTab === 'project' && (
           project ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', textAlign: 'left' }}>
-              <h2 style={{ color: 'var(--ink)' }}>{project.projectTitle}</h2>
-              <p style={{ fontStyle: 'italic', color: 'var(--ink-60)' }}>{project.oneLiner}</p>
+              <h2 style={{ color: 'var(--ink)', wordBreak: 'break-word' }}>{project.projectTitle}</h2>
+              <p style={{ fontStyle: 'italic', color: 'var(--ink-60)', wordBreak: 'break-word' }}>{project.oneLiner}</p>
 
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <Tag tone="accent">Track: {project.track.replace(/_/g, ' ')}</Tag>
@@ -172,7 +172,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
               {(() => {
                 const lockedPS = PROBLEM_STATEMENTS.find(ps => ps.id === project.problemStatementId || ps.title === project.problemStatement);
                 return (
-                  <div style={{ background: 'var(--surface)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ background: 'var(--surface)', padding: '1.25rem 1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <h4 style={{ fontWeight: 700, color: 'var(--ink)', margin: 0 }}>Problem Statement</h4>
                       {lockedPS && (
@@ -203,7 +203,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                       )}
                     </div>
 
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)', margin: 0 }}>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)', margin: 0, wordBreak: 'break-word' }}>
                       {lockedPS ? lockedPS.title : project.problemStatement}
                     </h3>
 
@@ -216,12 +216,13 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                         color: 'var(--ink-80)',
                         fontSize: '0.9rem',
                         lineHeight: 1.7,
-                        whiteSpace: 'pre-wrap'
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word'
                       }}>
                         {lockedPS.description}
                       </div>
                     ) : (
-                      <p style={{ whiteSpace: 'pre-wrap', color: 'var(--ink-70)', margin: 0 }}>
+                      <p style={{ whiteSpace: 'pre-wrap', color: 'var(--ink-70)', margin: 0, wordBreak: 'break-word' }}>
                         {project.problemStatement}
                       </p>
                     )}
@@ -232,7 +233,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
 
               <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
                 <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Proposed Solution</h4>
-                <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>{project.proposedSolution}</p>
+                <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem', wordBreak: 'break-word' }}>{project.proposedSolution}</p>
               </div>
 
               {project.targetUsers && project.targetUsers.length > 0 && (
@@ -248,7 +249,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                 <div>
                   <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Core Features</h4>
                   <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
-                    {project.coreFeatures.map(f => <li key={f.id}><strong>{f.title}:</strong> {f.description}</li>)}
+                    {project.coreFeatures.map(f => <li key={f.id} style={{ wordBreak: 'break-word' }}><strong>{f.title}:</strong> {f.description}</li>)}
                   </ul>
                 </div>
               )}
@@ -257,7 +258,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                 <div>
                   <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Future Enhancements</h4>
                   <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
-                    {project.futureEnhancements.map(f => <li key={f.id}><strong>{f.title}:</strong> {f.description}</li>)}
+                    {project.futureEnhancements.map(f => <li key={f.id} style={{ wordBreak: 'break-word' }}><strong>{f.title}:</strong> {f.description}</li>)}
                   </ul>
                 </div>
               )}
@@ -278,7 +279,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
               {project.potentialChallenges && (
                 <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)' }}>
                   <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Potential Challenges</h4>
-                  <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>{project.potentialChallenges}</p>
+                  <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem', wordBreak: 'break-word' }}>{project.potentialChallenges}</p>
                 </div>
               )}
 
@@ -318,7 +319,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                   <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>References</h4>
                   <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
                     {project.references.map(r => (
-                      <li key={r.id}>
+                      <li key={r.id} style={{ wordBreak: 'break-word' }}>
                         <a href={r.url} target="_blank" rel="noreferrer" style={{ color: 'var(--flame-red)' }}>{r.title}</a>
                       </li>
                     ))}
@@ -331,7 +332,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                   <h4 style={{ color: '#2563eb', fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <HelpCircle size={16} /> Questions for Mentors
                   </h4>
-                  <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem' }}>{project.questionsForMentors}</p>
+                  <p style={{ whiteSpace: 'pre-wrap', marginTop: '0.5rem', wordBreak: 'break-word' }}>{project.questionsForMentors}</p>
                 </div>
               )}
             </div>
@@ -346,7 +347,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
             <div className={styles.contactGrid}>
               <p><strong>Name:</strong> {team.leaderName}</p>
               <p><strong>Phone:</strong> {team.leaderPhone}</p>
-              <p><strong>Email:</strong> {team.leaderEmail || 'N/A'}</p>
+              <p style={{ wordBreak: 'break-word' }}><strong>Email:</strong> {team.leaderEmail || 'N/A'}</p>
             </div>
 
             <h3 style={{ fontWeight: 700, margin: '2rem 0 1rem' }}>Team Members</h3>
@@ -371,9 +372,9 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                   <div key={idx} style={{ background: 'var(--surface)', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1rem' }}>
                     {fb.createdAt && <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginBottom: '0.5rem' }}>{new Date(fb.createdAt).toLocaleString()}</p>}
                     <p style={{ fontWeight: 'bold' }}>Overall Feedback:</p>
-                    <p style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem' }}>{fb.overallFeedback}</p>
+                    <p style={{ whiteSpace: 'pre-wrap', marginBottom: '1rem', wordBreak: 'break-word' }}>{fb.overallFeedback}</p>
                     <p style={{ fontWeight: 'bold' }}>Suggestions:</p>
-                    <p style={{ whiteSpace: 'pre-wrap' }}>{fb.suggestions}</p>
+                    <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{fb.suggestions}</p>
                   </div>
                 ))}
               </div>
@@ -387,15 +388,15 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
               <Textarea rows={5} value={feedback.suggestions} onChange={e => setFeedback({...feedback, suggestions: e.target.value})} placeholder="List actionable suggestions for the team..." />
             </Field>
             
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--line)' }}>
+            <div className={styles.actionButtonGroup}>
               <div style={{ flex: 1 }}>
-                <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Project looks good?</p>
+                <p style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem' }}>Project looks good?</p>
                 <Button onClick={() => submitFeedback('REVIEWED')} disabled={isSubmitting || !project || !feedback.overallFeedback} style={{ width: '100%' }}>
                   Approve Submission
                 </Button>
               </div>
               <div style={{ flex: 1 }}>
-                <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Changes needed?</p>
+                <p style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.875rem' }}>Changes needed?</p>
                 <Button onClick={() => submitFeedback('NEEDS_REVISION')} variant="secondary" disabled={isSubmitting || !project || !feedback.overallFeedback} style={{ width: '100%' }}>
                   Request Revision
                 </Button>
@@ -408,9 +409,9 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
           <div style={{ textAlign: 'left' }}>
             <h3 style={{ fontWeight: 700, marginBottom: '1rem' }}>Assign Improvement Tasks</h3>
 
-            <Card style={{ padding: '1.5rem', marginBottom: '2rem' }}>
+            <Card style={{ padding: '1.25rem', marginBottom: '2rem' }}>
               <h4 style={{ fontWeight: 700, marginBottom: '1rem' }}>Create New Task</h4>
-              <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+              <div className={styles.taskFormGrid}>
                 <div style={{ gridColumn: '1 / -1' }}>
                   <Field label="Task Title">
                     <Input value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} />
@@ -432,7 +433,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                   <Input type="datetime-local" value={newTask.dueDate} onChange={e => setNewTask({...newTask, dueDate: e.target.value})} />
                 </Field>
               </div>
-              <Button onClick={submitTask} disabled={isSubmitting || !project} style={{ marginTop: '1rem' }}>
+              <Button onClick={submitTask} disabled={isSubmitting || !project} style={{ marginTop: '1rem', width: '100%' }}>
                 <Plus size={16} /> Assign Task
               </Button>
             </Card>
@@ -442,11 +443,11 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {project?.tasks?.map(t => (
                 <li key={t.id} style={{ borderBottom: '1px solid var(--line)', padding: '1rem 0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <strong>{t.title}</strong>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <strong style={{ wordBreak: 'break-word' }}>{t.title}</strong>
                     <Tag tone={t.status === 'COMPLETED' ? 'success' : 'gold'}>{t.status}</Tag>
                   </div>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginTop: '0.5rem' }}>{t.description}</p>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginTop: '0.5rem', wordBreak: 'break-word' }}>{t.description}</p>
                 </li>
               ))}
             </ul>
@@ -463,7 +464,7 @@ export default function MentorWorkspaceClient({ team, project }: { team: Workspa
                 {project.privateNotes.map((pn, idx) => (
                   <div key={idx} style={{ background: 'var(--surface)', padding: '1.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1rem' }}>
                     {pn.createdAt && <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginBottom: '0.5rem' }}>{new Date(pn.createdAt).toLocaleString()}</p>}
-                    <p style={{ whiteSpace: 'pre-wrap' }}>{pn.note}</p>
+                    <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{pn.note}</p>
                   </div>
                 ))}
               </div>
