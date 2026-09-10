@@ -77,7 +77,7 @@ export default async function TeamSubmissionPage() {
             <strong>Mentor requested revision:</strong> Please review your mentor's feedback in the Feedback tab and update your submission. Once done, submit again for review.
           </div>
         )}
-        <SubmissionForm initialData={project} />
+        <SubmissionForm initialData={project} leaderRollNo={team.leaderRollNo} />
       </>
     )
   }

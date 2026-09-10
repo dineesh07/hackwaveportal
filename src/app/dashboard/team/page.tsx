@@ -8,6 +8,8 @@ import { StatCard } from '@/components/ui/StatCard'
 import { CheckCircle2, Loader, FileCheck, Award, Megaphone, Users, Target, Trophy, Medal, Sparkles, Bell, Lightbulb, ArrowRight, Lock } from 'lucide-react'
 import styles from '../dashboard.module.css'
 
+import { isFirstYearRollNo } from '@/data/problem-statements'
+
 function formatAnnouncementText(text: string) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const parts = text.split(urlRegex);
@@ -128,8 +130,9 @@ export default async function TeamDashboardPage() {
   // Calculate Submission Progress
   let progress = 0;
   if (project) {
+    const isFirstYear = isFirstYearRollNo(team.leaderRollNo);
     let filledFields = 0;
-    const totalFields = 10;
+    const totalFields = (isFirstYear && !project.architectureFileUrl) ? 9 : 10;
     
     if (project.projectTitle) filledFields++;
     if (project.oneLiner) filledFields++;
@@ -142,7 +145,7 @@ export default async function TeamDashboardPage() {
     if (project.architectureFileUrl) filledFields++;
     if (project.demoVideoUrl || project.mockupFileUrl) filledFields++;
 
-    progress = Math.round((filledFields / totalFields) * 100);
+    progress = Math.min(100, Math.round((filledFields / totalFields) * 100));
   }
 
   // Fetch total teams

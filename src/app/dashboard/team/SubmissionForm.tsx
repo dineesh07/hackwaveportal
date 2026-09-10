@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input, Textarea, Select } from '@/components/ui/FormControls'
 import { Check, Circle, Plus, X, FileText, Lightbulb, Sparkles, Cpu, Network, Compass, Link2, Video, ListChecks, ChevronLeft, ChevronRight, AlertCircle, Target, Eye, Search, Filter, Layers, CheckCircle2, Lock } from 'lucide-react'
 import styles from './SubmissionForm.module.css'
-import { PROBLEM_STATEMENTS } from '@/data/problem-statements'
+import { PROBLEM_STATEMENTS, isFirstYearRollNo } from '@/data/problem-statements'
 
 const TRACKS = [
   { value: 'ARTIFICIAL_INTELLIGENCE', label: 'Agentic & Generative AI' },
@@ -179,7 +179,7 @@ function getTrackFromDomain(domain?: string): string {
   return 'WEB_DEVELOPMENT';
 }
 
-export default function SubmissionForm({ initialData }: { initialData: ProjectInitialData | null }) {
+export default function SubmissionForm({ initialData, leaderRollNo }: { initialData: ProjectInitialData | null; leaderRollNo?: string | null }) {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false)
@@ -233,6 +233,12 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
     limits: {},
     myLockedPsId: null
   })
+
+  const isFirstYear = Boolean(
+    (leaderRollNo && isFirstYearRollNo(leaderRollNo)) ||
+    (formData.problemStatementId && formData.problemStatementId.startsWith('FY')) ||
+    (initialData?.problemStatementId && initialData.problemStatementId.startsWith('FY'))
+  );
 
   const loadPsStats = async () => {
     try {
@@ -308,7 +314,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                formData.techDatabase.length > 0 || formData.techAiMl.length > 0 || 
                formData.techCloud.length > 0 || formData.techApis.length > 0 || formData.techOther.length > 0;
       case 6:
-        return formData.architectureFileUrl.trim().length > 0;
+        return isFirstYear ? true : formData.architectureFileUrl.trim().length > 0;
       case 7:
         return formData.githubRepoUrl.trim().length > 0;
       case 8:
@@ -718,9 +724,15 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
           )}
 
           {currentStep === 6 && (
-            <Section icon={<Network size={18} />} title="Section 6: Architecture">
-              <label className={styles.tagsLabel}>Solution Architecture Link *</label>
-              <span className={styles.helper}>Provide a link to your system architecture, workflow diagram, ER diagram (e.g., Google Drive, Figma).</span>
+            <Section icon={<Network size={18} />} title={isFirstYear ? "Section 6: Architecture (Optional)" : "Section 6: Architecture"}>
+              <label className={styles.tagsLabel}>
+                Solution Architecture Link {isFirstYear ? '(Optional for 1st Years)' : '*'}
+              </label>
+              <span className={styles.helper}>
+                {isFirstYear
+                  ? 'Optional for 1st Year teams. If available, provide a link to your system architecture or workflow diagram (e.g., Google Drive, Figma).'
+                  : 'Provide a link to your system architecture, workflow diagram, ER diagram (e.g., Google Drive, Figma).'}
+              </span>
               <Input name="architectureFileUrl" placeholder="https://..." value={formData.architectureFileUrl} onChange={handleChange} />
             </Section>
           )}
@@ -939,7 +951,7 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                   <div>
                     <h4 style={{ fontWeight: 700, color: 'var(--ink)' }}>Links & Resources</h4>
                     <ul style={{ paddingLeft: '1.25rem', marginTop: '0.5rem', wordBreak: 'break-all' }}>
-                      <li><strong>Architecture:</strong> {formData.architectureFileUrl ? <a href={formData.architectureFileUrl} target="_blank" rel="noreferrer">{formData.architectureFileUrl}</a> : 'N/A'}</li>
+                      <li><strong>Architecture:</strong> {formData.architectureFileUrl ? <a href={formData.architectureFileUrl} target="_blank" rel="noreferrer">{formData.architectureFileUrl}</a> : (isFirstYear ? <span style={{ color: 'var(--ink-40)' }}>Not provided (Optional for 1st Years)</span> : 'N/A')}</li>
                       <li><strong>GitHub Repo:</strong> {formData.githubRepoUrl ? <a href={formData.githubRepoUrl} target="_blank" rel="noreferrer">{formData.githubRepoUrl}</a> : 'N/A'}</li>
                       <li><strong>Mockups/Screenshots:</strong> {formData.mockupFileUrl ? <a href={formData.mockupFileUrl} target="_blank" rel="noreferrer">{formData.mockupFileUrl}</a> : 'N/A'}</li>
                       <li><strong>Prototype:</strong> {formData.prototypeLinkUrl ? <a href={formData.prototypeLinkUrl} target="_blank" rel="noreferrer">{formData.prototypeLinkUrl}</a> : 'N/A'}</li>
@@ -987,7 +999,9 @@ export default function SubmissionForm({ initialData }: { initialData: ProjectIn
                   </li>
                   <li>
                     {isStepValid(6) ? <Check size={16} color="var(--success)" /> : <AlertCircle size={16} color="var(--danger)" />}
-                    <span className={isStepValid(6) ? undefined : styles.checklistLabel}>Architecture Link Provided</span>
+                    <span className={isStepValid(6) ? undefined : styles.checklistLabel}>
+                      Architecture Link {isFirstYear ? '(Optional for 1st Years)' : 'Provided'}
+                    </span>
                   </li>
                   <li>
                     {isStepValid(7) ? <Check size={16} color="var(--success)" /> : <AlertCircle size={16} color="var(--danger)" />}
