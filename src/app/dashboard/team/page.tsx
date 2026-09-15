@@ -58,7 +58,7 @@ export default async function TeamDashboardPage() {
   const now = new Date()
   const dateRegistrationOpens = new Date('2026-08-25T00:00:00')
   const dateRegistrationEnds = platformSettings?.submissionDeadline ? new Date(platformSettings.submissionDeadline) : new Date('2026-09-07T23:59:59')
-  const dateMentorReviewEnds = platformSettings?.phase1ReviewWindowEnd ? new Date(platformSettings.phase1ReviewWindowEnd) : new Date('2026-09-14T23:59:59')
+  const dateMentorReviewEnds = platformSettings?.phase1ReviewWindowEnd ? new Date(platformSettings.phase1ReviewWindowEnd) : new Date('2026-09-20T23:59:59')
   const dateIgniteEnds = platformSettings?.evaluationWindowEnd ? new Date(platformSettings.evaluationWindowEnd) : new Date('2026-09-26T23:59:59')
 
   // Strict date-synced progression based on the event schedule
@@ -91,7 +91,7 @@ export default async function TeamDashboardPage() {
     { 
       step: '03',
       label: 'Atleast one Mentor review to be completed', 
-      date: '14 SEP',
+      date: '20 SEP',
       status: step3Status
     },
     { 

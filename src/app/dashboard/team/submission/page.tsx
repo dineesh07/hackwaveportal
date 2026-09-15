@@ -22,7 +22,7 @@ export default async function TeamSubmissionPage() {
   const teamData = await getTeamData(session.user.id, session.user.rollNo)
   if (!teamData || !teamData.team) return null
 
-  const { project, status } = teamData
+  const { team, project, status } = teamData
 
   // 1. Check if problem statement is locked
   if (!project?.problemStatementId) {

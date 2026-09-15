@@ -33,7 +33,7 @@ const timelineData: TimelineItem[] = [
   {
     step: "03",
     title: "Atleast one Mentor review to be completed",
-    date: "14 SEP",
+    date: "20 SEP",
     description: "Present your prototype to mentors, receive constructive feedback, and refine your solution before Phase 1.",
     badge: "MENTOR REVIEW"
   },
