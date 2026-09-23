@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { motion, type Variants } from "framer-motion";
-import { Lock } from "lucide-react";
 import styles from "./MentorsAndJudges.module.css";
 
 const mentors = [
@@ -17,6 +16,24 @@ const mentors = [
   { name: "Harshath", role: "Associate Software Developer", company: "Rently", img: "/mentors/mentor8.jpeg", objectPosition: "top" },
   { name: "Samyugtha K", role: "AI/ML & Computational Science Analyst", company: "Accenture", img: "/mentors/mentor9.png", objectPosition: "top" },
   { name: "Aswinraj S", role: "Software Development Engineer & Prompt Engineer", company: "CloudAssert", img: "/mentors/mentor10.jpeg", objectPosition: "top", scale: 1.15 },
+];
+
+const judges = [
+  {
+    name: "Bala Kaarthik Veerappan Balasubramanian",
+    role: "Staff Programming Analyst",
+    company: "Extreme Networks India Pvt. Limited",
+    img: "/jury1.jpeg",
+    objectPosition: "center 20%"
+  },
+  {
+    name: "Lakshin C",
+    role: "Associate Product Engineer",
+    company: "Arivonix AI",
+    img: "/jury2.jpeg",
+    objectPosition: "center top",
+    transform: "scale(1.6) translateY(24px)"
+  }
 ];
 
 const containerVariants: Variants = {
@@ -37,7 +54,19 @@ const cardVariants: Variants = {
   }
 };
 
-const ImageWithShimmer = ({ src, alt, objectPosition, scale }: { src: string, alt: string, objectPosition?: string, scale?: number }) => {
+const ImageWithShimmer = ({ 
+  src, 
+  alt, 
+  objectPosition, 
+  scale, 
+  transform 
+}: { 
+  src: string; 
+  alt: string; 
+  objectPosition?: string; 
+  scale?: number; 
+  transform?: string;
+}) => {
   return (
     <div className={styles.cardImageWrapper}>
       <Image
@@ -46,8 +75,8 @@ const ImageWithShimmer = ({ src, alt, objectPosition, scale }: { src: string, al
         fill
         className={styles.image}
         style={{ 
-          objectPosition: objectPosition || undefined,
-          transform: scale ? `scale(${scale})` : undefined
+          objectPosition: objectPosition || "center",
+          transform: transform || (scale ? `scale(${scale})` : undefined)
         }}
       />
       <div className={styles.vignette}></div>
@@ -55,54 +84,32 @@ const ImageWithShimmer = ({ src, alt, objectPosition, scale }: { src: string, al
   );
 };
 
-const MentorCard = ({ mentor }: { mentor: typeof mentors[0] & { scale?: number } }) => {
+const MemberCard = ({ 
+  member 
+}: { 
+  member: { 
+    name: string; 
+    role: string; 
+    company: string; 
+    img: string; 
+    objectPosition?: string; 
+    scale?: number;
+    transform?: string;
+  } 
+}) => {
   return (
     <motion.div variants={cardVariants} className={styles.card}>
-      <ImageWithShimmer src={mentor.img} alt={mentor.name} objectPosition={mentor.objectPosition} scale={(mentor as any).scale} />
+      <ImageWithShimmer 
+        src={member.img} 
+        alt={member.name} 
+        objectPosition={member.objectPosition} 
+        scale={member.scale}
+        transform={member.transform}
+      />
       <div className={styles.cardInfo}>
-        <div className={styles.name}>{mentor.name}</div>
-        <div className={styles.role}>{mentor.role}</div>
-        <div className={styles.companyPill}>{mentor.company}</div>
-      </div>
-    </motion.div>
-  );
-};
-
-const JudgeCard = () => {
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  return (
-    <motion.div
-      variants={cardVariants}
-      className={styles.flipContainer}
-      onMouseEnter={() => setIsFlipped(true)}
-      onMouseLeave={() => setIsFlipped(false)}
-      onClick={() => setIsFlipped(!isFlipped)}
-    >
-      <div className={`${styles.flipper} ${isFlipped ? styles.flipped : ""}`}>
-        <div className={`${styles.card} ${styles.front}`}>
-          <div className={styles.lockedBadge}>
-            <Lock size={14} strokeWidth={3} /> LOCKED
-          </div>
-          <ImageWithShimmer src="/judges/locked.svg" alt="Mystery Judge" />
-          <div className={styles.cardInfo}>
-            <div className={styles.name}>???????</div>
-            <div className={styles.role}>Industry Expert</div>
-            <div className={styles.companyPill}>To Be Revealed</div>
-          </div>
-        </div>
-
-        <div className={styles.back}>
-          <div className={styles.backLockGlow}></div>
-          <Lock size={64} strokeWidth={2} color="rgba(255,255,255,0.8)" className="mb-6 z-10 relative" />
-          <div className={styles.comingSoon}>COMING SOON</div>
-          <div className={styles.backSubtitle}>
-            Our industry experts and jury panel will be revealed soon.<br />
-            Stay tuned for the official announcement.
-          </div>
-          <div className={styles.revealingBadge}>REVEALING SOON</div>
-          <div className={styles.lightSweep}></div>
-        </div>
+        <div className={styles.name}>{member.name}</div>
+        <div className={styles.role}>{member.role}</div>
+        <div className={styles.companyPill}>{member.company}</div>
       </div>
     </motion.div>
   );
@@ -126,7 +133,7 @@ export default function MentorsAndJudges() {
           viewport={{ once: true, amount: 0.1 }}
         >
           {mentors.map((mentor, i) => (
-            <MentorCard key={i} mentor={mentor} />
+            <MemberCard key={i} member={mentor} />
           ))}
         </motion.div>
 
@@ -136,16 +143,15 @@ export default function MentorsAndJudges() {
         </div>
 
         <motion.div
-          className={styles.grid}
+          className={styles.judgesGrid}
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
-          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", maxWidth: "1050px", margin: "0 auto" }}
         >
-          <JudgeCard />
-          <JudgeCard />
-          <JudgeCard />
+          {judges.map((judge, i) => (
+            <MemberCard key={i} member={judge} />
+          ))}
         </motion.div>
 
       </div>
