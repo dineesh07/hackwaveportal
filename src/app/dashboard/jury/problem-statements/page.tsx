@@ -1,6 +1,6 @@
 import React from 'react'
 import ProblemStatementsTab from '@/app/dashboard/team/components/ProblemStatementsTab'
-import styles from '../dashboard.module.css'
+import styles from '../../dashboard.module.css'
 
 export default function JuryProblemStatementsPage() {
   return (
