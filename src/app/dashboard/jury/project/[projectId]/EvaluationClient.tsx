@@ -199,26 +199,30 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
   const isLocked = initialEvaluation?.status === 'SUBMITTED';
 
   return (
-    <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* 1. Team & Problem Statement Section */}
-      <Card style={{ padding: '2rem' }}>
-        <h2 style={{ color: 'var(--ink)' }}>{project.projectTitle}</h2>
-        <p style={{ fontStyle: 'italic', color: 'var(--ink-60)', marginTop: '0.25rem', marginBottom: '1.5rem' }}>{project.oneLiner}</p>
+      <Card className={styles.workspaceCard}>
+        <h2 style={{ color: 'var(--ink)', fontSize: '1.35rem', fontWeight: 800, marginBottom: '0.25rem', lineHeight: 1.3 }}>
+          {project.projectTitle}
+        </h2>
+        <p style={{ fontStyle: 'italic', color: 'var(--ink-60)', fontSize: '0.925rem', marginTop: '0.25rem', marginBottom: '1.25rem' }}>
+          {project.oneLiner}
+        </p>
 
         {(() => {
           const lockedPS = PROBLEM_STATEMENTS.find(ps => ps.id === project.problemStatementId || ps.title === project.problemStatement);
           return (
-            <div style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <h3 style={{ fontWeight: 700, color: 'var(--brand)', margin: 0 }}>Problem Statement</h3>
+                <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--brand)', margin: 0 }}>Problem Statement</h3>
                 {lockedPS && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                     <span style={{
                       background: 'var(--flame-red)',
                       color: '#fff',
-                      padding: '0.25rem 0.75rem',
+                      padding: '0.2rem 0.6rem',
                       borderRadius: '999px',
-                      fontSize: '0.8rem',
+                      fontSize: '0.75rem',
                       fontWeight: 800,
                       letterSpacing: '0.04em'
                     }}>
@@ -228,7 +232,7 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
                       background: 'var(--surface-sunken)',
                       color: 'var(--ink-70)',
                       border: '1px solid var(--line)',
-                      padding: '0.25rem 0.75rem',
+                      padding: '0.2rem 0.6rem',
                       borderRadius: '999px',
                       fontSize: '0.75rem',
                       fontWeight: 700
@@ -239,48 +243,47 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
                 )}
               </div>
 
-              <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--ink)', margin: 0 }}>
+              <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--ink)', margin: 0, lineHeight: 1.4 }}>
                 {lockedPS ? lockedPS.title : project.problemStatement}
               </h4>
 
               {lockedPS ? (
                 <div style={{
                   background: 'var(--surface-sunken)',
-                  padding: '1.25rem',
+                  padding: '1rem',
                   borderRadius: '8px',
                   border: '1px solid var(--line)',
                   color: 'var(--ink-80)',
-                  fontSize: '0.925rem',
-                  lineHeight: 1.7,
+                  fontSize: '0.875rem',
+                  lineHeight: 1.6,
                   whiteSpace: 'pre-wrap'
                 }}>
                   {lockedPS.description}
                 </div>
               ) : (
-                <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, margin: 0 }}>{project.problemStatement}</p>
+                <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, margin: 0, fontSize: '0.875rem' }}>{project.problemStatement}</p>
               )}
             </div>
           );
         })()}
 
-        <div style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1.5rem' }}>
-          <h3 style={{ fontWeight: 700, marginBottom: '0.75rem', color: 'var(--brand)' }}>Proposed Solution</h3>
-          <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{project.proposedSolution}</p>
+        <div style={{ background: 'var(--surface)', padding: '1rem', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '1.25rem' }}>
+          <h3 style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.5rem', color: 'var(--brand)' }}>Proposed Solution</h3>
+          <p style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, fontSize: '0.875rem', margin: 0 }}>{project.proposedSolution}</p>
         </div>
-
 
         {/* Collapsible section for extra details */}
         <div>
           <button 
             type="button" 
             onClick={() => setShowMoreDetails(!showMoreDetails)}
-            style={{ background: 'none', border: 'none', color: 'var(--flame-red)', fontWeight: 600, cursor: 'pointer', padding: 0 }}
+            style={{ background: 'none', border: 'none', color: 'var(--flame-red)', fontWeight: 600, cursor: 'pointer', padding: 0, fontSize: '0.875rem' }}
           >
             {showMoreDetails ? 'Hide additional project details -' : 'Show additional project details +'}
           </button>
           
           {showMoreDetails && (
-            <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', animation: 'fadeIn 0.3s ease' }}>
+            <div style={{ marginTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1.25rem', animation: 'fadeIn 0.3s ease' }}>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <Tag tone="accent">Track: {project.track.replace(/_/g, ' ')}</Tag>
                 {project.targetUsers?.length > 0 && <Tag tone="neutral">Target: {project.targetUsers.join(', ')}</Tag>}
@@ -288,16 +291,16 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
 
               {project.coreFeatures.length > 0 && (
                 <div>
-                  <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Core Features</h4>
-                  <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.8 }}>
-                    {project.coreFeatures.map(f => <li key={f.id}><strong>{f.title}:</strong> {f.description}</li>)}
+                  <h4 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Core Features</h4>
+                  <ul style={{ paddingLeft: '1.25rem', lineHeight: 1.7, fontSize: '0.875rem' }}>
+                    {project.coreFeatures.map(f => <li key={f.id} style={{ marginBottom: '0.35rem' }}><strong>{f.title}:</strong> {f.description}</li>)}
                   </ul>
                 </div>
               )}
 
               <div>
-                <h4 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>Tech Stack</h4>
-                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <h4 style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.5rem' }}>Tech Stack</h4>
+                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                   {(['techFrontend', 'techBackend', 'techDatabase', 'techAiMl', 'techCloud', 'techApis'] as const).map(tech => {
                     const stack = (project as unknown as Record<string, string[] | undefined>)[tech];
                     return stack && stack.length > 0 ? (
@@ -307,7 +310,7 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
                 {RESOURCE_LINKS.map(({ key, label, icon }) => {
                   const url = project[key as keyof EvalProject];
                   return typeof url === 'string' && url && (
@@ -323,96 +326,98 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
       </Card>
 
       {/* 2. Evaluation Form */}
-      <Card style={{ padding: '2rem' }}>
+      <Card className={styles.workspaceCard}>
         {isLocked && (
-          <div className={styles.lockedBanner} style={{ marginBottom: '2rem' }}>
+          <div className={styles.lockedBanner} style={{ marginBottom: '1.5rem' }}>
             <CheckCircle2 size={18} />
-            <span>Evaluation Submitted. This form is now read-only.</span>
+            <span style={{ fontSize: '0.9rem' }}>Evaluation Submitted. This form is now read-only.</span>
           </div>
         )}
 
-        <h2 style={{ marginBottom: '1.5rem', borderBottom: '2px solid var(--line)', paddingBottom: '0.5rem' }}>Round 1: Concept, Innovation & Feasibility (40 Marks)</h2>
-        <div style={{ display: 'grid', gap: '1rem', marginBottom: '1.5rem' }}>
+        <h2 className={styles.evalRoundHeader}>Round 1: Concept, Innovation & Feasibility (40 Marks)</h2>
+        <div style={{ display: 'grid', gap: '0.875rem', marginBottom: '1.5rem' }}>
           {REVIEW1_FIELDS.map((field, idx) => (
-            <div key={field.key} style={{ padding: '1.5rem', border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--surface)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-                <div>
-                  <h4 style={{ fontWeight: 600, fontSize: '1.1rem' }}>{idx + 1}. {field.label}</h4>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginTop: '0.25rem' }}>{field.helper}</p>
+            <div key={field.key} className={styles.evalCriterionCard}>
+              <div className={styles.evalCriterionContent}>
+                <div className={styles.evalCriterionHeader}>
+                  <h4>{idx + 1}. {field.label}</h4>
+                  <p>{field.helper}</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className={styles.evalScoreInputWrapper}>
                   <Input 
                     type="number" 
                     step="any" 
+                    inputMode="decimal"
                     name={field.key} 
                     value={evalData[field.key] !== undefined ? evalData[field.key] : 0} 
                     onChange={handleChange} 
                     min="0" 
                     max={field.max} 
                     disabled={isLocked} 
-                    style={{ width: '80px', textAlign: 'center', fontWeight: 'bold' }} 
+                    style={{ width: '75px', textAlign: 'center', fontWeight: 'bold', fontSize: '1rem', padding: '0.5rem' }} 
                   />
-                  <span style={{ color: 'var(--ink-60)', fontWeight: 600 }}>/ {field.max}</span>
+                  <span style={{ color: 'var(--ink-60)', fontWeight: 700, fontSize: '0.9rem' }}>/ {field.max}</span>
                 </div>
               </div>
             </div>
           ))}
           <Field label="Round 1 Remarks (Private to Jury)">
-            <Textarea rows={4} name="r1Remark" value={evalData.r1Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Round 1..." />
+            <Textarea rows={3} name="r1Remark" value={evalData.r1Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Round 1..." />
           </Field>
-          <div style={{ textAlign: 'right', fontWeight: 700, fontSize: '1.1rem', marginTop: '0.5rem', color: 'var(--ink)' }}>
+          <div className={styles.evalRoundTotal}>
             Round 1 Total: <span style={{ color: 'var(--flame-red)' }}>{totalR1}</span> / 40
           </div>
         </div>
 
-        <h2 style={{ marginBottom: '1.5rem', marginTop: '3rem', borderBottom: '2px solid var(--line)', paddingBottom: '0.5rem' }}>Round 2: Technical Implementation, UI/UX & Progress (60 Marks)</h2>
-        <div style={{ display: 'grid', gap: '1rem', marginBottom: '1.5rem' }}>
+        <h2 className={styles.evalRoundHeader} style={{ marginTop: '2.5rem' }}>Round 2: Technical Implementation, UI/UX & Progress (60 Marks)</h2>
+        <div style={{ display: 'grid', gap: '0.875rem', marginBottom: '1.5rem' }}>
           {REVIEW2_FIELDS.map((field, idx) => (
-            <div key={field.key} style={{ padding: '1.5rem', border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--surface)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-                <div>
-                  <h4 style={{ fontWeight: 600, fontSize: '1.1rem' }}>{idx + 1}. {field.label}</h4>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--ink-60)', marginTop: '0.25rem' }}>{field.helper}</p>
+            <div key={field.key} className={styles.evalCriterionCard}>
+              <div className={styles.evalCriterionContent}>
+                <div className={styles.evalCriterionHeader}>
+                  <h4>{idx + 1}. {field.label}</h4>
+                  <p>{field.helper}</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div className={styles.evalScoreInputWrapper}>
                   <Input 
                     type="number" 
                     step="any" 
+                    inputMode="decimal"
                     name={field.key} 
                     value={evalData[field.key] !== undefined ? evalData[field.key] : 0} 
                     onChange={handleChange} 
                     min="0" 
                     max={field.max} 
                     disabled={isLocked} 
-                    style={{ width: '80px', textAlign: 'center', fontWeight: 'bold' }} 
+                    style={{ width: '75px', textAlign: 'center', fontWeight: 'bold', fontSize: '1rem', padding: '0.5rem' }} 
                   />
-                  <span style={{ color: 'var(--ink-60)', fontWeight: 600 }}>/ {field.max}</span>
+                  <span style={{ color: 'var(--ink-60)', fontWeight: 700, fontSize: '0.9rem' }}>/ {field.max}</span>
                 </div>
               </div>
             </div>
           ))}
 
           <Field label="Round 2 Remarks (Private to Jury)">
-            <Textarea rows={4} name="r2Remark" value={evalData.r2Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Round 2..." />
+            <Textarea rows={3} name="r2Remark" value={evalData.r2Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Round 2..." />
           </Field>
-          <div style={{ textAlign: 'right', fontWeight: 700, fontSize: '1.1rem', marginTop: '0.5rem', color: 'var(--ink)' }}>
+          <div className={styles.evalRoundTotal}>
             Round 2 Total: <span style={{ color: 'var(--flame-red)' }}>{totalR2}</span> / 60
           </div>
         </div>
 
         {/* Total Score & Submit */}
-        <div style={{ background: 'var(--sidebar-bg)', color: '#fff', padding: '1.5rem 2rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '3rem' }}>
+        <div className={styles.evalFinalScoreBanner}>
           <div>
-            <h3 style={{ fontWeight: 700, margin: 0 }}>Final Evaluation Score</h3>
-            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0, fontSize: '0.875rem' }}>Sum of Round 1 (40) and Round 2 (60)</p>
+            <h3 style={{ fontWeight: 700, margin: 0, fontSize: '1.1rem' }}>Final Evaluation Score</h3>
+            <p style={{ color: 'rgba(255,255,255,0.7)', margin: '0.25rem 0 0 0', fontSize: '0.825rem' }}>Sum of Round 1 (40) and Round 2 (60)</p>
           </div>
-          <h2 className="tabular-nums" style={{ color: '#fff', margin: 0, fontSize: '2.5rem' }}>
-            {totalScore} <span style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.5)' }}>/ 100</span>
+          <h2 className="tabular-nums" style={{ color: '#fff', margin: 0, fontSize: '2rem', fontWeight: 800 }}>
+            {totalScore} <span style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.6)' }}>/ 100</span>
           </h2>
         </div>
 
         {!isLocked && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
+          <div className={styles.evalActionButtons}>
             <Button variant="secondary" onClick={() => submitEval('DRAFT')} disabled={isSubmitting}>Save as Draft</Button>
             <Button variant="primary" onClick={() => submitEval('SUBMITTED')} disabled={isSubmitting}>Submit Final Evaluation</Button>
           </div>

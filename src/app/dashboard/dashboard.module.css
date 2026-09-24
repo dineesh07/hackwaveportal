@@ -298,12 +298,106 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
 .juryCardTop h3 {
   color: var(--flame-red);
   font-weight: 700;
+  font-size: 1.1rem;
+  word-break: break-word;
+}
+
+.juryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.juryMetricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.evalCriterionCard {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.evalCriterionContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.evalCriterionHeader {
+  flex: 1;
+}
+
+.evalCriterionHeader h4 {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.evalCriterionHeader p {
+  font-size: 0.85rem;
+  color: var(--ink-60);
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+.evalScoreInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.evalRoundHeader {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 0.5rem;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.evalRoundTotal {
+  text-align: right;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-top: 0.75rem;
+  color: var(--ink);
+}
+
+.evalFinalScoreBanner {
+  background: var(--sidebar-bg);
+  color: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.evalActionButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.75rem;
 }
 
 .tabs {
@@ -517,20 +611,78 @@
   .taskFormGrid {
     grid-template-columns: 1fr;
   }
+
+  .evalCriterionContent {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .evalScoreInputWrapper {
+    justify-content: flex-end !important;
+    width: 100% !important;
+    border-top: 1px solid var(--line);
+    padding-top: 0.5rem;
+  }
+
+  .evalFinalScoreBanner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+    padding: 1.25rem 1rem !important;
+  }
+
+  .evalFinalScoreBanner h2 {
+    font-size: 2rem !important;
+  }
+
+  .evalActionButtons {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .evalActionButtons button {
+    width: 100% !important;
+  }
+
+  .juryMetricsGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .juryGrid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
 }
 
 @media (max-width: 480px) {
   .title {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
+    line-height: 1.2;
   }
 
-  .teamGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  .subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .juryMetricsGrid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  .teamGrid,
+  .juryGrid {
+    grid-template-columns: 1fr !important;
+    gap: 0.875rem !important;
   }
 
   .workspaceCard {
     padding: 1rem 0.75rem;
+  }
+
+  .evalRoundHeader {
+    font-size: 1.05rem !important;
   }
 }
 

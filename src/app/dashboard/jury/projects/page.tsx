@@ -47,17 +47,17 @@ export default async function JuryProjectsPage() {
         </header>
 
         {assignments.length > 0 ? (
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid var(--line)', overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <div className={styles.tableContainer}>
+            <table className={styles.table} style={{ minWidth: '650px' }}>
               <thead>
-                <tr style={{ backgroundColor: 'var(--paper)', borderBottom: '1px solid var(--line)' }}>
-                  <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Team ID</th>
-                  <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Team Name</th>
-                  <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Project Title</th>
-                  <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Track</th>
-                  <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>Status</th>
-                  <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem', textAlign: 'center' }}>Marks</th>
-                  <th style={{ padding: '1rem', fontWeight: 600, fontSize: '0.875rem', textAlign: 'right' }}>Action</th>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Team ID</th>
+                  <th className={styles.th}>Team Name</th>
+                  <th className={styles.th}>Project Title</th>
+                  <th className={styles.th}>Track</th>
+                  <th className={styles.th}>Status</th>
+                  <th className={styles.th} style={{ textAlign: 'center' }}>Marks</th>
+                  <th className={styles.th} style={{ textAlign: 'right' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -68,22 +68,22 @@ export default async function JuryProjectsPage() {
                   const totalScore = evaluation?.totalScore || 0;
 
                   return (
-                    <tr key={project.id} style={{ borderBottom: '1px solid var(--line)' }}>
-                      <td style={{ padding: '1rem', fontWeight: 600 }}>{project.team.teamCode || 'N/A'}</td>
-                      <td style={{ padding: '1rem', fontWeight: 500 }}>{project.team.teamName}</td>
-                      <td style={{ padding: '1rem', color: 'var(--ink)' }}>{project.projectTitle}</td>
-                      <td style={{ padding: '1rem', color: 'var(--ink-60)', fontSize: '0.875rem' }}>
+                    <tr key={project.id} className={styles.tr}>
+                      <td className={styles.td} style={{ fontWeight: 600 }}>{project.team.teamCode || 'N/A'}</td>
+                      <td className={styles.td} style={{ fontWeight: 500 }}>{project.team.teamName}</td>
+                      <td className={styles.td} style={{ color: 'var(--ink)' }}>{project.projectTitle}</td>
+                      <td className={styles.td} style={{ color: 'var(--ink-60)', fontSize: '0.875rem' }}>
                         {project.track.replace(/_/g, ' ')}
                       </td>
-                      <td style={{ padding: '1rem' }}>
+                      <td className={styles.td}>
                         <Tag tone={evalTone(evalStatus)}>{evalLabel(evalStatus)}</Tag>
                       </td>
-                      <td style={{ padding: '1rem', textAlign: 'center', fontWeight: evalStatus !== 'NOT_STARTED' ? 700 : 400, color: evalStatus !== 'NOT_STARTED' ? 'var(--flame-red)' : 'var(--ink-40)' }}>
+                      <td className={styles.td} style={{ textAlign: 'center', fontWeight: evalStatus !== 'NOT_STARTED' ? 700 : 400, color: evalStatus !== 'NOT_STARTED' ? 'var(--flame-red)' : 'var(--ink-40)' }}>
                         {evalStatus !== 'NOT_STARTED' ? `${totalScore} / 100` : '-'}
                       </td>
-                      <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <Link href={`/dashboard/jury/project/${project.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem', backgroundColor: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '6px', textDecoration: 'none', color: 'var(--ink)', fontWeight: 500, fontSize: '0.875rem', transition: 'background-color 0.2s' }}>
-                          <Eye size={16} /> Evaluate
+                      <td className={styles.td} style={{ textAlign: 'right' }}>
+                        <Link href={`/dashboard/jury/project/${project.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.85rem', backgroundColor: 'var(--surface)', border: '1px solid var(--line)', borderRadius: '6px', textDecoration: 'none', color: 'var(--ink)', fontWeight: 600, fontSize: '0.85rem', transition: 'background-color 0.2s', whiteSpace: 'nowrap' }}>
+                          <Eye size={15} /> Evaluate
                         </Link>
                       </td>
                     </tr>

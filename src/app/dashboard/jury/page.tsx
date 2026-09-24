@@ -71,7 +71,7 @@ export default async function JuryDashboardPage() {
           <StatusRibbon label="Phase 1" tone="hot" />
         </header>
 
-        <section className={styles.metricsGrid} style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '2.5rem' }}>
+        <section className={styles.juryMetricsGrid}>
           <StatCard label="Assigned Projects" value={assignments.length} icon={<ClipboardList size={18} />} />
           <StatCard label="Pending Evaluations" value={pendingCount} icon={<Clock size={18} />} tone="danger" />
           <StatCard label="Completed Evaluations" value={completedCount} icon={<CheckCircle2 size={18} />} tone="success" />
@@ -83,7 +83,7 @@ export default async function JuryDashboardPage() {
           Assigned Projects
         </h2>
         {projectCards.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+          <div className={styles.juryGrid}>
             {projectCards}
           </div>
         ) : (

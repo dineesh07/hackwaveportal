@@ -45,8 +45,8 @@ export default async function JuryEvaluationPage({ params }: { params: Promise<{
             <h1 className={styles.title}>Evaluation Workspace</h1>
             <p className={styles.subtitle}>{project.team.teamCode ? `${project.team.teamCode} - ` : ''}{project.team.teamName} · {project.projectTitle}</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link href="/dashboard/jury" style={{ color: 'var(--flame-red)', textDecoration: 'none', fontWeight: 600 }}>&larr; Back to Dashboard</Link>
+          <div className={styles.headerActions}>
+            <Link href="/dashboard/jury" style={{ color: 'var(--flame-red)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>&larr; Back to Dashboard</Link>
             <StatusRibbon label="Phase 1" tone="hot" />
           </div>
         </header>
