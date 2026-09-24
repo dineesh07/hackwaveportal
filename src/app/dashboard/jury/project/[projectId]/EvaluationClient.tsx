@@ -12,21 +12,22 @@ import { PROBLEM_STATEMENTS } from '@/data/problem-statements'
 
 
 const REVIEW1_FIELDS = [
-  { key: 'r1ProblemUnderstanding', label: 'Problem Understanding', max: 10, helper: 'How clearly the team understands the problem, users, pain points, and requirements' },
-  { key: 'r1ProposedSolution', label: 'Proposed Solution & Innovation', max: 10, helper: 'Relevance of the solution, uniqueness, practicality, and innovation' },
-  { key: 'r1TechUnderstanding', label: 'Technical Understanding', max: 8, helper: 'Understanding of technologies, architecture, AI/ML concepts, APIs, database, etc.' },
-  { key: 'r1PrototypeDev', label: 'Prototype Development', max: 12, helper: 'Working prototype, core features implemented, functionality, and demo quality' },
-  { key: 'r1UiUx', label: 'User Flow & UI/UX', max: 5, helper: 'Ease of use, navigation, interface design, and whether the UI supports the intended users' },
-  { key: 'r1TeamUnderstanding', label: 'Team Understanding & Contribution', max: 5, helper: "Each member's understanding of their work and ability to explain their contribution" },
+  { key: 'r1OriginalityInnovation', label: 'Idea Originality, Innovation & Relevance', max: 10, helper: 'Uniqueness, innovation, creativity, and relevance of the idea' },
+  { key: 'r1Feasibility', label: 'Feasibility', max: 5, helper: 'Practicality and potential for real-world application' },
+  { key: 'r1ClarityConcept', label: 'Clarity of Concept', max: 10, helper: 'How clearly the idea, problem, and proposed solution are communicated and understood' },
+  { key: 'r1TechCompetence', label: 'Technical Competence', max: 5, helper: 'Level of technical knowledge and expertise demonstrated' },
+  { key: 'r1TeamCollaboration', label: 'Team Collaboration', max: 5, helper: 'Effective contribution, coordination, and collaboration among team members' },
+  { key: 'r1PresentationQa', label: 'Demo Presentation & Question and Answer', max: 5, helper: 'Clear, concise, and detailed explanation, along with the ability to effectively respond to questions' },
 ];
 
 const REVIEW2_FIELDS = [
-  { key: 'r2FeedbackImplementation', label: 'Implementation of Review 1 Feedback', max: 10, helper: 'Did they actually address the feedback given during Review 1?' },
-  { key: 'r2Improvements', label: 'Improvements & Iteration', max: 10, helper: 'New features, corrections, optimization, improved workflow, better UI/UX, etc.' },
-  { key: 'r2PrototypeFunctionality', label: 'Prototype Functionality & Completeness', max: 12, helper: 'How well the updated prototype works and how much of the solution is functional' },
-  { key: 'r2TechImplementation', label: 'Technical Implementation', max: 8, helper: 'Code quality, architecture, database/API integration, AI/ML implementation, security, etc.' },
-  { key: 'r2TestingValidation', label: 'Testing & Validation', max: 5, helper: 'Testing performed, bugs identified/fixed, user feedback, accuracy/performance evaluation' },
-  { key: 'r2TeamPresentation', label: 'Team Understanding & Presentation', max: 5, helper: 'Ability of members to explain changes, technical decisions, and individual contributions' },
+  { key: 'r2UiUx', label: 'Design & UI/UX', max: 15, helper: 'Look and feel of the project, user interface, usability, and overall user experience' },
+  { key: 'r2Functionality', label: 'Functionality & Usability', max: 5, helper: 'Smooth operation, reliability, and absence of critical bugs' },
+  { key: 'r2TechImplementation', label: 'Technical Implementation', max: 20, helper: 'Effective and appropriate use of relevant tools, technologies, and technical approaches' },
+  { key: 'r2Progress', label: 'Progress Since Round 1', max: 10, helper: 'Improvement, development, and refinement of the initial idea and prototype' },
+  { key: 'r2FeedbackIncorporation', label: 'Incorporation of Feedback', max: 5, helper: 'Ability to receive and implement feedback, along with scope for future iterations and improvements' },
+  { key: 'r2OverallImpressions', label: 'Overall Impressions', max: 5, helper: 'Overall quality, completeness, impact, and presentation of the project' },
+  { key: 'r2QuestionAnswer', label: 'Question and Answer', max: 5, helper: 'Ability to clearly explain technical and functional aspects and effectively respond to questions' },
 ];
 
 const RESOURCE_LINKS = [
@@ -61,19 +62,20 @@ type EvalProject = {
 };
 
 type EvalData = {
-  r1ProblemUnderstanding?: number;
-  r1ProposedSolution?: number;
-  r1TechUnderstanding?: number;
-  r1PrototypeDev?: number;
-  r1UiUx?: number;
-  r1TeamUnderstanding?: number;
+  r1OriginalityInnovation?: number;
+  r1Feasibility?: number;
+  r1ClarityConcept?: number;
+  r1TechCompetence?: number;
+  r1TeamCollaboration?: number;
+  r1PresentationQa?: number;
   r1Remark?: string;
-  r2FeedbackImplementation?: number;
-  r2Improvements?: number;
-  r2PrototypeFunctionality?: number;
+  r2UiUx?: number;
+  r2Functionality?: number;
   r2TechImplementation?: number;
-  r2TestingValidation?: number;
-  r2TeamPresentation?: number;
+  r2Progress?: number;
+  r2FeedbackIncorporation?: number;
+  r2OverallImpressions?: number;
+  r2QuestionAnswer?: number;
   r2Remark?: string;
   status?: string;
 };
@@ -87,20 +89,21 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
   const router = useRouter();
   
   const [evalData, setEvalData] = useState<{ [key: string]: number | string }>({
-    r1ProblemUnderstanding: initialEvaluation?.r1ProblemUnderstanding ?? 0,
-    r1ProposedSolution: initialEvaluation?.r1ProposedSolution ?? 0,
-    r1TechUnderstanding: initialEvaluation?.r1TechUnderstanding ?? 0,
-    r1PrototypeDev: initialEvaluation?.r1PrototypeDev ?? 0,
-    r1UiUx: initialEvaluation?.r1UiUx ?? 0,
-    r1TeamUnderstanding: initialEvaluation?.r1TeamUnderstanding ?? 0,
+    r1OriginalityInnovation: initialEvaluation?.r1OriginalityInnovation ?? 0,
+    r1Feasibility: initialEvaluation?.r1Feasibility ?? 0,
+    r1ClarityConcept: initialEvaluation?.r1ClarityConcept ?? 0,
+    r1TechCompetence: initialEvaluation?.r1TechCompetence ?? 0,
+    r1TeamCollaboration: initialEvaluation?.r1TeamCollaboration ?? 0,
+    r1PresentationQa: initialEvaluation?.r1PresentationQa ?? 0,
     r1Remark: initialEvaluation?.r1Remark || '',
     
-    r2FeedbackImplementation: initialEvaluation?.r2FeedbackImplementation ?? 0,
-    r2Improvements: initialEvaluation?.r2Improvements ?? 0,
-    r2PrototypeFunctionality: initialEvaluation?.r2PrototypeFunctionality ?? 0,
+    r2UiUx: initialEvaluation?.r2UiUx ?? 0,
+    r2Functionality: initialEvaluation?.r2Functionality ?? 0,
     r2TechImplementation: initialEvaluation?.r2TechImplementation ?? 0,
-    r2TestingValidation: initialEvaluation?.r2TestingValidation ?? 0,
-    r2TeamPresentation: initialEvaluation?.r2TeamPresentation ?? 0,
+    r2Progress: initialEvaluation?.r2Progress ?? 0,
+    r2FeedbackIncorporation: initialEvaluation?.r2FeedbackIncorporation ?? 0,
+    r2OverallImpressions: initialEvaluation?.r2OverallImpressions ?? 0,
+    r2QuestionAnswer: initialEvaluation?.r2QuestionAnswer ?? 0,
     r2Remark: initialEvaluation?.r2Remark || '',
   });
 
@@ -328,7 +331,7 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
           </div>
         )}
 
-        <h2 style={{ marginBottom: '1.5rem', borderBottom: '2px solid var(--line)', paddingBottom: '0.5rem' }}>Review 1: Problem Understanding & Initial Prototype</h2>
+        <h2 style={{ marginBottom: '1.5rem', borderBottom: '2px solid var(--line)', paddingBottom: '0.5rem' }}>Round 1: Concept, Innovation & Feasibility (40 Marks)</h2>
         <div style={{ display: 'grid', gap: '1rem', marginBottom: '1.5rem' }}>
           {REVIEW1_FIELDS.map((field, idx) => (
             <div key={field.key} style={{ padding: '1.5rem', border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--surface)' }}>
@@ -354,15 +357,15 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
               </div>
             </div>
           ))}
-          <Field label="Review 1 Remarks (Private to Jury)">
-            <Textarea rows={4} name="r1Remark" value={evalData.r1Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Review 1..." />
+          <Field label="Round 1 Remarks (Private to Jury)">
+            <Textarea rows={4} name="r1Remark" value={evalData.r1Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Round 1..." />
           </Field>
           <div style={{ textAlign: 'right', fontWeight: 700, fontSize: '1.1rem', marginTop: '0.5rem', color: 'var(--ink)' }}>
-            Review 1 Total: <span style={{ color: 'var(--flame-red)' }}>{totalR1}</span> / 50
+            Round 1 Total: <span style={{ color: 'var(--flame-red)' }}>{totalR1}</span> / 40
           </div>
         </div>
 
-        <h2 style={{ marginBottom: '1.5rem', marginTop: '3rem', borderBottom: '2px solid var(--line)', paddingBottom: '0.5rem' }}>Review 2: Iteration & Final Delivery</h2>
+        <h2 style={{ marginBottom: '1.5rem', marginTop: '3rem', borderBottom: '2px solid var(--line)', paddingBottom: '0.5rem' }}>Round 2: Technical Implementation, UI/UX & Progress (60 Marks)</h2>
         <div style={{ display: 'grid', gap: '1rem', marginBottom: '1.5rem' }}>
           {REVIEW2_FIELDS.map((field, idx) => (
             <div key={field.key} style={{ padding: '1.5rem', border: '1px solid var(--line)', borderRadius: 'var(--radius)', background: 'var(--surface)' }}>
@@ -389,11 +392,11 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
             </div>
           ))}
 
-          <Field label="Review 2 Remarks (Private to Jury)">
-            <Textarea rows={4} name="r2Remark" value={evalData.r2Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Review 2..." />
+          <Field label="Round 2 Remarks (Private to Jury)">
+            <Textarea rows={4} name="r2Remark" value={evalData.r2Remark} onChange={handleChange} disabled={isLocked} placeholder="Add your private remarks for Round 2..." />
           </Field>
           <div style={{ textAlign: 'right', fontWeight: 700, fontSize: '1.1rem', marginTop: '0.5rem', color: 'var(--ink)' }}>
-            Review 2 Total: <span style={{ color: 'var(--flame-red)' }}>{totalR2}</span> / 50
+            Round 2 Total: <span style={{ color: 'var(--flame-red)' }}>{totalR2}</span> / 60
           </div>
         </div>
 
@@ -401,7 +404,7 @@ export default function EvaluationClient({ project, initialEvaluation }: { proje
         <div style={{ background: 'var(--sidebar-bg)', color: '#fff', padding: '1.5rem 2rem', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '3rem' }}>
           <div>
             <h3 style={{ fontWeight: 700, margin: 0 }}>Final Evaluation Score</h3>
-            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0, fontSize: '0.875rem' }}>Sum of Review 1 and Review 2</p>
+            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0, fontSize: '0.875rem' }}>Sum of Round 1 (40) and Round 2 (60)</p>
           </div>
           <h2 className="tabular-nums" style={{ color: '#fff', margin: 0, fontSize: '2.5rem' }}>
             {totalScore} <span style={{ fontSize: '1.25rem', color: 'rgba(255,255,255,0.5)' }}>/ 100</span>

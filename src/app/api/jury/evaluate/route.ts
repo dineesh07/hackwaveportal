@@ -12,8 +12,8 @@ export async function POST(req: Request) {
 
     const { 
       projectId, status, totalScore,
-      r1ProblemUnderstanding, r1ProposedSolution, r1TechUnderstanding, r1PrototypeDev, r1UiUx, r1TeamUnderstanding, r1Remark,
-      r2FeedbackImplementation, r2Improvements, r2PrototypeFunctionality, r2TechImplementation, r2TestingValidation, r2TeamPresentation, r2Remark
+      r1OriginalityInnovation, r1Feasibility, r1ClarityConcept, r1TechCompetence, r1TeamCollaboration, r1PresentationQa, r1Remark,
+      r2UiUx, r2Functionality, r2TechImplementation, r2Progress, r2FeedbackIncorporation, r2OverallImpressions, r2QuestionAnswer, r2Remark
     } = await req.json();
 
     const assignment = await prisma.juryAssignment.findUnique({
@@ -38,50 +38,55 @@ export async function POST(req: Request) {
       return Math.min(max, Number(num.toFixed(2)));
     };
 
-    const c_r1ProblemUnderstanding = clamp(r1ProblemUnderstanding, 10);
-    const c_r1ProposedSolution = clamp(r1ProposedSolution, 10);
-    const c_r1TechUnderstanding = clamp(r1TechUnderstanding, 8);
-    const c_r1PrototypeDev = clamp(r1PrototypeDev, 12);
-    const c_r1UiUx = clamp(r1UiUx, 5);
-    const c_r1TeamUnderstanding = clamp(r1TeamUnderstanding, 5);
+    // Round 1 Clamps (40 Marks Total)
+    const c_r1OriginalityInnovation = clamp(r1OriginalityInnovation, 10);
+    const c_r1Feasibility = clamp(r1Feasibility, 5);
+    const c_r1ClarityConcept = clamp(r1ClarityConcept, 10);
+    const c_r1TechCompetence = clamp(r1TechCompetence, 5);
+    const c_r1TeamCollaboration = clamp(r1TeamCollaboration, 5);
+    const c_r1PresentationQa = clamp(r1PresentationQa, 5);
 
-    const c_r2FeedbackImplementation = clamp(r2FeedbackImplementation, 10);
-    const c_r2Improvements = clamp(r2Improvements, 10);
-    const c_r2PrototypeFunctionality = clamp(r2PrototypeFunctionality, 12);
-    const c_r2TechImplementation = clamp(r2TechImplementation, 8);
-    const c_r2TestingValidation = clamp(r2TestingValidation, 5);
-    const c_r2TeamPresentation = clamp(r2TeamPresentation, 5);
+    // Round 2 Clamps (60 Marks Total)
+    const c_r2UiUx = clamp(r2UiUx, 15);
+    const c_r2Functionality = clamp(r2Functionality, 5);
+    const c_r2TechImplementation = clamp(r2TechImplementation, 20);
+    const c_r2Progress = clamp(r2Progress, 10);
+    const c_r2FeedbackIncorporation = clamp(r2FeedbackIncorporation, 5);
+    const c_r2OverallImpressions = clamp(r2OverallImpressions, 5);
+    const c_r2QuestionAnswer = clamp(r2QuestionAnswer, 5);
 
     const computedTotal = Number((
-      c_r1ProblemUnderstanding +
-      c_r1ProposedSolution +
-      c_r1TechUnderstanding +
-      c_r1PrototypeDev +
-      c_r1UiUx +
-      c_r1TeamUnderstanding +
-      c_r2FeedbackImplementation +
-      c_r2Improvements +
-      c_r2PrototypeFunctionality +
+      c_r1OriginalityInnovation +
+      c_r1Feasibility +
+      c_r1ClarityConcept +
+      c_r1TechCompetence +
+      c_r1TeamCollaboration +
+      c_r1PresentationQa +
+      c_r2UiUx +
+      c_r2Functionality +
       c_r2TechImplementation +
-      c_r2TestingValidation +
-      c_r2TeamPresentation
+      c_r2Progress +
+      c_r2FeedbackIncorporation +
+      c_r2OverallImpressions +
+      c_r2QuestionAnswer
     ).toFixed(2));
 
 
     const data = {
-      r1ProblemUnderstanding: c_r1ProblemUnderstanding,
-      r1ProposedSolution: c_r1ProposedSolution,
-      r1TechUnderstanding: c_r1TechUnderstanding,
-      r1PrototypeDev: c_r1PrototypeDev,
-      r1UiUx: c_r1UiUx,
-      r1TeamUnderstanding: c_r1TeamUnderstanding,
+      r1OriginalityInnovation: c_r1OriginalityInnovation,
+      r1Feasibility: c_r1Feasibility,
+      r1ClarityConcept: c_r1ClarityConcept,
+      r1TechCompetence: c_r1TechCompetence,
+      r1TeamCollaboration: c_r1TeamCollaboration,
+      r1PresentationQa: c_r1PresentationQa,
       r1Remark: r1Remark || "",
-      r2FeedbackImplementation: c_r2FeedbackImplementation,
-      r2Improvements: c_r2Improvements,
-      r2PrototypeFunctionality: c_r2PrototypeFunctionality,
+      r2UiUx: c_r2UiUx,
+      r2Functionality: c_r2Functionality,
       r2TechImplementation: c_r2TechImplementation,
-      r2TestingValidation: c_r2TestingValidation,
-      r2TeamPresentation: c_r2TeamPresentation,
+      r2Progress: c_r2Progress,
+      r2FeedbackIncorporation: c_r2FeedbackIncorporation,
+      r2OverallImpressions: c_r2OverallImpressions,
+      r2QuestionAnswer: c_r2QuestionAnswer,
       r2Remark: r2Remark || "",
       totalScore: computedTotal,
       status: evalStatus,
