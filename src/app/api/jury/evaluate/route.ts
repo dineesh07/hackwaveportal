@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     // Round 2 Clamps (60 Marks Total)
     const c_r2UiUx = clamp(r2UiUx, 15);
     const c_r2Functionality = clamp(r2Functionality, 5);
-    const c_r2TechImplementation = clamp(r2TechImplementation, 20);
+    const c_r2TechImplementation = clamp(r2TechImplementation, 15);
     const c_r2Progress = clamp(r2Progress, 10);
     const c_r2FeedbackIncorporation = clamp(r2FeedbackIncorporation, 5);
     const c_r2OverallImpressions = clamp(r2OverallImpressions, 5);

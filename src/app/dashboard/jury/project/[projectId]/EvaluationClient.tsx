@@ -23,7 +23,7 @@ const REVIEW1_FIELDS = [
 const REVIEW2_FIELDS = [
   { key: 'r2UiUx', label: 'Design & UI/UX', max: 15, helper: 'Look and feel of the project, user interface, usability, and overall user experience' },
   { key: 'r2Functionality', label: 'Functionality & Usability', max: 5, helper: 'Smooth operation, reliability, and absence of critical bugs' },
-  { key: 'r2TechImplementation', label: 'Technical Implementation', max: 20, helper: 'Effective and appropriate use of relevant tools, technologies, and technical approaches' },
+  { key: 'r2TechImplementation', label: 'Technical Implementation', max: 15, helper: 'Effective and appropriate use of relevant tools, technologies, and technical approaches' },
   { key: 'r2Progress', label: 'Progress Since Round 1', max: 10, helper: 'Improvement, development, and refinement of the initial idea and prototype' },
   { key: 'r2FeedbackIncorporation', label: 'Incorporation of Feedback', max: 5, helper: 'Ability to receive and implement feedback, along with scope for future iterations and improvements' },
   { key: 'r2OverallImpressions', label: 'Overall Impressions', max: 5, helper: 'Overall quality, completeness, impact, and presentation of the project' },
